@@ -11,61 +11,61 @@
         <error line="14" column="1" source="standard:no-unused-imports" />
         <error line="17" column="1" source="standard:no-unused-imports" />
         <error line="42" column="1" source="standard:no-wildcard-imports" />
-        <error line="69" column="1" source="standard:no-wildcard-imports" />
-        <error line="74" column="1" source="standard:no-unused-imports" />
-        <error line="76" column="20" source="standard:property-naming" />
-        <error line="79" column="21" source="standard:class-signature" />
-        <error line="79" column="48" source="standard:class-signature" />
-        <error line="79" column="72" source="standard:class-signature" />
-        <error line="144" column="29" source="standard:chain-method-continuation" />
-        <error line="147" column="51" source="standard:trailing-comma-on-call-site" />
-        <error line="152" column="22" source="standard:trailing-comma-on-call-site" />
-        <error line="198" column="14" source="standard:trailing-comma-on-call-site" />
-        <error line="199" column="1" source="standard:no-blank-line-in-list" />
-        <error line="202" column="1" source="standard:no-consecutive-blank-lines" />
-        <error line="224" column="1" source="standard:no-consecutive-blank-lines" />
-        <error line="226" column="9" source="standard:comment-spacing" />
-        <error line="244" column="44" source="standard:multiline-expression-wrapping" />
-        <error line="244" column="62" source="standard:chain-method-continuation" />
-        <error line="244" column="82" source="standard:chain-method-continuation" />
-        <error line="250" column="93" source="standard:trailing-comma-on-call-site" />
-        <error line="251" column="39" source="standard:wrapping" />
-        <error line="251" column="40" source="standard:argument-list-wrapping" />
-        <error line="251" column="58" source="standard:trailing-comma-on-call-site" />
-        <error line="264" column="40" source="standard:multiline-expression-wrapping" />
-        <error line="264" column="58" source="standard:chain-method-continuation" />
-        <error line="264" column="78" source="standard:chain-method-continuation" />
-        <error line="270" column="89" source="standard:trailing-comma-on-call-site" />
-        <error line="271" column="35" source="standard:wrapping" />
-        <error line="271" column="36" source="standard:argument-list-wrapping" />
-        <error line="271" column="54" source="standard:trailing-comma-on-call-site" />
-        <error line="279" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="286" column="52" source="standard:multiline-expression-wrapping" />
-        <error line="309" column="17" source="standard:comment-spacing" />
+        <error line="71" column="1" source="standard:no-wildcard-imports" />
+        <error line="76" column="1" source="standard:no-unused-imports" />
+        <error line="78" column="20" source="standard:property-naming" />
+        <error line="81" column="21" source="standard:class-signature" />
+        <error line="81" column="48" source="standard:class-signature" />
+        <error line="81" column="72" source="standard:class-signature" />
+        <error line="146" column="29" source="standard:chain-method-continuation" />
+        <error line="149" column="51" source="standard:trailing-comma-on-call-site" />
+        <error line="154" column="22" source="standard:trailing-comma-on-call-site" />
+        <error line="200" column="14" source="standard:trailing-comma-on-call-site" />
+        <error line="201" column="1" source="standard:no-blank-line-in-list" />
+        <error line="204" column="1" source="standard:no-consecutive-blank-lines" />
+        <error line="226" column="1" source="standard:no-consecutive-blank-lines" />
+        <error line="228" column="9" source="standard:comment-spacing" />
+        <error line="246" column="44" source="standard:multiline-expression-wrapping" />
+        <error line="246" column="62" source="standard:chain-method-continuation" />
+        <error line="246" column="82" source="standard:chain-method-continuation" />
+        <error line="252" column="93" source="standard:trailing-comma-on-call-site" />
+        <error line="253" column="39" source="standard:wrapping" />
+        <error line="253" column="40" source="standard:argument-list-wrapping" />
+        <error line="253" column="58" source="standard:trailing-comma-on-call-site" />
+        <error line="266" column="40" source="standard:multiline-expression-wrapping" />
+        <error line="266" column="58" source="standard:chain-method-continuation" />
+        <error line="266" column="78" source="standard:chain-method-continuation" />
+        <error line="272" column="89" source="standard:trailing-comma-on-call-site" />
+        <error line="273" column="35" source="standard:wrapping" />
+        <error line="273" column="36" source="standard:argument-list-wrapping" />
+        <error line="273" column="54" source="standard:trailing-comma-on-call-site" />
+        <error line="281" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="288" column="52" source="standard:multiline-expression-wrapping" />
         <error line="311" column="17" source="standard:comment-spacing" />
-        <error line="313" column="32" source="standard:chain-method-continuation" />
-        <error line="313" column="42" source="standard:chain-method-continuation" />
-        <error line="314" column="54" source="standard:chain-method-continuation" />
-        <error line="316" column="42" source="standard:multiline-expression-wrapping" />
-        <error line="318" column="37" source="standard:trailing-comma-on-call-site" />
-        <error line="324" column="39" source="standard:trailing-comma-on-call-site" />
-        <error line="335" column="90" source="standard:trailing-comma-on-call-site" />
-        <error line="342" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="342" column="1" source="standard:no-empty-first-line-in-method-block" />
-        <error line="346" column="1" source="standard:no-consecutive-blank-lines" />
-        <error line="361" column="17" source="standard:comment-spacing" />
-        <error line="372" column="9" source="standard:comment-spacing" />
-        <error line="374" column="58" source="standard:multiline-expression-wrapping" />
-        <error line="374" column="58" source="standard:wrapping" />
-        <error line="376" column="13" source="standard:wrapping" />
-        <error line="381" column="129" source="standard:trailing-comma-on-call-site" />
-        <error line="382" column="14" source="standard:trailing-comma-on-call-site" />
-        <error line="386" column="65" source="standard:multiline-expression-wrapping" />
-        <error line="386" column="65" source="standard:function-signature" />
-        <error line="386" column="78" source="standard:chain-method-continuation" />
-        <error line="391" column="48" source="standard:function-expression-body" />
-        <error line="394" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="395" column="1" source="standard:no-consecutive-blank-lines" />
+        <error line="313" column="17" source="standard:comment-spacing" />
+        <error line="315" column="32" source="standard:chain-method-continuation" />
+        <error line="315" column="42" source="standard:chain-method-continuation" />
+        <error line="316" column="54" source="standard:chain-method-continuation" />
+        <error line="318" column="42" source="standard:multiline-expression-wrapping" />
+        <error line="320" column="37" source="standard:trailing-comma-on-call-site" />
+        <error line="326" column="39" source="standard:trailing-comma-on-call-site" />
+        <error line="337" column="90" source="standard:trailing-comma-on-call-site" />
+        <error line="344" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="344" column="1" source="standard:no-empty-first-line-in-method-block" />
+        <error line="360" column="1" source="standard:no-consecutive-blank-lines" />
+        <error line="375" column="17" source="standard:comment-spacing" />
+        <error line="386" column="9" source="standard:comment-spacing" />
+        <error line="388" column="58" source="standard:multiline-expression-wrapping" />
+        <error line="388" column="58" source="standard:wrapping" />
+        <error line="390" column="13" source="standard:wrapping" />
+        <error line="395" column="129" source="standard:trailing-comma-on-call-site" />
+        <error line="396" column="14" source="standard:trailing-comma-on-call-site" />
+        <error line="400" column="65" source="standard:multiline-expression-wrapping" />
+        <error line="400" column="65" source="standard:function-signature" />
+        <error line="400" column="78" source="standard:chain-method-continuation" />
+        <error line="405" column="48" source="standard:function-expression-body" />
+        <error line="408" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="409" column="1" source="standard:no-consecutive-blank-lines" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/Favorites.kt">
         <error line="3" column="1" source="standard:no-wildcard-imports" />
@@ -369,10 +369,10 @@
         <error line="25" column="23" source="standard:multiline-expression-wrapping" />
         <error line="25" column="23" source="standard:function-signature" />
         <error line="25" column="35" source="standard:chain-method-continuation" />
-        <error line="27" column="9" source="standard:comment-spacing" />
         <error line="28" column="9" source="standard:comment-spacing" />
-        <error line="34" column="48" source="standard:trailing-comma-on-declaration-site" />
-        <error line="41" column="1" source="standard:final-newline" />
+        <error line="29" column="9" source="standard:comment-spacing" />
+        <error line="35" column="48" source="standard:trailing-comma-on-declaration-site" />
+        <error line="42" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/di/AppModule.kt">
         <error line="24" column="1" source="standard:no-empty-first-line-in-class-body" />
@@ -2999,7 +2999,6 @@
         <error line="263" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/features/hideout/viewmodels/HideoutMainViewModel.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
         <error line="21" column="27" source="standard:annotation" />
         <error line="21" column="35" source="standard:annotation" />
         <error line="22" column="1" source="standard:no-empty-first-line-in-class-body" />
@@ -3007,7 +3006,7 @@
         <error line="46" column="57" source="standard:curly-spacing" />
         <error line="46" column="75" source="standard:curly-spacing" />
         <error line="50" column="43" source="standard:trailing-comma-on-call-site" />
-        <error line="56" column="31" source="standard:multiline-expression-wrapping" />
+        <error line="56" column="34" source="standard:multiline-expression-wrapping" />
         <error line="57" column="41" source="standard:multiline-expression-wrapping" />
         <error line="58" column="50" source="standard:multiline-expression-wrapping" />
         <error line="60" column="59" source="standard:trailing-comma-on-call-site" />
@@ -3015,14 +3014,14 @@
         <error line="63" column="56" source="standard:trailing-comma-on-call-site" />
         <error line="64" column="18" source="standard:trailing-comma-on-call-site" />
         <error line="66" column="31" source="standard:trailing-comma-on-call-site" />
-        <error line="82" column="31" source="standard:multiline-expression-wrapping" />
+        <error line="82" column="34" source="standard:multiline-expression-wrapping" />
         <error line="83" column="41" source="standard:multiline-expression-wrapping" />
         <error line="84" column="69" source="standard:trailing-comma-on-call-site" />
         <error line="85" column="22" source="standard:trailing-comma-on-call-site" />
         <error line="86" column="18" source="standard:trailing-comma-on-call-site" />
         <error line="88" column="31" source="standard:trailing-comma-on-call-site" />
         <error line="91" column="1" source="standard:no-consecutive-blank-lines" />
-        <error line="95" column="35" source="standard:multiline-expression-wrapping" />
+        <error line="95" column="38" source="standard:multiline-expression-wrapping" />
         <error line="96" column="48" source="standard:multiline-expression-wrapping" />
         <error line="97" column="77" source="standard:trailing-comma-on-call-site" />
         <error line="98" column="26" source="standard:trailing-comma-on-call-site" />
@@ -3069,10 +3068,9 @@
         <error line="251" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/features/keys/viewmodels/KeysViewModel.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
         <error line="9" column="1" source="standard:no-unused-imports" />
-        <error line="10" column="1" source="standard:no-unused-imports" />
         <error line="11" column="1" source="standard:no-unused-imports" />
+        <error line="12" column="1" source="standard:no-unused-imports" />
         <error line="14" column="1" source="standard:no-unused-imports" />
         <error line="15" column="1" source="standard:no-unused-imports" />
         <error line="16" column="1" source="standard:no-unused-imports" />
@@ -5244,7 +5242,6 @@
         <error line="333" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/features/team/TeamManagementActivity.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
         <error line="13" column="1" source="standard:no-wildcard-imports" />
         <error line="15" column="1" source="standard:no-wildcard-imports" />
         <error line="18" column="1" source="standard:no-wildcard-imports" />
@@ -6916,87 +6913,87 @@
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/firebase/FSUser.kt">
         <error line="10" column="18" source="standard:paren-spacing" />
-        <error line="16" column="47" source="standard:trailing-comma-on-declaration-site" />
-        <error line="18" column="1" source="standard:no-empty-first-line-in-class-body" />
-        <error line="19" column="25" source="standard:function-signature" />
-        <error line="19" column="59" source="standard:if-else-wrapping" />
-        <error line="19" column="71" source="standard:if-else-wrapping" />
-        <error line="19" column="114" source="standard:if-else-wrapping" />
-        <error line="19" column="114" source="standard:multiline-if-else" />
-        <error line="19" column="130" source="standard:if-else-wrapping" />
-        <error line="19" column="135" source="standard:if-else-wrapping" />
-        <error line="19" column="135" source="standard:multiline-if-else" />
-        <error line="19" column="140" source="standard:max-line-length" />
-        <error line="20" column="5" source="standard:blank-line-before-declaration" />
-        <error line="23" column="24" source="standard:paren-spacing" />
-        <error line="30" column="9" source="standard:blank-line-before-declaration" />
-        <error line="31" column="9" source="standard:blank-line-before-declaration" />
-        <error line="32" column="9" source="standard:blank-line-before-declaration" />
-        <error line="32" column="39" source="standard:parameter-list-wrapping" />
-        <error line="32" column="108" source="standard:parameter-list-wrapping" />
-        <error line="32" column="112" source="standard:function-signature" />
-        <error line="32" column="119" source="standard:statement-wrapping" />
-        <error line="32" column="140" source="standard:argument-list-wrapping" />
-        <error line="32" column="141" source="standard:max-line-length" />
-        <error line="32" column="152" source="standard:argument-list-wrapping" />
-        <error line="32" column="167" source="standard:binary-expression-wrapping" />
-        <error line="32" column="181" source="standard:statement-wrapping" />
-        <error line="32" column="203" source="standard:argument-list-wrapping" />
-        <error line="32" column="215" source="standard:argument-list-wrapping" />
-        <error line="32" column="229" source="standard:binary-expression-wrapping" />
-        <error line="32" column="255" source="standard:statement-wrapping" />
-        <error line="32" column="270" source="standard:statement-wrapping" />
-        <error line="33" column="9" source="standard:blank-line-before-declaration" />
-        <error line="34" column="9" source="standard:blank-line-before-declaration" />
-        <error line="34" column="39" source="standard:parameter-list-wrapping" />
-        <error line="34" column="108" source="standard:parameter-list-wrapping" />
-        <error line="34" column="112" source="standard:binary-expression-wrapping" />
-        <error line="34" column="112" source="standard:function-signature" />
-        <error line="34" column="133" source="standard:argument-list-wrapping" />
-        <error line="34" column="141" source="standard:max-line-length" />
-        <error line="34" column="145" source="standard:argument-list-wrapping" />
-        <error line="34" column="157" source="standard:binary-expression-wrapping" />
+        <error line="22" column="53" source="standard:trailing-comma-on-declaration-site" />
+        <error line="24" column="1" source="standard:no-empty-first-line-in-class-body" />
+        <error line="25" column="25" source="standard:function-signature" />
+        <error line="25" column="59" source="standard:if-else-wrapping" />
+        <error line="25" column="71" source="standard:if-else-wrapping" />
+        <error line="25" column="114" source="standard:if-else-wrapping" />
+        <error line="25" column="114" source="standard:multiline-if-else" />
+        <error line="25" column="130" source="standard:if-else-wrapping" />
+        <error line="25" column="135" source="standard:if-else-wrapping" />
+        <error line="25" column="135" source="standard:multiline-if-else" />
+        <error line="25" column="140" source="standard:max-line-length" />
+        <error line="26" column="5" source="standard:blank-line-before-declaration" />
+        <error line="29" column="24" source="standard:paren-spacing" />
+        <error line="36" column="9" source="standard:blank-line-before-declaration" />
         <error line="37" column="9" source="standard:blank-line-before-declaration" />
         <error line="38" column="9" source="standard:blank-line-before-declaration" />
+        <error line="38" column="39" source="standard:parameter-list-wrapping" />
+        <error line="38" column="108" source="standard:parameter-list-wrapping" />
+        <error line="38" column="112" source="standard:function-signature" />
+        <error line="38" column="119" source="standard:statement-wrapping" />
+        <error line="38" column="140" source="standard:argument-list-wrapping" />
+        <error line="38" column="141" source="standard:max-line-length" />
+        <error line="38" column="152" source="standard:argument-list-wrapping" />
+        <error line="38" column="167" source="standard:binary-expression-wrapping" />
+        <error line="38" column="181" source="standard:statement-wrapping" />
+        <error line="38" column="203" source="standard:argument-list-wrapping" />
+        <error line="38" column="215" source="standard:argument-list-wrapping" />
+        <error line="38" column="229" source="standard:binary-expression-wrapping" />
+        <error line="38" column="255" source="standard:statement-wrapping" />
+        <error line="38" column="270" source="standard:statement-wrapping" />
         <error line="39" column="9" source="standard:blank-line-before-declaration" />
-        <error line="39" column="41" source="standard:parameter-list-wrapping" />
-        <error line="39" column="107" source="standard:parameter-list-wrapping" />
-        <error line="39" column="111" source="standard:function-signature" />
-        <error line="39" column="118" source="standard:statement-wrapping" />
-        <error line="39" column="141" source="standard:argument-list-wrapping" />
-        <error line="39" column="141" source="standard:max-line-length" />
-        <error line="39" column="153" source="standard:chain-method-continuation" />
-        <error line="39" column="164" source="standard:argument-list-wrapping" />
-        <error line="39" column="179" source="standard:binary-expression-wrapping" />
-        <error line="39" column="193" source="standard:statement-wrapping" />
-        <error line="39" column="217" source="standard:argument-list-wrapping" />
-        <error line="39" column="229" source="standard:chain-method-continuation" />
-        <error line="39" column="240" source="standard:argument-list-wrapping" />
-        <error line="39" column="254" source="standard:binary-expression-wrapping" />
-        <error line="39" column="282" source="standard:statement-wrapping" />
-        <error line="39" column="297" source="standard:statement-wrapping" />
         <error line="40" column="9" source="standard:blank-line-before-declaration" />
-        <error line="41" column="9" source="standard:blank-line-before-declaration" />
-        <error line="41" column="40" source="standard:parameter-list-wrapping" />
-        <error line="41" column="106" source="standard:parameter-list-wrapping" />
-        <error line="41" column="110" source="standard:binary-expression-wrapping" />
-        <error line="41" column="110" source="standard:function-signature" />
-        <error line="41" column="133" source="standard:argument-list-wrapping" />
-        <error line="41" column="141" source="standard:max-line-length" />
-        <error line="41" column="145" source="standard:chain-method-continuation" />
-        <error line="41" column="156" source="standard:argument-list-wrapping" />
-        <error line="41" column="168" source="standard:binary-expression-wrapping" />
+        <error line="40" column="39" source="standard:parameter-list-wrapping" />
+        <error line="40" column="108" source="standard:parameter-list-wrapping" />
+        <error line="40" column="112" source="standard:binary-expression-wrapping" />
+        <error line="40" column="112" source="standard:function-signature" />
+        <error line="40" column="133" source="standard:argument-list-wrapping" />
+        <error line="40" column="141" source="standard:max-line-length" />
+        <error line="40" column="145" source="standard:argument-list-wrapping" />
+        <error line="40" column="157" source="standard:binary-expression-wrapping" />
+        <error line="43" column="9" source="standard:blank-line-before-declaration" />
         <error line="44" column="9" source="standard:blank-line-before-declaration" />
         <error line="45" column="9" source="standard:blank-line-before-declaration" />
+        <error line="45" column="41" source="standard:parameter-list-wrapping" />
+        <error line="45" column="107" source="standard:parameter-list-wrapping" />
+        <error line="45" column="111" source="standard:function-signature" />
+        <error line="45" column="118" source="standard:statement-wrapping" />
+        <error line="45" column="141" source="standard:argument-list-wrapping" />
+        <error line="45" column="141" source="standard:max-line-length" />
+        <error line="45" column="153" source="standard:chain-method-continuation" />
+        <error line="45" column="164" source="standard:argument-list-wrapping" />
+        <error line="45" column="179" source="standard:binary-expression-wrapping" />
+        <error line="45" column="193" source="standard:statement-wrapping" />
+        <error line="45" column="217" source="standard:argument-list-wrapping" />
+        <error line="45" column="229" source="standard:chain-method-continuation" />
+        <error line="45" column="240" source="standard:argument-list-wrapping" />
+        <error line="45" column="254" source="standard:binary-expression-wrapping" />
+        <error line="45" column="282" source="standard:statement-wrapping" />
+        <error line="45" column="297" source="standard:statement-wrapping" />
         <error line="46" column="9" source="standard:blank-line-before-declaration" />
-        <error line="53" column="25" source="standard:paren-spacing" />
-        <error line="55" column="45" source="standard:trailing-comma-on-declaration-site" />
-        <error line="59" column="34" source="standard:paren-spacing" />
-        <error line="62" column="38" source="standard:trailing-comma-on-declaration-site" />
-        <error line="66" column="27" source="standard:paren-spacing" />
-        <error line="68" column="45" source="standard:trailing-comma-on-declaration-site" />
-        <error line="72" column="36" source="standard:paren-spacing" />
-        <error line="75" column="38" source="standard:trailing-comma-on-declaration-site" />
+        <error line="47" column="9" source="standard:blank-line-before-declaration" />
+        <error line="47" column="40" source="standard:parameter-list-wrapping" />
+        <error line="47" column="106" source="standard:parameter-list-wrapping" />
+        <error line="47" column="110" source="standard:binary-expression-wrapping" />
+        <error line="47" column="110" source="standard:function-signature" />
+        <error line="47" column="133" source="standard:argument-list-wrapping" />
+        <error line="47" column="141" source="standard:max-line-length" />
+        <error line="47" column="145" source="standard:chain-method-continuation" />
+        <error line="47" column="156" source="standard:argument-list-wrapping" />
+        <error line="47" column="168" source="standard:binary-expression-wrapping" />
+        <error line="50" column="9" source="standard:blank-line-before-declaration" />
+        <error line="51" column="9" source="standard:blank-line-before-declaration" />
+        <error line="52" column="9" source="standard:blank-line-before-declaration" />
+        <error line="59" column="25" source="standard:paren-spacing" />
+        <error line="61" column="45" source="standard:trailing-comma-on-declaration-site" />
+        <error line="65" column="34" source="standard:paren-spacing" />
+        <error line="68" column="38" source="standard:trailing-comma-on-declaration-site" />
+        <error line="72" column="27" source="standard:paren-spacing" />
+        <error line="74" column="45" source="standard:trailing-comma-on-declaration-site" />
+        <error line="78" column="36" source="standard:paren-spacing" />
+        <error line="81" column="38" source="standard:trailing-comma-on-declaration-site" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/firebase/MessagingService.kt">
         <error line="24" column="1" source="standard:no-unused-imports" />
@@ -7560,65 +7557,65 @@
         <error line="92" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/settings/SettingsActivity.kt">
-        <error line="173" column="37" source="standard:trailing-comma-on-call-site" />
-        <error line="187" column="32" source="standard:multiline-expression-wrapping" />
-        <error line="194" column="32" source="standard:multiline-expression-wrapping" />
-        <error line="211" column="35" source="standard:multiline-expression-wrapping" />
-        <error line="225" column="39" source="standard:multiline-expression-wrapping" />
-        <error line="228" column="47" source="standard:trailing-comma-on-call-site" />
-        <error line="237" column="65" source="standard:trailing-comma-on-call-site" />
-        <error line="251" column="42" source="standard:argument-list-wrapping" />
-        <error line="251" column="68" source="standard:argument-list-wrapping" />
-        <error line="251" column="105" source="standard:argument-list-wrapping" />
-        <error line="251" column="108" source="standard:argument-list-wrapping" />
-        <error line="251" column="135" source="standard:argument-list-wrapping" />
-        <error line="251" column="141" source="standard:max-line-length" />
-        <error line="251" column="153" source="standard:argument-list-wrapping" />
-        <error line="253" column="30" source="standard:trailing-comma-on-call-site" />
-        <error line="255" column="22" source="standard:trailing-comma-on-call-site" />
-        <error line="258" column="36" source="standard:multiline-expression-wrapping" />
-        <error line="271" column="38" source="standard:multiline-expression-wrapping" />
-        <error line="311" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="317" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="399" column="61" source="standard:argument-list-wrapping" />
-        <error line="399" column="141" source="standard:max-line-length" />
-        <error line="399" column="154" source="standard:argument-list-wrapping" />
-        <error line="422" column="37" source="standard:comment-spacing" />
-        <error line="456" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="468" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="474" column="41" source="standard:multiline-if-else" />
-        <error line="491" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="506" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="520" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="531" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="542" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="555" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="642" column="1" source="standard:no-blank-line-before-rbrace" />
-        <error line="665" column="41" source="standard:multiline-if-else" />
-        <error line="678" column="41" source="standard:multiline-if-else" />
-        <error line="691" column="41" source="standard:multiline-if-else" />
-        <error line="702" column="54" source="standard:multiline-expression-wrapping" />
-        <error line="704" column="39" source="standard:if-else-wrapping" />
-        <error line="704" column="44" source="standard:if-else-bracing" />
-        <error line="704" column="44" source="standard:if-else-wrapping" />
-        <error line="704" column="44" source="standard:multiline-if-else" />
-        <error line="731" column="41" source="standard:comment-spacing" />
-        <error line="734" column="74" source="standard:multiline-expression-wrapping" />
-        <error line="734" column="92" source="standard:chain-method-continuation" />
-        <error line="735" column="78" source="standard:trailing-comma-on-call-site" />
-        <error line="746" column="41" source="standard:comment-spacing" />
-        <error line="757" column="33" source="standard:no-consecutive-comments" />
-        <error line="760" column="33" source="standard:no-consecutive-comments" />
-        <error line="988" column="41" source="standard:comment-spacing" />
+        <error line="176" column="37" source="standard:trailing-comma-on-call-site" />
+        <error line="190" column="32" source="standard:multiline-expression-wrapping" />
+        <error line="197" column="32" source="standard:multiline-expression-wrapping" />
+        <error line="214" column="35" source="standard:multiline-expression-wrapping" />
+        <error line="228" column="39" source="standard:multiline-expression-wrapping" />
+        <error line="231" column="47" source="standard:trailing-comma-on-call-site" />
+        <error line="240" column="65" source="standard:trailing-comma-on-call-site" />
+        <error line="254" column="42" source="standard:argument-list-wrapping" />
+        <error line="254" column="68" source="standard:argument-list-wrapping" />
+        <error line="254" column="105" source="standard:argument-list-wrapping" />
+        <error line="254" column="108" source="standard:argument-list-wrapping" />
+        <error line="254" column="135" source="standard:argument-list-wrapping" />
+        <error line="254" column="141" source="standard:max-line-length" />
+        <error line="254" column="153" source="standard:argument-list-wrapping" />
+        <error line="256" column="30" source="standard:trailing-comma-on-call-site" />
+        <error line="258" column="22" source="standard:trailing-comma-on-call-site" />
+        <error line="261" column="36" source="standard:multiline-expression-wrapping" />
+        <error line="274" column="38" source="standard:multiline-expression-wrapping" />
+        <error line="314" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="320" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="402" column="61" source="standard:argument-list-wrapping" />
+        <error line="402" column="141" source="standard:max-line-length" />
+        <error line="402" column="154" source="standard:argument-list-wrapping" />
+        <error line="425" column="37" source="standard:comment-spacing" />
+        <error line="463" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="475" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="481" column="41" source="standard:multiline-if-else" />
+        <error line="498" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="513" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="527" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="538" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="549" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="562" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="649" column="1" source="standard:no-blank-line-before-rbrace" />
+        <error line="672" column="41" source="standard:multiline-if-else" />
+        <error line="685" column="41" source="standard:multiline-if-else" />
+        <error line="698" column="41" source="standard:multiline-if-else" />
+        <error line="709" column="54" source="standard:multiline-expression-wrapping" />
+        <error line="711" column="39" source="standard:if-else-wrapping" />
+        <error line="711" column="44" source="standard:if-else-bracing" />
+        <error line="711" column="44" source="standard:if-else-wrapping" />
+        <error line="711" column="44" source="standard:multiline-if-else" />
+        <error line="738" column="41" source="standard:comment-spacing" />
+        <error line="741" column="74" source="standard:multiline-expression-wrapping" />
+        <error line="741" column="92" source="standard:chain-method-continuation" />
+        <error line="742" column="78" source="standard:trailing-comma-on-call-site" />
+        <error line="753" column="41" source="standard:comment-spacing" />
+        <error line="764" column="33" source="standard:no-consecutive-comments" />
+        <error line="767" column="33" source="standard:no-consecutive-comments" />
         <error line="995" column="41" source="standard:comment-spacing" />
         <error line="1002" column="41" source="standard:comment-spacing" />
-        <error line="1003" column="41" source="standard:comment-spacing" />
+        <error line="1009" column="41" source="standard:comment-spacing" />
         <error line="1010" column="41" source="standard:comment-spacing" />
-        <error line="1011" column="41" source="standard:comment-spacing" />
+        <error line="1017" column="41" source="standard:comment-spacing" />
         <error line="1018" column="41" source="standard:comment-spacing" />
-        <error line="1019" column="41" source="standard:comment-spacing" />
-        <error line="1061" column="45" source="standard:comment-spacing" />
-        <error line="1099" column="26" source="standard:trailing-comma-on-call-site" />
+        <error line="1025" column="41" source="standard:comment-spacing" />
+        <error line="1026" column="41" source="standard:comment-spacing" />
+        <error line="1068" column="45" source="standard:comment-spacing" />
+        <error line="1106" column="26" source="standard:trailing-comma-on-call-site" />
     </file>
     <file name="src/main/java/com/austinhodak/thehideout/ui/common/Background.kt">
         <error line="17" column="36" source="standard:trailing-comma-on-declaration-site" />
@@ -8760,17 +8757,17 @@
     <file name="src/main/java/com/austinhodak/thehideout/utils/QuestExtensions.kt">
         <error line="14" column="41" source="standard:function-expression-body" />
         <error line="73" column="29" source="standard:function-expression-body" />
-        <error line="79" column="57" source="standard:argument-list-wrapping" />
-        <error line="79" column="80" source="standard:trailing-comma-on-call-site" />
-        <error line="85" column="57" source="standard:argument-list-wrapping" />
-        <error line="85" column="81" source="standard:trailing-comma-on-call-site" />
+        <error line="79" column="63" source="standard:argument-list-wrapping" />
+        <error line="79" column="86" source="standard:trailing-comma-on-call-site" />
+        <error line="85" column="63" source="standard:argument-list-wrapping" />
+        <error line="85" column="87" source="standard:trailing-comma-on-call-site" />
         <error line="89" column="1" source="standard:no-consecutive-blank-lines" />
         <error line="95" column="24" source="standard:multiline-expression-wrapping" />
         <error line="95" column="55" source="standard:curly-spacing" />
         <error line="95" column="60" source="standard:curly-spacing" />
         <error line="98" column="43" source="standard:trailing-comma-on-call-site" />
         <error line="102" column="20" source="standard:chain-method-continuation" />
-        <error line="104" column="27" source="standard:multiline-expression-wrapping" />
+        <error line="104" column="30" source="standard:multiline-expression-wrapping" />
         <error line="105" column="29" source="standard:multiline-expression-wrapping" />
         <error line="106" column="33" source="standard:multiline-expression-wrapping" />
         <error line="108" column="55" source="standard:trailing-comma-on-call-site" />
@@ -8779,7 +8776,7 @@
         <error line="112" column="14" source="standard:trailing-comma-on-call-site" />
         <error line="114" column="27" source="standard:trailing-comma-on-call-site" />
         <error line="119" column="13" source="standard:multiline-if-else" />
-        <error line="129" column="27" source="standard:multiline-expression-wrapping" />
+        <error line="129" column="30" source="standard:multiline-expression-wrapping" />
         <error line="130" column="38" source="standard:multiline-expression-wrapping" />
         <error line="131" column="37" source="standard:multiline-expression-wrapping" />
         <error line="134" column="50" source="standard:trailing-comma-on-call-site" />
@@ -8788,13 +8785,13 @@
         <error line="137" column="14" source="standard:trailing-comma-on-call-site" />
         <error line="139" column="27" source="standard:trailing-comma-on-call-site" />
         <error line="145" column="35" source="standard:string-template" />
-        <error line="158" column="27" source="standard:multiline-expression-wrapping" />
+        <error line="158" column="30" source="standard:multiline-expression-wrapping" />
         <error line="159" column="38" source="standard:multiline-expression-wrapping" />
         <error line="160" column="56" source="standard:trailing-comma-on-call-site" />
         <error line="161" column="18" source="standard:trailing-comma-on-call-site" />
         <error line="162" column="14" source="standard:trailing-comma-on-call-site" />
         <error line="164" column="27" source="standard:trailing-comma-on-call-site" />
-        <error line="180" column="27" source="standard:multiline-expression-wrapping" />
+        <error line="180" column="30" source="standard:multiline-expression-wrapping" />
         <error line="181" column="29" source="standard:multiline-expression-wrapping" />
         <error line="182" column="52" source="standard:trailing-comma-on-call-site" />
         <error line="183" column="18" source="standard:trailing-comma-on-call-site" />

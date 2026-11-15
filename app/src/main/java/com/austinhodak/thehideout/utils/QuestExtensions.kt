@@ -76,13 +76,13 @@ fun Quest.trader(): Traders {
 
 fun Quest.QuestObjective.increment() {
     userFirestore()?.update(
-        "progress.questObjectives.${this.id}.progress", FieldValue.increment(1)
+        "$progressField.questObjectives.${this.id}.progress", FieldValue.increment(1)
     )
 }
 
 fun Quest.QuestObjective.decrement() {
     userFirestore()?.update(
-        "progress.questObjectives.${this.id}.progress", FieldValue.increment(-1)
+        "$progressField.questObjectives.${this.id}.progress", FieldValue.increment(-1)
     )
 }
 
@@ -101,7 +101,7 @@ fun Quest.completed(success: ((Boolean) -> Unit)? = null) {
 
     userFirestore()?.set(
         hashMapOf(
-            "progress" to hashMapOf(
+            progressField to hashMapOf(
                 "quests" to hashMapOf(
                     quest.id to hashMapOf(
                         "completed" to true,
@@ -126,7 +126,7 @@ fun Quest.QuestObjective.completed(success: ((Boolean) -> Unit)? = null) {
 
     userFirestore()?.set(
         hashMapOf(
-            "progress" to hashMapOf(
+            progressField to hashMapOf(
                 "questObjectives" to hashMapOf(
                     objective.id to hashMapOf(
                         "completed" to true,
@@ -155,7 +155,7 @@ fun Quest.QuestObjective.undo() {
 
     userFirestore()?.set(
         hashMapOf(
-            "progress" to hashMapOf(
+            progressField to hashMapOf(
                 "questObjectives" to hashMapOf(
                     objective.id to FieldValue.delete()
                 )
@@ -177,7 +177,7 @@ fun Quest.undo(objectives: Boolean = false) {
 
     userFirestore()?.set(
         hashMapOf(
-            "progress" to hashMapOf(
+            progressField to hashMapOf(
                 "quests" to hashMapOf(
                     quest.id to FieldValue.delete()
                 )

@@ -8,63 +8,63 @@
         <error line="7" column="1" source="standard:no-wildcard-imports" />
         <error line="9" column="1" source="standard:no-consecutive-blank-lines" />
         <error line="11" column="1" source="standard:no-empty-first-line-in-class-body" />
-        <error line="117" column="37" source="standard:argument-list-wrapping" />
-        <error line="117" column="67" source="standard:function-literal" />
-        <error line="117" column="68" source="standard:wrapping" />
-        <error line="117" column="109" source="standard:function-literal" />
-        <error line="117" column="139" source="standard:argument-list-wrapping" />
-        <error line="117" column="140" source="standard:max-line-length" />
-        <error line="117" column="149" source="standard:argument-list-wrapping" />
-        <error line="132" column="15" source="standard:enum-wrapping" />
-        <error line="132" column="29" source="standard:enum-wrapping" />
-        <error line="135" column="27" source="standard:paren-spacing" />
-        <error line="135" column="29" source="standard:class-signature" />
-        <error line="135" column="47" source="standard:class-signature" />
-        <error line="136" column="12" source="standard:paren-spacing" />
-        <error line="137" column="11" source="standard:paren-spacing" />
-        <error line="138" column="11" source="standard:paren-spacing" />
-        <error line="139" column="11" source="standard:paren-spacing" />
-        <error line="140" column="12" source="standard:paren-spacing" />
-        <error line="141" column="12" source="standard:paren-spacing" />
-        <error line="141" column="13" source="standard:no-multi-spaces" />
-        <error line="145" column="5" source="standard:enum-entry-name-case" />
-        <error line="146" column="5" source="standard:enum-entry-name-case" />
-        <error line="147" column="5" source="standard:enum-entry-name-case" />
+        <error line="120" column="37" source="standard:argument-list-wrapping" />
+        <error line="120" column="67" source="standard:function-literal" />
+        <error line="120" column="68" source="standard:wrapping" />
+        <error line="120" column="109" source="standard:function-literal" />
+        <error line="120" column="139" source="standard:argument-list-wrapping" />
+        <error line="120" column="140" source="standard:max-line-length" />
+        <error line="120" column="149" source="standard:argument-list-wrapping" />
+        <error line="135" column="15" source="standard:enum-wrapping" />
+        <error line="135" column="29" source="standard:enum-wrapping" />
+        <error line="138" column="27" source="standard:paren-spacing" />
+        <error line="138" column="29" source="standard:class-signature" />
+        <error line="138" column="47" source="standard:class-signature" />
+        <error line="139" column="12" source="standard:paren-spacing" />
+        <error line="140" column="11" source="standard:paren-spacing" />
+        <error line="141" column="11" source="standard:paren-spacing" />
+        <error line="142" column="11" source="standard:paren-spacing" />
+        <error line="143" column="12" source="standard:paren-spacing" />
+        <error line="144" column="12" source="standard:paren-spacing" />
+        <error line="144" column="13" source="standard:no-multi-spaces" />
         <error line="148" column="5" source="standard:enum-entry-name-case" />
         <error line="149" column="5" source="standard:enum-entry-name-case" />
         <error line="150" column="5" source="standard:enum-entry-name-case" />
-        <error line="150" column="9" source="standard:trailing-comma-on-declaration-site" />
-        <error line="154" column="5" source="standard:enum-entry-name-case" />
-        <error line="155" column="5" source="standard:enum-entry-name-case" />
-        <error line="156" column="5" source="standard:enum-entry-name-case" />
+        <error line="151" column="5" source="standard:enum-entry-name-case" />
+        <error line="152" column="5" source="standard:enum-entry-name-case" />
+        <error line="153" column="5" source="standard:enum-entry-name-case" />
+        <error line="153" column="9" source="standard:trailing-comma-on-declaration-site" />
         <error line="157" column="5" source="standard:enum-entry-name-case" />
         <error line="158" column="5" source="standard:enum-entry-name-case" />
         <error line="159" column="5" source="standard:enum-entry-name-case" />
         <error line="160" column="5" source="standard:enum-entry-name-case" />
-        <error line="160" column="11" source="standard:trailing-comma-on-declaration-site" />
-        <error line="173" column="9" source="standard:trailing-comma-on-declaration-site" />
-        <error line="181" column="9" source="standard:trailing-comma-on-declaration-site" />
-        <error line="186" column="13" source="standard:trailing-comma-on-declaration-site" />
-        <error line="191" column="15" source="standard:trailing-comma-on-declaration-site" />
-        <error line="199" column="10" source="standard:trailing-comma-on-declaration-site" />
-        <error line="203" column="5" source="standard:enum-entry-name-case" />
-        <error line="204" column="5" source="standard:enum-entry-name-case" />
-        <error line="205" column="5" source="standard:enum-entry-name-case" />
-        <error line="206" column="5" source="standard:enum-entry-name-case" />
-        <error line="206" column="8" source="standard:trailing-comma-on-declaration-site" />
-        <error line="208" column="22" source="standard:function-expression-body" />
-        <error line="210" column="6" source="standard:curly-spacing" />
-        <error line="210" column="6" source="standard:curly-spacing" />
-        <error line="210" column="6" source="standard:enum-wrapping" />
-        <error line="210" column="6" source="standard:statement-wrapping" />
-        <error line="215" column="9" source="standard:trailing-comma-on-declaration-site" />
-        <error line="222" column="21" source="standard:trailing-comma-on-declaration-site" />
-        <error line="227" column="9" source="standard:trailing-comma-on-declaration-site" />
-        <error line="230" column="21" source="standard:class-signature" />
-        <error line="230" column="37" source="standard:class-signature" />
-        <error line="230" column="51" source="standard:class-signature" />
-        <error line="230" column="64" source="standard:class-signature" />
-        <error line="239" column="1" source="standard:final-newline" />
+        <error line="161" column="5" source="standard:enum-entry-name-case" />
+        <error line="162" column="5" source="standard:enum-entry-name-case" />
+        <error line="163" column="5" source="standard:enum-entry-name-case" />
+        <error line="163" column="11" source="standard:trailing-comma-on-declaration-site" />
+        <error line="192" column="9" source="standard:trailing-comma-on-declaration-site" />
+        <error line="200" column="9" source="standard:trailing-comma-on-declaration-site" />
+        <error line="205" column="13" source="standard:trailing-comma-on-declaration-site" />
+        <error line="210" column="15" source="standard:trailing-comma-on-declaration-site" />
+        <error line="218" column="10" source="standard:trailing-comma-on-declaration-site" />
+        <error line="222" column="5" source="standard:enum-entry-name-case" />
+        <error line="223" column="5" source="standard:enum-entry-name-case" />
+        <error line="224" column="5" source="standard:enum-entry-name-case" />
+        <error line="225" column="5" source="standard:enum-entry-name-case" />
+        <error line="225" column="8" source="standard:trailing-comma-on-declaration-site" />
+        <error line="227" column="22" source="standard:function-expression-body" />
+        <error line="229" column="6" source="standard:curly-spacing" />
+        <error line="229" column="6" source="standard:curly-spacing" />
+        <error line="229" column="6" source="standard:enum-wrapping" />
+        <error line="229" column="6" source="standard:statement-wrapping" />
+        <error line="234" column="9" source="standard:trailing-comma-on-declaration-site" />
+        <error line="241" column="21" source="standard:trailing-comma-on-declaration-site" />
+        <error line="246" column="9" source="standard:trailing-comma-on-declaration-site" />
+        <error line="249" column="21" source="standard:class-signature" />
+        <error line="249" column="37" source="standard:class-signature" />
+        <error line="249" column="51" source="standard:class-signature" />
+        <error line="249" column="64" source="standard:class-signature" />
+        <error line="258" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/tarkovapi/di/Module.kt">
         <error line="19" column="1" source="standard:no-empty-first-line-in-class-body" />
@@ -412,7 +412,7 @@
     </file>
     <file name="src/main/java/com/austinhodak/tarkovapi/room/dao/PriceDao.kt">
         <error line="11" column="1" source="standard:no-empty-first-line-in-class-body" />
-        <error line="20" column="1" source="standard:final-newline" />
+        <error line="23" column="1" source="standard:final-newline" />
     </file>
     <file name="src/main/java/com/austinhodak/tarkovapi/room/dao/QuestDao.kt">
         <error line="12" column="1" source="standard:no-empty-first-line-in-class-body" />

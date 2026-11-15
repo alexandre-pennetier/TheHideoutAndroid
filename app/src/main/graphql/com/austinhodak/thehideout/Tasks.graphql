@@ -1,5 +1,5 @@
-query Tasks {
-    tasks {
+query Tasks($gameMode: GameMode) {
+    tasks(gameMode: $gameMode) {
         ...TaskFragment
     }
 }

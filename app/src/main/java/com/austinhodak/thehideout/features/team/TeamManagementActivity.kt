@@ -31,26 +31,26 @@ import com.afollestad.materialdialogs.color.colorChooser
 import com.afollestad.materialdialogs.input.input
 import com.austinhodak.thehideout.GodActivity
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.ui.common.EmptyText
-import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.compose.theme.DarkGrey
 import com.austinhodak.thehideout.compose.theme.DividerDark
-import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.compose.theme.Red400
+import com.austinhodak.thehideout.features.team.viewmodels.TeamManagementViewModel
 import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.firebase.Team
 import com.austinhodak.thehideout.fsUser
-import com.austinhodak.thehideout.features.team.viewmodels.TeamManagementViewModel
+import com.austinhodak.thehideout.ui.common.EmptyText
+import com.austinhodak.thehideout.ui.common.LoadingItem
+import com.austinhodak.thehideout.ui.theme.HideoutTheme
+import com.austinhodak.thehideout.utils.forActiveMode
 import com.austinhodak.thehideout.utils.questsFirebase
 import com.austinhodak.thehideout.utils.uid
 import com.austinhodak.thehideout.utils.userFirestore
-
+import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
-import com.google.firebase.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -214,7 +214,7 @@ class TeamManagementActivity : GodActivity() {
     private fun TeamMemberItem(id: String, value: Team.MemberSettings, teamID: String?) {
         var teamMember by remember { mutableStateOf<FSUser?>(null) }
         Firebase.firestore.collection("users").document(id).get().addOnSuccessListener {
-            teamMember = it.toObject<FSUser>()
+            teamMember = it.toObject<FSUser>()?.forActiveMode()
         }
 
         teamMember?.let {

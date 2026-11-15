@@ -1,7 +1,8 @@
 query Item(
-    $id: ID!
+    $id: ID!,
+    $gameMode: GameMode
 ) {
-    item(id: $id) {
+    item(gameMode: $gameMode, id: $id) {
         ...ItemFragment
     }
 }

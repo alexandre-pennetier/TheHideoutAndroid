@@ -33,6 +33,9 @@ object UserSettingsModel : SettingsModel(DataStoreStorage(name = "user")) {
     val keepScreenOn by boolPref(false, "keepScreenOn")
     val hidePremiumBanner by boolPref(false, "hidePremiumBanner")
 
+    // Which game profile is active: picks the API game mode and where progress is stored (see GameProfile).
+    val gameProfile by enumPref(GameProfile.PVP_ZONE, "gameProfile")
+
     val praporLevel by enumPref(Levels.`4`, "praporLevel")
     val therapistLevel by enumPref(Levels.`4`, "therapistLevel")
     val fenceLevel by enumPref(Levels.`1`, "fenceLevel")
@@ -158,6 +161,22 @@ enum class DataSyncFrequency {
     `360`,
     `720`,
     `1440`
+}
+
+/**
+ * Quest, hideout and key progress is tracked per profile. PvP zone keeps the original Firestore fields so existing
+ * users lose nothing. tarkov.dev only distinguishes regular and PvE, so a PvP season uses the regular API data
+ * and differs only in where its progress is stored.
+ */
+enum class GameProfile(
+    val title: String,
+    val pveApi: Boolean,
+    val progressField: String,
+    val keysField: String,
+) {
+    PVP_ZONE("PvP zone", false, "progress", "keys"),
+    PVE_ZONE("PvE zone", true, "progressPve", "keysPve"),
+    PVP_SEASON("PvP season", false, "progressSeason", "keysSeason"),
 }
 
 enum class OpeningScreen {

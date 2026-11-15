@@ -13,7 +13,13 @@ data class FSUser (
     val playerLevel: Int? = null,
     val progress: Progress? = null,
     val teams: HashMap<String, Boolean>? = null,
-    val keys: HashMap<String, Boolean>? = null
+    val keys: HashMap<String, Boolean>? = null,
+    // PvE zone progress and keys; see utils/GameMode.kt.
+    val progressPve: Progress? = null,
+    val keysPve: HashMap<String, Boolean>? = null,
+    // PvP season progress and keys.
+    val progressSeason: Progress? = null,
+    val keysSeason: HashMap<String, Boolean>? = null
 ) : Serializable {
 
     fun getUsername() = if (!displayName.isNullOrEmpty()) displayName else if (!discordUsername.isNullOrEmpty()) discordUsername else "Teammate"

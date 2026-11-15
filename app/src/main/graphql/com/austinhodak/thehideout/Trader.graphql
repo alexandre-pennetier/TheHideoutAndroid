@@ -1,5 +1,5 @@
-query Traders {
-    traders {
+query Traders($gameMode: GameMode) {
+    traders(gameMode: $gameMode) {
         ...Trader
     }
 }

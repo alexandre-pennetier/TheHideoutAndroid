@@ -1,5 +1,5 @@
-query Hideout {
-    hideoutStations {
+query Hideout($gameMode: GameMode) {
+    hideoutStations(gameMode: $gameMode) {
         id
         name
         normalizedName

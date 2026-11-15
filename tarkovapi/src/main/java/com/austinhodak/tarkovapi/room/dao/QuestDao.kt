@@ -40,6 +40,6 @@ interface QuestDao {
     @Query("SELECT COUNT (id) FROM quests")
     fun numOfQuests(): Flow<Int>
 
-    /* @Query("DELETE FROM quests")
-     fun nukeTable()*/
+    @Query("DELETE FROM quests")
+    fun nukeTable()
 }

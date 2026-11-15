@@ -1,5 +1,5 @@
-query Barters {
-    barters {
+query Barters($gameMode: GameMode) {
+    barters(gameMode: $gameMode) {
         trader {
             name
         }

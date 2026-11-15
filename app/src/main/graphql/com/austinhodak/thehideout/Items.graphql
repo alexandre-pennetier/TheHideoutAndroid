@@ -12,8 +12,10 @@ query Items(
     $lang: LanguageCode,
     $limit: Int,
     $offset: Int,
+    $gameMode: GameMode
 ) {
     items(
+        gameMode: $gameMode,
         ids: $ids,
         type: $type,
         name: $name,

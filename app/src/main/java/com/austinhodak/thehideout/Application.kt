@@ -40,6 +40,8 @@ import com.austinhodak.tarkovapi.utils.WeaponPresets
 import com.austinhodak.thehideout.features.premium.viewmodels.checkEntitlement
 import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.utils.*
+import com.austinhodak.thehideout.utils.applyGameModeToCache
+import com.austinhodak.thehideout.utils.forActiveMode
 import com.austinhodak.thehideout.workmanager.PriceUpdateFactory
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
 import com.google.firebase.Firebase
@@ -243,7 +245,7 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
                 it.user?.uid?.let {
                     listenerRegistration = Firebase.firestore.collection("users").document(it)
                         .addSnapshotListener { value, error ->
-                            val user = value?.toObject<FSUser>()
+                            val user = value?.toObject<FSUser>()?.forActiveMode()
                             if (value?.exists() == false) {
                                 Firebase.firestore.collection("users").document(it).set(
                                     hashMapOf(
@@ -263,7 +265,7 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
             uid()?.let {
                 listenerRegistration = Firebase.firestore.collection("users").document(it)
                     .addSnapshotListener { value, error ->
-                        val user = value?.toObject<FSUser>()
+                        val user = value?.toObject<FSUser>()?.forActiveMode()
                         if (value?.exists() == false) {
                             Firebase.firestore.collection("users").document(it).set(
                                 hashMapOf(
@@ -340,6 +342,18 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
         UserSettingsModel.languageSetting.observe(MainScope()) {
 
+        }
+
+        UserSettingsModel.gameProfile.observe(MainScope()) {
+            MainScope().launch(Dispatchers.IO) {
+                applyGameModeToCache(tarkovRepo)
+                // Re-read progress so screens switch to the other mode's data immediately.
+                uid()?.let { uid ->
+                    Firebase.firestore.collection("users").document(uid).get().addOnSuccessListener { doc ->
+                        doc.toObject<FSUser>()?.forActiveMode()?.let { user -> fsUser.postValue(user) }
+                    }
+                }
+            }
         }
     }
 

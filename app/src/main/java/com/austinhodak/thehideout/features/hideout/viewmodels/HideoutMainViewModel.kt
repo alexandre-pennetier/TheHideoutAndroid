@@ -7,8 +7,8 @@ import com.austinhodak.tarkovapi.models.Hideout
 import com.austinhodak.thehideout.SearchViewModel
 import com.austinhodak.thehideout.features.hideout.HideoutFilter
 import com.austinhodak.thehideout.utils.addQuotes
+import com.austinhodak.thehideout.utils.progressField
 import com.austinhodak.thehideout.utils.userFirestore
-
 import com.austinhodak.thehideout.utils.userRefTracker
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
@@ -53,7 +53,7 @@ class HideoutMainViewModel @Inject constructor() : SearchViewModel() {
 
         userFirestore()?.set(
             hashMapOf(
-                "progress" to hashMapOf(
+                progressField to hashMapOf(
                     "hideoutModules" to hashMapOf(
                         module.id?.toString() to hashMapOf(
                             "completed" to true,
@@ -79,7 +79,7 @@ class HideoutMainViewModel @Inject constructor() : SearchViewModel() {
     fun undoModule(module: Hideout.Module) {
         userFirestore()?.set(
             hashMapOf(
-                "progress" to hashMapOf(
+                progressField to hashMapOf(
                     "hideoutModules" to hashMapOf(
                         module.id?.toString() to FieldValue.delete()
                     )
@@ -92,7 +92,7 @@ class HideoutMainViewModel @Inject constructor() : SearchViewModel() {
         module.require?.forEach { objective ->
             userFirestore()?.set(
                 hashMapOf(
-                    "progress" to hashMapOf(
+                    progressField to hashMapOf(
                         "hideoutObjectives" to hashMapOf(
                             objective?.id?.toString() to FieldValue.delete()
                         )

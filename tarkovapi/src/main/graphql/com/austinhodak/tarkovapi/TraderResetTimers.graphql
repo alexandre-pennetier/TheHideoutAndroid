@@ -1,5 +1,5 @@
-query TraderResetTimers {
-    traderResetTimes: traders {
+query TraderResetTimers($gameMode: GameMode) {
+    traderResetTimes: traders(gameMode: $gameMode) {
         name: normalizedName
         resetTimestamp: resetTime
     }

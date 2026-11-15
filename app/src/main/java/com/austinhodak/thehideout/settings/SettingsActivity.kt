@@ -45,6 +45,7 @@ import com.austinhodak.tarkovapi.FleaVisibleName
 import com.austinhodak.tarkovapi.FleaVisiblePrice
 import com.austinhodak.tarkovapi.FleaVisibleTraderPrice
 import com.austinhodak.tarkovapi.GameEdition
+import com.austinhodak.tarkovapi.GameProfile
 import com.austinhodak.tarkovapi.IconSelection
 import com.austinhodak.tarkovapi.LanguageSetting
 import com.austinhodak.tarkovapi.MapEnums
@@ -60,9 +61,11 @@ import com.austinhodak.thehideout.ui.theme3.HideoutTheme3
 import com.austinhodak.thehideout.utils.isDebug
 import com.austinhodak.thehideout.utils.isPremium
 import com.austinhodak.thehideout.utils.isWorkRunning
+import com.austinhodak.thehideout.utils.keysField
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.openNotificationSettings
 import com.austinhodak.thehideout.utils.openWithCustomTab
+import com.austinhodak.thehideout.utils.progressField
 import com.austinhodak.thehideout.utils.restartNavActivity
 import com.austinhodak.thehideout.utils.userFirestore
 import com.austinhodak.thehideout.utils.userRefTracker
@@ -366,8 +369,8 @@ class SettingsActivity : AppCompatActivity() {
                                                     title(text = "Reset Hideout Progress?")
                                                     message(text = "Are you sure?")
                                                     positiveButton(text = "RESET") {
-                                                        userFirestore()?.update("progress.hideoutModules", FieldValue.delete())
-                                                        userFirestore()?.update("progress.hideoutObjectives", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.hideoutModules", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.hideoutObjectives", FieldValue.delete())
                                                         userRefTracker("hideoutModules").removeValue()
                                                         userRefTracker("hideoutObjectives").removeValue()
                                                     }
@@ -382,8 +385,8 @@ class SettingsActivity : AppCompatActivity() {
                                                     title(text = "Reset Quest Progress?")
                                                     message(text = "Are you sure?")
                                                     positiveButton(text = "RESET") {
-                                                        userFirestore()?.update("progress.quests", FieldValue.delete())
-                                                        userFirestore()?.update("progress.questObjectives", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.quests", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.questObjectives", FieldValue.delete())
                                                         userRefTracker("questObjectives").removeValue()
                                                         userRefTracker("quests").removeValue()
                                                     }
@@ -398,11 +401,11 @@ class SettingsActivity : AppCompatActivity() {
                                                     title(text = "Reset All Progress?")
                                                     message(text = "This is typically used after a wipe or reset.\n\nTeam settings will not be affected.")
                                                     positiveButton(text = "RESET") {
-                                                        userFirestore()?.update("progress.quests", FieldValue.delete())
-                                                        userFirestore()?.update("progress.questObjectives", FieldValue.delete())
-                                                        userFirestore()?.update("progress.hideoutModules", FieldValue.delete())
-                                                        userFirestore()?.update("progress.hideoutObjectives", FieldValue.delete())
-                                                        userFirestore()?.update("keys", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.quests", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.questObjectives", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.hideoutModules", FieldValue.delete())
+                                                        userFirestore()?.update("$progressField.hideoutObjectives", FieldValue.delete())
+                                                        userFirestore()?.update(keysField, FieldValue.delete())
 
                                                         userRefTracker("hideoutModules").removeValue()
                                                         userRefTracker("hideoutObjectives").removeValue()
@@ -432,6 +435,10 @@ class SettingsActivity : AppCompatActivity() {
                                 subScreen {
                                     title = getString(R.string.display).asText()
                                     icon = R.drawable.ic_baseline_wb_sunny_24.asIcon()
+                                    singleChoice(UserSettingsModel.gameProfile, GameProfile.values(), { it.title }) {
+                                        title = "Game profile".asText()
+                                        summary = "PvE zone shows PvE prices and tasks. Progress is kept separately per profile.".asText()
+                                    }
                                     switch(UserSettingsModel.keepScreenOn) {
                                         title = getString(R.string.keep_screen_on).asText()
                                         icon = R.drawable.ic_baseline_screen_lock_portrait_24.asIcon()

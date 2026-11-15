@@ -1,9 +1,10 @@
-query Barters (
+query Barters(
     $lang: LanguageCode,
     $limit: Int,
     $offset: Int,
+    $gameMode: GameMode
 ) {
-    barters(lang: $lang, limit: $limit, offset: $offset) {
+    barters(gameMode: $gameMode, lang: $lang, limit: $limit, offset: $offset) {
         requiredItems {
             ...TaskItem
         }

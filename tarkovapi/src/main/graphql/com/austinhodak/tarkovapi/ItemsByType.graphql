@@ -1,5 +1,5 @@
-query ItemsByType($type: ItemType!) {
-    items(type: $type) {
+query ItemsByType($type: ItemType!, $gameMode: GameMode) {
+    items(gameMode: $gameMode, type: $type) {
         ...ItemFragment
     }
 }

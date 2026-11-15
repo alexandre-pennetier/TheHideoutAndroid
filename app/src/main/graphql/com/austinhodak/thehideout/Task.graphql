@@ -1,5 +1,5 @@
-query Task($id: ID!) {
-    task(id: $id) {
+query Task($id: ID!, $gameMode: GameMode) {
+    task(gameMode: $gameMode, id: $id) {
         ...TaskFragment
     }
 }

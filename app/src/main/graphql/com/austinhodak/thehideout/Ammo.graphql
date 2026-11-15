@@ -1,9 +1,10 @@
-query Ammo (
+query Ammo(
     $lang: LanguageCode,
     $limit: Int,
     $offset: Int,
+    $gameMode: GameMode
 ) {
-    ammo (lang: $lang, limit: $limit, offset: $offset) {
+    ammo (gameMode: $gameMode, lang: $lang, limit: $limit, offset: $offset) {
         item {
             id
         }

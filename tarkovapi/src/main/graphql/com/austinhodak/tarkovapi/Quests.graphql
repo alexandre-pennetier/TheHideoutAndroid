@@ -1,6 +1,6 @@
 # Legacy Room quest data, now built from the tasks API (root quests was deprecated).
-query Quests {
-    quests: tasks {
+query Quests($gameMode: GameMode) {
+    quests: tasks(gameMode: $gameMode) {
         ...QuestFragment
     }
 }

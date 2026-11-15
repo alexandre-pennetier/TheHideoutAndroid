@@ -1,5 +1,5 @@
-query Crafts {
-    crafts {
+query Crafts($gameMode: GameMode) {
+    crafts(gameMode: $gameMode) {
         id
         level
         duration

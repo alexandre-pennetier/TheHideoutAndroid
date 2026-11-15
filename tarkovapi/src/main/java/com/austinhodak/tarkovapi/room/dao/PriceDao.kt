@@ -17,4 +17,7 @@ interface PriceDao {
 
     @Query("select count(*) from pricing_table")
     fun count(): Int
+
+    @Query("DELETE FROM pricing_table")
+    fun nukeTable()
 }

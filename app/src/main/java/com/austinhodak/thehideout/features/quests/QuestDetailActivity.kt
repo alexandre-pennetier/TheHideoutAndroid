@@ -398,7 +398,7 @@ class QuestDetailActivity : GodActivity() {
     private fun TeamMemberItem(id: String, value: Team.MemberSettings) {
         var teamMember by remember { mutableStateOf<FSUser?>(null) }
         Firebase.firestore.collection("users").document(id).get().addOnSuccessListener {
-            teamMember = it.toObject<FSUser>()
+            teamMember = it.toObject<FSUser>()?.forActiveMode()
         }
 
         teamMember?.let {

@@ -24,6 +24,7 @@ object ApolloModule {
         okHttpClient: OkHttpClient
     ): ApolloClient = ApolloClient.Builder()
         .serverUrl("https://api.tarkov.dev/graphql")
+        .addHttpInterceptor(GameModeInterceptor)
         //.normalizedCache(normalizedCacheFactory)
         //.okHttpClient(okHttpClient)
         .build()
