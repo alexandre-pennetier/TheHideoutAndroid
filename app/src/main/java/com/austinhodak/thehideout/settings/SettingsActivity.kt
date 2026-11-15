@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.text.format.DateUtils
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -21,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -69,7 +68,6 @@ import com.austinhodak.thehideout.utils.userFirestore
 import com.austinhodak.thehideout.utils.userRefTracker
 import com.austinhodak.thehideout.workmanager.PriceUpdateFactory
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -102,7 +100,6 @@ import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-
 @ExperimentalCoroutinesApi
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
@@ -110,7 +107,6 @@ import javax.inject.Inject
 @ExperimentalFoundationApi
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
-
     lateinit var screen: PreferenceScreen
 
     var currentScreen = "Settings"
@@ -121,7 +117,9 @@ class SettingsActivity : AppCompatActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        onBackPressedDispatcher.addCallback(this) {
+            if (currentScreen == "Settings") finish() else screen.onBackPressed()
+        }
 
         val preferences = getSharedPreferences("tarkov", MODE_PRIVATE)
 
@@ -174,14 +172,6 @@ class SettingsActivity : AppCompatActivity() {
                 darkTheme = true,
                 dynamicColor = false
             ) {
-                val systemUiController = rememberSystemUiController()
-
-                // Update the dark content of the system bars to match the theme
-                DisposableEffect(systemUiController, true) {
-                    systemUiController.setSystemBarsColor(Color.Transparent, false)
-                    onDispose {}
-                }
-
                 var toolbarTitle by remember { mutableStateOf("Settings") }
 
                 var isSignedIn by remember {
@@ -319,13 +309,11 @@ class SettingsActivity : AppCompatActivity() {
                                     }) {
                                         title = getString(R.string.game_edition).asText()
 
-
                                     }
                                     singleChoice(UserSettingsModel.faction, Faction.values(), {
                                         it.name
                                     }) {
                                         title = "Faction".asText()
-
 
                                     }
                                     category {
@@ -466,7 +454,6 @@ class SettingsActivity : AppCompatActivity() {
                                         title = getString(R.string.opening_screen).asText()
                                         icon = R.drawable.ic_baseline_open_in_browser_24.asIcon()
 
-
                                     }
                                     singleChoice(UserSettingsModel.menuDrawerLayout, MenuDrawerLayout.values(), {
                                         when (it) {
@@ -478,7 +465,6 @@ class SettingsActivity : AppCompatActivity() {
                                     }) {
                                         title = "Menu Drawer Layout".asText()
                                         icon = R.drawable.round_view_sidebar_24.asIcon()
-
 
                                     }
                                     category {
@@ -503,7 +489,6 @@ class SettingsActivity : AppCompatActivity() {
                                         title = getString(R.string.language).asText()
                                         icon = R.drawable.ic_baseline_language_24.asIcon()
 
-
                                     }
                                 }
                                 subScreen {
@@ -519,7 +504,6 @@ class SettingsActivity : AppCompatActivity() {
                                         title = "Display Name".asText()
                                         icon = R.drawable.ic_baseline_text_fields_24.asIcon()
 
-
                                     }
                                     singleChoice(UserSettingsModel.fleaVisiblePrice, FleaVisiblePrice.values(), {
                                         when (it) {
@@ -534,7 +518,6 @@ class SettingsActivity : AppCompatActivity() {
                                         title = getString(R.string.list_price).asText()
                                         icon = R.drawable.ic_baseline_money_24.asIcon()
 
-
                                     }
                                     singleChoice(UserSettingsModel.fleaVisibleTraderPrice, FleaVisibleTraderPrice.values(), {
                                         when (it) {
@@ -546,7 +529,6 @@ class SettingsActivity : AppCompatActivity() {
                                         title = "Trader Display Price".asText()
                                         icon = R.drawable.ic_baseline_person_24.asIcon()
 
-
                                     }
                                     singleChoice(UserSettingsModel.fleaIconDisplay, IconSelection.values(), {
                                         when (it) {
@@ -557,7 +539,6 @@ class SettingsActivity : AppCompatActivity() {
                                     }) {
                                         title = getString(R.string.icon_display).asText()
                                         icon = R.drawable.ic_baseline_image_24.asIcon()
-
 
                                     }
                                     singleChoice(UserSettingsModel.fleaHideTime, FleaHideTime.values(), {
@@ -658,7 +639,6 @@ class SettingsActivity : AppCompatActivity() {
                                     }) {
                                         title = getString(R.string.default_map).asText()
                                         icon = R.drawable.ic_baseline_map_24.asIcon()
-
 
                                     }
                                 }
@@ -1100,7 +1080,6 @@ class SettingsActivity : AppCompatActivity() {
                                         title = "Restore Purchases".asText()
                                         icon = R.drawable.ic_baseline_settings_backup_restore_24.asIcon()
                                         onClick = {
-
                                         }
                                     }
                                 }
@@ -1124,17 +1103,8 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        if (currentScreen == "Settings") {
-            super.onBackPressed()
-        } else {
-            screen.onBackPressed()
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         screen.onSaveInstanceState(outState)
     }
 }
-

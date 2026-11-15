@@ -26,10 +26,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.AsyncImagePainter
-import coil.compose.ImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.austinhodak.tarkovapi.repository.ModsRepo
 import com.austinhodak.tarkovapi.repository.TarkovRepo
@@ -53,12 +51,8 @@ import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -69,7 +63,6 @@ import kotlin.math.roundToInt
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class WeaponDetailActivity : GodActivity() {
-
     private val weaponViewModel: WeaponDetailViewModel by viewModels()
 
     @Inject
@@ -80,8 +73,6 @@ class WeaponDetailActivity : GodActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val weaponID = intent.getStringExtra("weaponID") ?: "5926bb2186f7744b1c6c6e60"
         weaponViewModel.getWeapon(weaponID)
@@ -94,7 +85,6 @@ class WeaponDetailActivity : GodActivity() {
             HideoutTheme {
                 val weapon by tarkovRepo.getWeaponByID(weaponID).collectAsState(initial = null)
                 val scaffoldState = rememberScaffoldState()
-                val systemUiController = rememberSystemUiController()
 
                 val mods by modRepo.getAllMods().collectAsState(initial = null)
                 val presetModIDs = presetList.getPresetsForWeapon(weaponID).flatMap {
@@ -124,11 +114,6 @@ class WeaponDetailActivity : GodActivity() {
                         ) {
                             when (it) {
                                 0 -> {
-                                    systemUiController.setStatusBarColor(
-                                        Color.Transparent,
-                                        darkIcons = false
-                                    )
-                                    systemUiController.setNavigationBarColor(DarkPrimary)
                                     Column {
                                         Box {
                                             val painter = fadeImagePainter(
@@ -221,10 +206,6 @@ class WeaponDetailActivity : GodActivity() {
                                 }
                                 2,
                                 1 -> {
-                                    systemUiController.setStatusBarColor(
-                                        MaterialTheme.colors.primary,
-                                        darkIcons = false
-                                    )
                                     TopAppBar(
                                         title = {
                                             Column {
@@ -579,7 +560,6 @@ class WeaponDetailActivity : GodActivity() {
         items: List<ModDetailActivity.NavItem>,
         onItemSelected: (Int) -> Unit
     ) {
-
         BottomNavigation(
             backgroundColor = Color(0xFE1F1F1F),
             modifier = Modifier.navigationBarsPadding()
@@ -618,7 +598,6 @@ class WeaponDetailActivity : GodActivity() {
                     Modifier.padding(0.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                 }
                 Divider(color = DividerDark)
                 Column(

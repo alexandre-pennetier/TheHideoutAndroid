@@ -1,11 +1,16 @@
 package com.austinhodak.thehideout
 
 import android.Manifest
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
@@ -182,6 +187,8 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
     override fun onCreate() {
         super.onCreate()
+        // Edge-to-edge is enforced from targetSdk 35; theme roots keep content clear of the bars (SystemBarsBox).
+        registerActivityLifecycleCallbacks(EdgeToEdgeCallbacks)
         val firebaseAppCheck = FirebaseAppCheck.getInstance()
         firebaseAppCheck.installAppCheckProviderFactory(
             if (isDebug()) {
@@ -410,4 +417,29 @@ val stims: Stims = Application.stims!!
 
 val hideoutList: Hideout by lazy {
     Application.hideout!!
+}
+
+private object EdgeToEdgeCallbacks : android.app.Application.ActivityLifecycleCallbacks {
+    override fun onActivityCreated(
+        activity: Activity,
+        savedInstanceState: Bundle?,
+    ) {
+        val transparent = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+        (activity as? ComponentActivity)?.enableEdgeToEdge(transparent, transparent)
+    }
+
+    override fun onActivityStarted(activity: Activity) = Unit
+
+    override fun onActivityResumed(activity: Activity) = Unit
+
+    override fun onActivityPaused(activity: Activity) = Unit
+
+    override fun onActivityStopped(activity: Activity) = Unit
+
+    override fun onActivitySaveInstanceState(
+        activity: Activity,
+        outState: Bundle,
+    ) = Unit
+
+    override fun onActivityDestroyed(activity: Activity) = Unit
 }

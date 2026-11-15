@@ -34,7 +34,6 @@ import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.foundation.pager.rememberPagerState
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -97,10 +96,6 @@ class HideoutStationDetailActivity : AppCompatActivity() {
                 var selectedNavItem by remember { mutableStateOf(startDestination) }
 
                 val allItems by navViewModel.allItems.observeAsState(initial = emptyList())
-
-                val uiController = rememberSystemUiController()
-                uiController.setNavigationBarColor(Color(0xFF1F1F1F))
-                uiController.setStatusBarColor(Color(0xFF1F1F1F))
 
                 Scaffold(
                     scaffoldState = scaffoldState,

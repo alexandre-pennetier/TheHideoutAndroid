@@ -20,7 +20,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -50,7 +49,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import coil.annotation.ExperimentalCoilApi
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
@@ -79,7 +77,6 @@ import kotlinx.coroutines.launch
 @ExperimentalAnimationApi
 @AndroidEntryPoint
 class PremiumPusherActivity : ComponentActivity() {
-
     @OptIn(
         ExperimentalLayoutApi::class,
         ExperimentalAnimationGraphicsApi::class
@@ -87,8 +84,6 @@ class PremiumPusherActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val viewModel: PremiumViewModel = mavericksViewModel()
@@ -143,7 +138,6 @@ class PremiumPusherActivity : ComponentActivity() {
                         }
                     }
                 }
-
 
                 Scaffold(
                     snackbarHost = { SnackbarHost(hostState = snackbarState) },

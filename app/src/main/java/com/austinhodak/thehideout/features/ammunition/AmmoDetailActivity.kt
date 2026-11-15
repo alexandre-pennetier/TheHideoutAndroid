@@ -75,7 +75,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.Firebase
 import com.stfalcon.imageviewer.StfalconImageViewer

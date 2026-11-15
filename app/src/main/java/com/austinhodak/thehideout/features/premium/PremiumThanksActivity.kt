@@ -1,13 +1,15 @@
 package com.austinhodak.thehideout.features.premium
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -25,8 +27,6 @@ import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.openWithCustomTab
 import com.austinhodak.thehideout.utils.restartNavActivity
-import androidx.compose.foundation.layout.statusBarsPadding
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoilApi
@@ -36,23 +36,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 class PremiumThanksActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalFoundationApi::class)
-    override fun onBackPressed() {
-        if (intent.hasExtra("restart")) {
-            restartNavActivity()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
-    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, enabled = intent.hasExtra("restart")) {
+            restartNavActivity()
+        }
 
         setContent {
             HideoutTheme {
-                val uiController = rememberSystemUiController()
-                uiController.setNavigationBarColor(Color(0xFF1F1F1F))
-                uiController.setStatusBarColor(Color(0xFF1F1F1F))
                 Scaffold(
                     topBar = {
                         TopAppBar(

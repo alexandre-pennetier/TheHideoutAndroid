@@ -2,7 +2,7 @@
 
 Guidance for humans and AI coding agents working on **The Hideout: Tarkov Sidekick**, an unofficial open-source Android companion app for Escape from Tarkov (flea prices, quests, hideout, barters, crafts, maps, ammo/weapon tools). Package: `com.austinhodak.thehideout`. App version in `app/build.gradle.kts` (currently 1.6.7).
 
-> The project started as a snapshot from early 2023 and is being upgraded in phases (see PR #1 and "Known upgrade debt"). The build toolchain is current; several libraries and the targetSdk are not yet.
+> The project started as a snapshot from early 2023 and is being upgraded in phases (see PR #1 and "Known upgrade debt"). Toolchain, libraries, API usage and targetSdk are current; tablet layouts are not done yet.
 
 ## Modules
 
@@ -21,9 +21,9 @@ Both modules have their own Apollo service and their own `schema.graphqls` + `.g
 |---|---|---|
 | Language | Kotlin (+ a little Java) | 2.4.21 (built-in Kotlin via AGP 9) |
 | Build | Android Gradle Plugin / Gradle wrapper | 9.5.1 / 9.9.1 |
-| SDK | minSdk / targetSdk / compileSdk | 24 (23 in `:tarkovapi`) / 33 / 37 |
+| SDK | minSdk / targetSdk / compileSdk | 24 (23 in `:tarkovapi`) / 36 / 37 |
 | JVM | source/target + toolchain | Java 17 |
-| UI | Jetpack Compose (BOM 2026.09.00, compiler = Kotlin Compose plugin), Material 3 + Material 2 from the BOM, ViewBinding for legacy screens. Pager, FlowRow, insets and pull-to-refresh come from Compose foundation/Material 3; the only Accompanist module left is `systemuicontroller` (0.36.0) | |
+| UI | Jetpack Compose (BOM 2026.09.00, compiler = Kotlin Compose plugin), Material 3 + Material 2 from the BOM, ViewBinding for legacy screens. Pager, FlowRow, insets and pull-to-refresh come from Compose foundation/Material 3; no Accompanist | |
 | Navigation | AndroidX Navigation 2.10.2, Mavericks 3.1.1 (state/ViewModels), mikepenz MaterialDrawer 8.4.5 | |
 | DI | Hilt / Dagger 2.60.1 (via **KSP**), androidx.hilt 1.4.0 | |
 | Networking | Apollo Kotlin 5.2.0 (GraphQL), Retrofit 3.0.0 + OkHttp 5.5.1 + Gson | |
@@ -82,7 +82,9 @@ None: Apollo codegen reports zero deprecated-field warnings in either module (ch
 ## Known upgrade debt (tablet / current-Android readiness)
 
 - Toolchain and libraries are done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP, Compose BOM 2026.09, Firebase BoM 35, Qonversion 9). FirebaseUI Auth stays on 9.1.1 because 10.x changed its API. Team invites are plain `https://thehideout.io/invite/<teamId>` links handled in `NavActivity` (Firebase Dynamic Links was shut down); App Links verification for that host needs an `assetlinks.json` on thehideout.io.
-- compileSdk/targetSdk 33 (Android 13). Newer targets change notification, foreground-service, edge-to-edge and back-navigation behaviour.
+- targetSdk 36 is done. Edge-to-edge is on for every activity (`EdgeToEdgeCallbacks` in `Application.kt`), and `HideoutTheme` / `HideoutTheme3` wrap content in `ui/common/SystemBarsBox`, which pads `WindowInsets.safeDrawing` and paints the bar areas. Screens that want to draw behind the bars must opt out of that box deliberately; nested inset modifiers add nothing because the box consumes the insets. Do not use `window.statusBarColor` or `setDecorFitsSystemWindows`.
+- Back handling: `onBackPressed()` overrides are not called at targetSdk 36 (predictive back). Use `onBackPressedDispatcher.addCallback` or Compose `BackHandler`; in `NavActivity` the `BackHandler` sits after `NavHost` so it runs first.
+- Native libraries are 16 KB page aligned (checked on the APK's arm64/x86_64 `.so` files).
 - No adaptive layouts: there is no `WindowSizeClass`, `NavigationRail` or permanent drawer usage, and the manifest sets no orientation lock or `resizeableActivity`, so on a tablet the phone UI is stretched. The README promises tablet/foldable support.
-- Deprecated or archived libraries: Accompanist `systemuicontroller` (replace with `enableEdgeToEdge`), afollestad material-dialogs 3.3.0, StfalconImageViewer. Jetifier is off.
-- `AndroidManifest.xml` uses `requestLegacyExternalStorage` and `allowBackup="true"`; `largeHeap="true"` is set.
+- Deprecated or archived libraries: afollestad material-dialogs 3.3.0, StfalconImageViewer. Jetifier is off.
+- `AndroidManifest.xml` still sets `allowBackup="true"` (no backup rules) and `largeHeap="true"`, and many internal activities are `exported="true"` without needing it.

@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Pair
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContent
@@ -50,16 +51,15 @@ import com.austinhodak.tarkovapi.room.models.Quest
 import com.austinhodak.thehideout.GodActivity
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.theme.*
-import com.austinhodak.thehideout.firebase.FSUser
-import com.austinhodak.thehideout.fsUser
+import com.austinhodak.thehideout.data.enums.Map
 import com.austinhodak.thehideout.features.map.models.CustomMarker
 import com.austinhodak.thehideout.features.map.viewmodels.MapViewModel
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity
-import com.austinhodak.thehideout.utils.*
-import com.austinhodak.thehideout.data.enums.Map
+import com.austinhodak.thehideout.firebase.FSUser
+import com.austinhodak.thehideout.fsUser
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
+import com.austinhodak.thehideout.utils.*
 import com.bumptech.glide.Glide
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -120,6 +120,7 @@ class MapsActivity : GodActivity() {
     @SuppressLint("CheckResult", "PotentialBehaviorOverride", "CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this) { handleBack() }
 
         setContent {
             val mapView = rememberMapViewWithLifecycle()
@@ -192,9 +193,6 @@ class MapsActivity : GodActivity() {
             }
 
             var selectedMarker by remember { mutableStateOf<Marker?>(null) }
-
-            val systemUiController = rememberSystemUiController()
-            systemUiController.setNavigationBarColor(Color.Transparent)
 
             val questsExtra by mapViewModel.questsExtra.observeAsState()
 
@@ -886,14 +884,14 @@ class MapsActivity : GodActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
-    override fun onBackPressed() {
+    private fun handleBack() {
         if (backdropState.isRevealed) {
             coroutineScope.launch {
                 backdropState.conceal()
             }
         } else {
             if (doubleBackToExitPressedOnce) {
-                super.onBackPressed()
+                finish()
                 return
             }
 

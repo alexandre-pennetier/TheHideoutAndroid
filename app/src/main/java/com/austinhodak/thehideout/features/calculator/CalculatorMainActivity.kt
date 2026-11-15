@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -39,7 +38,6 @@ import com.austinhodak.thehideout.GodActivity
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.features.calculator.viewmodels.SimViewModel
 import com.austinhodak.thehideout.features.calculator.views.HealthBar
-import com.austinhodak.thehideout.compose.theme.DarkPrimary
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.compose.theme.White
 import com.austinhodak.thehideout.features.calculator.models.Body
@@ -49,10 +47,8 @@ import com.austinhodak.thehideout.features.calculator.models.Character
 import com.austinhodak.thehideout.features.calculator.models.Part
 import com.austinhodak.thehideout.features.pickers.PickerActivity
 import com.austinhodak.thehideout.utils.toSimAmmo
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @ExperimentalCoilApi
@@ -60,12 +56,10 @@ import javax.inject.Inject
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class CalculatorMainActivity : GodActivity() {
-
     private val simViewModel: SimViewModel by viewModels()
 
     @Inject
     lateinit var tarkovRepo: TarkovRepo
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,9 +102,6 @@ class CalculatorMainActivity : GodActivity() {
                 if (selectedAmmo == null && !ammo.isNullOrEmpty()) {
                     simViewModel.selectAmmo(ammo.first())
                 }
-
-                val systemUiController = rememberSystemUiController()
-                systemUiController.setNavigationBarColor(DarkPrimary)
 
                 BottomSheetScaffold(
                     sheetContent = {
@@ -215,7 +206,6 @@ class CalculatorMainActivity : GodActivity() {
                                 verticalAlignment = Alignment.Bottom,
                                 modifier = Modifier.padding(top = 16.dp)
                             ) {
-
                                 val totalHealth by simViewModel.totalHealthTV.observeAsState()
                                 val totalHealthCurrent by simViewModel.currentHealthTV.observeAsState()
 
@@ -269,7 +259,6 @@ class CalculatorMainActivity : GodActivity() {
             content = content
         )
     }
-
 
     @Composable
     private fun AmmoCard(selectedAmmo: Ammo?) {

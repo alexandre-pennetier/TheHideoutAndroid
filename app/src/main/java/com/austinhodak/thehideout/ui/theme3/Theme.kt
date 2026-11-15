@@ -8,10 +8,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.austinhodak.thehideout.ui.common.SystemBarsBox
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -44,7 +42,6 @@ private val LightColors = lightColorScheme(
     outlineVariant = md_theme_light_outlineVariant,
     scrim = md_theme_light_scrim,
 )
-
 
 private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
@@ -84,12 +81,6 @@ fun HideoutTheme3(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val systemUiController = rememberSystemUiController()
-    DisposableEffect(systemUiController, true) {
-        systemUiController.setSystemBarsColor(Color.Transparent, false)
-        onDispose {}
-    }
-
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
@@ -103,6 +94,6 @@ fun HideoutTheme3(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = { SystemBarsBox(colorScheme.surface, content) }
     )
 }

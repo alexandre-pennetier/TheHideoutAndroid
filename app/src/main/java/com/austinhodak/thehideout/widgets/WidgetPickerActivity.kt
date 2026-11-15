@@ -36,7 +36,6 @@ import com.austinhodak.thehideout.features.calculator.models.Character
 import com.austinhodak.thehideout.compose.components.AmmoDetailToolbar
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.compose.components.SearchToolbar
-import com.austinhodak.thehideout.compose.theme.DarkPrimary
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.features.gear.ItemCard
 import com.austinhodak.thehideout.features.pickers.viewmodels.PickerViewModel
@@ -44,7 +43,6 @@ import com.austinhodak.thehideout.utils.addPriceAlertDialog
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.features.weapons.WeaponCard
 import com.austinhodak.thehideout.features.weapons.builder.WeaponBuilderActivity
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
 import javax.inject.Inject
@@ -54,7 +52,6 @@ import javax.inject.Inject
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class WidgetPickerActivity : GodActivity() {
-
     private val pickerViewModel: PickerViewModel by viewModels()
 
     @Inject
@@ -67,7 +64,6 @@ class WidgetPickerActivity : GodActivity() {
 
         setContent {
             HideoutTheme {
-
                 val scope = rememberCoroutineScope()
                 val context = LocalContext.current
 
@@ -75,9 +71,6 @@ class WidgetPickerActivity : GodActivity() {
 
                 val searchKey by pickerViewModel.searchKey.observeAsState("")
                 val isSearchOpen by pickerViewModel.isSearchOpen.observeAsState(false)
-
-                val systemUiController = rememberSystemUiController()
-                systemUiController.setNavigationBarColor(DarkPrimary)
 
                 LaunchedEffect(scope) {
                     if (intent.getStringExtra("type") == null) {

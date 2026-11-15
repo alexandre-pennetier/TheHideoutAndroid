@@ -5,7 +5,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import com.austinhodak.thehideout.compose.theme.DarkGrey
 import com.austinhodak.thehideout.compose.theme.DarkPrimary
@@ -13,9 +12,9 @@ import com.austinhodak.thehideout.compose.theme.Red400
 import com.austinhodak.thehideout.compose.theme.Red500
 import com.austinhodak.thehideout.compose.theme.Red700
 import com.austinhodak.thehideout.compose.theme.Shapes
-import com.austinhodak.thehideout.ui.theme.Typography
 import com.austinhodak.thehideout.compose.theme.White
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.austinhodak.thehideout.ui.common.SystemBarsBox
+import com.austinhodak.thehideout.ui.theme.Typography
 
 private val DarkColorPalette = darkColors(
     primary = DarkGrey,
@@ -35,12 +34,6 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun HideoutTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val systemUiController = rememberSystemUiController()
-    DisposableEffect(systemUiController, true) {
-        systemUiController.setSystemBarsColor(Color.Transparent, false)
-        onDispose {}
-    }
-
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
@@ -51,7 +44,7 @@ fun HideoutTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composabl
         colors = colors,
         typography = Typography,
         shapes = Shapes,
-        content = content
+        content = { SystemBarsBox(DarkPrimary, content) }
     )
 }
 
@@ -68,15 +61,11 @@ private val LightPalette = lightColors(
 
 @Composable
 fun TheHideoutTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val systemUiController = rememberSystemUiController()
-
     val colors = if (darkTheme) {
         DarkPalette
     } else {
         LightPalette
     }
-
-    systemUiController.setStatusBarColor(colors.primaryVariant)
 
     MaterialTheme(
         colors = colors,

@@ -52,7 +52,6 @@ import com.austinhodak.thehideout.features.weapons.mods.StatItem
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import androidx.compose.foundation.layout.statusBarsPadding
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -173,7 +172,6 @@ class WeaponBuilderActivity : AppCompatActivity() {
         setContent {
             HideoutTheme {
 
-                val systemUiController = rememberSystemUiController()
                 val userLoadouts by viewModel.userLoadouts.observeAsState()
 
                 val scope = rememberCoroutineScope()
@@ -202,8 +200,6 @@ class WeaponBuilderActivity : AppCompatActivity() {
                 val parentWeapon = build?.parentWeapon
 
                 Timber.d("SCAFFOLD")
-
-                systemUiController.setNavigationBarColor(DarkPrimary)
 
                 BottomSheetScaffold(
                     scaffoldState = scaffoldState,
@@ -403,7 +399,6 @@ class WeaponBuilderActivity : AppCompatActivity() {
                                         pg.progress = build?.totalVelocity() ?: 0
                                         pg.secondaryProgress = build?.ammo?.ballistics?.initialSpeed ?: 0
                                     }
-
 
                                     icon.setImageResource(R.drawable.icons8_ammo_100)
 

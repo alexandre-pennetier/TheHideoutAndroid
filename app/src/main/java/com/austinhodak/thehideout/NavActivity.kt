@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -23,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -72,7 +74,6 @@ import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.auth.FirebaseAuth
 import com.maxkeppeker.sheets.core.models.base.Header
@@ -143,7 +144,7 @@ class NavActivity : GodActivity() {
 
     private var doubleBackToExitPressedOnce = false
 
-    override fun onBackPressed() {
+    private fun handleBack(navController: NavController) {
         when {
             navViewModel.isDrawerOpen.value == true -> {
                 navViewModel.setDrawerOpen(false)
@@ -178,7 +179,7 @@ class NavActivity : GodActivity() {
             }
             else -> {
                 if (doubleBackToExitPressedOnce) {
-                    super.onBackPressed()
+                    if (!navController.popBackStack()) finish()
                     return
                 }
 
@@ -222,7 +223,6 @@ class NavActivity : GodActivity() {
             val coroutineScope = rememberCoroutineScope()
             val lifeCycleOwner = this
             val navController = rememberNavController()
-            val systemUiController = rememberSystemUiController()
             val notificationDialogSheetState = rememberUseCaseState(visible = false)
 
             if (Build.VERSION.SDK_INT greaterThanOrEqualTo (33)) {
@@ -277,9 +277,6 @@ class NavActivity : GodActivity() {
                     ),
                 )
 
-                systemUiController.setSystemBarsColor(
-                    color = MaterialTheme.colors.primary,
-                )
                 Scaffold(
                     scaffoldState = scaffoldState,
                     drawerContent = {
@@ -428,6 +425,9 @@ class NavActivity : GodActivity() {
                         }
                     }
 
+                    // After NavHost so it runs before NavHost's own back callback, as onBackPressed did.
+                    BackHandler { handleBack(navController) }
+
                     navViewModel.selectedDrawerItem.observe(lifeCycleOwner) { selectedItem ->
                         if (selectedItem == null) return@observe
                         val route = selectedItem.tag.toString()
@@ -499,8 +499,6 @@ class NavActivity : GodActivity() {
             }
         }
     }
-
-
 
     // Team invites are plain https://thehideout.io/invite/<teamId> links (Firebase Dynamic Links was shut down).
     private fun setupInviteLinks() {

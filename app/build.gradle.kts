@@ -33,7 +33,7 @@ android {
     defaultConfig {
         applicationId = "com.austinhodak.thehideout"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 36
 
         versionName = System.getenv("VERSION") ?: "1.6.7"
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 17020
@@ -152,7 +152,6 @@ dependencies {
     implementation(androidx.compose.material)
     implementation(androidx.compose.ui.tooling)
     implementation(androidx.activity.compose)
-    implementation(libs.accompanist.systemuicontroller)
     implementation(androidx.compose.runtime.livedata)
 
     implementation(androidx.appcompat)

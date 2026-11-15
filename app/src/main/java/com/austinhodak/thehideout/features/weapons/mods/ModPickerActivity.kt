@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -32,22 +31,18 @@ import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.tarkovapi.repository.ModsRepo
 import com.austinhodak.tarkovapi.repository.TarkovRepo
-import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.tarkovapi.room.models.Mod
 import com.austinhodak.tarkovapi.room.models.Weapon
-import com.austinhodak.tarkovapi.utils.asCurrency
 import com.austinhodak.thehideout.GodActivity
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.components.AmmoDetailToolbar
 import com.austinhodak.thehideout.compose.components.SearchToolbar
 import com.austinhodak.thehideout.compose.components.SmallBuyPrice
 import com.austinhodak.thehideout.compose.theme.BorderColor
-import com.austinhodak.thehideout.compose.theme.DarkPrimary
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.compose.theme.Red400
 import com.austinhodak.thehideout.utils.getColor
 import com.austinhodak.thehideout.features.weapons.mods.viewmodel.ModPickerViewModel
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -59,7 +54,6 @@ import kotlin.math.roundToInt
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class ModPickerActivity : GodActivity() {
-
     @Inject
     lateinit var tarkovRepo: TarkovRepo
 
@@ -93,8 +87,6 @@ class ModPickerActivity : GodActivity() {
                 val scaffoldState = rememberScaffoldState()
                 val scope = rememberCoroutineScope()
 
-                val systemUiController = rememberSystemUiController()
-
                 val searchKey by viewModel.searchKey.observeAsState("")
                 val isSearchOpen by viewModel.isSearchOpen.observeAsState(false)
 
@@ -106,8 +98,6 @@ class ModPickerActivity : GodActivity() {
                         }
                     }
                 }
-
-                systemUiController.setNavigationBarColor(DarkPrimary)
 
                 var modPickerShowAvailable by remember { mutableStateOf(UserSettingsModel.modPickerShowAvailable.value) }
 
@@ -184,7 +174,6 @@ class ModPickerActivity : GodActivity() {
                     LazyColumn(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-
                         data = when (sort) {
                             0 -> data.sortedBy { it.ShortName }
                             1 -> data.sortedBy { it.pricing?.lastLowPrice }

@@ -3,6 +3,7 @@ package com.austinhodak.thehideout.features.status
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.*
@@ -28,9 +29,9 @@ import com.austinhodak.tarkovapi.models.ServerStatus
 import com.austinhodak.tarkovapi.models.toObj
 import com.austinhodak.thehideout.NavActivity
 import com.austinhodak.thehideout.R
+import com.austinhodak.thehideout.compose.theme.DividerDark
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme.Bender
-import com.austinhodak.thehideout.compose.theme.DividerDark
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.openStatusSite
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,19 +46,14 @@ class ServerStatusActivity : AppCompatActivity() {
     @Inject
     lateinit var apolloClient: ApolloClient
 
-    override fun onBackPressed() {
-        if (intent.hasExtra("fromNoti")) {
-            val intent = Intent(this, NavActivity::class.java)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, enabled = intent.hasExtra("fromNoti")) {
+            val intent = Intent(this@ServerStatusActivity, NavActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
             startActivity(intent)
             finish()
-        } else {
-            super.onBackPressed()
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
         setContent {
             HideoutTheme {

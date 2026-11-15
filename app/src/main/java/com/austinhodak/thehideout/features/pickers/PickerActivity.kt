@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -35,17 +34,14 @@ import com.austinhodak.thehideout.features.calculator.CalculatorHelper
 import com.austinhodak.thehideout.features.calculator.models.Character
 import com.austinhodak.thehideout.compose.components.AmmoDetailToolbar
 import com.austinhodak.thehideout.compose.components.SearchToolbar
-import com.austinhodak.thehideout.compose.theme.DarkPrimary
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.features.gear.GearCard
 import com.austinhodak.thehideout.features.pickers.viewmodels.PickerViewModel
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.features.weapons.WeaponCard
 import com.austinhodak.thehideout.features.weapons.builder.WeaponBuilderActivity
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import java.io.Serializable
 import javax.inject.Inject
 
@@ -54,7 +50,6 @@ import javax.inject.Inject
 @ExperimentalMaterialApi
 @AndroidEntryPoint
 class PickerActivity : GodActivity() {
-
     private val pickerViewModel: PickerViewModel by viewModels()
 
     @Inject
@@ -65,7 +60,6 @@ class PickerActivity : GodActivity() {
 
         setContent {
             HideoutTheme {
-
                 val scope = rememberCoroutineScope()
                 val context = LocalContext.current
 
@@ -73,9 +67,6 @@ class PickerActivity : GodActivity() {
 
                 val searchKey by pickerViewModel.searchKey.observeAsState("")
                 val isSearchOpen by pickerViewModel.isSearchOpen.observeAsState(false)
-
-                val systemUiController = rememberSystemUiController()
-                systemUiController.setNavigationBarColor(DarkPrimary)
 
                 LaunchedEffect(scope) {
                     intent.getStringExtra("type")?.let {
@@ -186,7 +177,6 @@ class PickerActivity : GodActivity() {
                             }
                         }
 
-                        
                         items(items = data ?: emptyList(), key = {
                             when (it) {
                                 is Ammo -> {

@@ -34,9 +34,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
-import coil.compose.rememberAsyncImagePainter
-import coil.size.OriginalSize
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.austinhodak.tarkovapi.UserSettingsModel
@@ -45,7 +42,6 @@ import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.fadeImagePainter
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -53,8 +49,6 @@ class StaticMapsActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             var selectedMap by remember {
@@ -72,26 +66,6 @@ class StaticMapsActivity : AppCompatActivity() {
             }
 
             HideoutTheme {
-                val systemUiController = rememberSystemUiController()
-
-                if (!isFullScreen) {
-                    systemUiController.setStatusBarColor(
-                        Color(0xFE1F1F1F),
-                        darkIcons = false
-                    )
-                    systemUiController.setNavigationBarColor(
-                        DarkPrimary,
-                    )
-                } else {
-                    systemUiController.setStatusBarColor(
-                        Color.Transparent,
-                        darkIcons = false
-                    )
-                    systemUiController.setNavigationBarColor(
-                        Color.Transparent,
-                    )
-                }
-
                 Scaffold(
                     topBar = {
                         val density = LocalDensity.current
@@ -115,7 +89,6 @@ class StaticMapsActivity : AppCompatActivity() {
                                     backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                                     elevation = 5.dp,
                                     actions = {
-
                                     }
                                 )
                                 AnimatedVisibility(visible = selectedMap?.images?.size ?: 1 > 1) {

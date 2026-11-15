@@ -1,7 +1,6 @@
 package com.austinhodak.thehideout.features.quests
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -39,7 +37,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.ImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.load
 import com.afollestad.materialdialogs.MaterialDialog
@@ -65,10 +62,8 @@ import com.austinhodak.thehideout.features.quests.QuestDetailActivity.Types.*
 import com.austinhodak.thehideout.features.quests.viewmodels.QuestDetailViewModel
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import com.bumptech.glide.Glide
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.Firebase
@@ -85,7 +80,6 @@ import javax.inject.Inject
 @ExperimentalFoundationApi
 @AndroidEntryPoint
 class QuestDetailActivity : GodActivity() {
-
     private val questViewModel: QuestDetailViewModel by viewModels()
 
     @Inject
@@ -95,8 +89,6 @@ class QuestDetailActivity : GodActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         val questID = intent.getStringExtra("questID") ?: "8"
         
@@ -121,15 +113,6 @@ class QuestDetailActivity : GodActivity() {
                 val teamData by questViewModel.teamsData.observeAsState()
 
                 Timber.d(teamData.toString())
-
-                val systemUiController = rememberSystemUiController()
-
-                systemUiController.setStatusBarColor(
-                    Color.Transparent,
-                    darkIcons = false
-                )
-
-                systemUiController.setNavigationBarColor(DarkPrimary)
 
                 val navController = rememberNavController()
 
@@ -300,7 +283,6 @@ class QuestDetailActivity : GodActivity() {
                                     },
                                     text = { Text("LOCKED", color = Color.White, style = MaterialTheme.typography.button) },
                                     onClick = {
-
                                     },
                                     backgroundColor = Color.DarkGray,
                                     //modifier = Modifier.navigationBarsPadding()
@@ -639,7 +621,6 @@ class QuestDetailActivity : GodActivity() {
 
     @Composable
     fun SmallQuestItem(quest: Quest, userData: FSUser?) {
-
         val isCompleted = userData?.progress?.isQuestCompleted(quest) == true
 
         Row(
@@ -722,7 +703,6 @@ class QuestDetailActivity : GodActivity() {
         questExtra: QuestExtra.QuestExtraItem?,
         userData: FSUser?
     ) {
-
         val isAllObjectivesCompleted = objectives.all {
             userData?.progress?.isQuestObjectiveCompleted(it) == true
         }
@@ -813,7 +793,6 @@ class QuestDetailActivity : GodActivity() {
         userData: FSUser?,
         objective: Quest.QuestObjective
     ) {
-
         val isCompleted = userData?.progress?.isQuestObjectiveCompleted(objective) ?: false
 
         val sub = if (subtitle is String) {
@@ -852,7 +831,6 @@ class QuestDetailActivity : GodActivity() {
                         .height(36.dp)
 
                 ) {
-
                     Column(Modifier.weight(1f)) {
                         Text(
                             text = title,

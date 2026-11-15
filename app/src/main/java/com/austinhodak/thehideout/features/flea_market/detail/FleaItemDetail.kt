@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.view.WindowManager
+import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
@@ -60,21 +61,21 @@ import com.austinhodak.tarkovapi.utils.asCurrency
 import com.austinhodak.tarkovapi.utils.openActivity
 import com.austinhodak.thehideout.*
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.features.barters.BarterDetailActivity
 import com.austinhodak.thehideout.compose.components.*
 import com.austinhodak.thehideout.compose.theme.*
+import com.austinhodak.thehideout.features.barters.BarterDetailActivity
 import com.austinhodak.thehideout.features.crafts.CompactItem
 import com.austinhodak.thehideout.features.crafts.CraftDetailActivity
-import com.austinhodak.thehideout.firebase.FSUser
-import com.austinhodak.thehideout.firebase.PriceAlert
-import com.austinhodak.thehideout.firebase.User
 import com.austinhodak.thehideout.features.flea_market.viewmodels.FleaViewModel
 import com.austinhodak.thehideout.features.gear.GearDetailActivity
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity
-import com.austinhodak.thehideout.utils.*
+import com.austinhodak.thehideout.firebase.FSUser
+import com.austinhodak.thehideout.firebase.PriceAlert
+import com.austinhodak.thehideout.firebase.User
 import com.austinhodak.thehideout.ui.legacy.PriceChartMarkerView
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
+import com.austinhodak.thehideout.utils.*
 import com.bumptech.glide.Glide
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
@@ -84,7 +85,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ServerValue
@@ -107,17 +107,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FleaItemDetail : GodActivity() {
 
-    override fun onBackPressed() {
-        if (intent.hasExtra("fromNoti")) {
-            val intent = Intent(this, NavActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-            startActivity(intent)
-            finish()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     private val viewModel: FleaViewModel by viewModels()
 
     @Inject
@@ -129,9 +118,14 @@ class FleaItemDetail : GodActivity() {
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, enabled = intent.hasExtra("fromNoti")) {
+            val intent = Intent(this@FleaItemDetail, NavActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+            startActivity(intent)
+            finish()
+        }
 
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        //WindowCompat.setDecorFitsSystemWindows(window, false)
 
         itemID = intent.getStringExtra("id") ?: "5751a25924597722c463c472"
         viewModel.getItemByID(itemID)
@@ -190,8 +184,6 @@ class FleaItemDetail : GodActivity() {
                 if (isDebug()) {
                     Timber.d(itemID)
                 }
-
-                rememberSystemUiController().setNavigationBarColor(DarkPrimary)
 
                 LaunchedEffect(key1 = "") {
                     questsFirebase.child("priceAlerts").orderByChild("uid").equalTo(uid()).addValueEventListener(object : ValueEventListener {
@@ -1761,7 +1753,6 @@ class FleaItemDetail : GodActivity() {
             }
         }
     }
-
 
     @Composable
     private fun TradersSellCard(
