@@ -1026,7 +1026,7 @@ class FleaItemDetail : GodActivity() {
         LazyColumn(
             contentPadding = PaddingValues(top = 4.dp, bottom = 60.dp),
         ) {
-            items(items = quests ?: emptyList()) { quest ->
+            items(items = quests ?: emptyList(), key = { it.id }) { quest ->
 //            val isRequired = quest.isRequiredForKappa(database).observeAsState().value
 //            Text("${quest.title} - ${isRequired == 1}")
                 QuestItem(quest = quest, item = item, tarkovRepo)
@@ -1109,7 +1109,7 @@ class FleaItemDetail : GodActivity() {
         LazyColumn(
             contentPadding = PaddingValues(top = 4.dp, bottom = 60.dp),
         ) {
-            items(items = crafts) { craft ->
+            items(items = crafts, key = { it.id }) { craft ->
                 CraftItem(craft, userData)
             }
         }

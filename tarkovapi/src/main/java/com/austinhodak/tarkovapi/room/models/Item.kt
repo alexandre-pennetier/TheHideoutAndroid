@@ -318,7 +318,7 @@ data class Item(
 
         return "Updated ${
             DateUtils.getRelativeTimeSpanString(
-                sdf.parse(pricing?.updated ?: "2021-07-01T08:36:35.194Z")?.time ?: 0,
+                date.time,
                 System.currentTimeMillis(),
                 DateUtils.MINUTE_IN_MILLIS
             )
