@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -372,9 +373,11 @@ fun FleaMarketFavoritesList(
     val traderPriceDisplay = UserSettingsModel.fleaVisibleTraderPrice.value
     val displayName = UserSettingsModel.fleaVisibleName.value
 
-    val data = Favorites.items.value.mapNotNull { favorite -> items?.find { it.id == favorite } }
-
-    val list = when (sortBy.value) {
+    val favoriteIds = Favorites.items.value
+    val sortValue = sortBy.value
+    val list = remember(items, favoriteIds, sortValue, searchKey, priceDisplay) {
+    val data = items?.filter { it.id in favoriteIds } ?: emptyList()
+    when (sortValue) {
         0 -> data.sortedBy { it.Name }
         1 -> data.sortedBy {
             when (priceDisplay) {
@@ -416,9 +419,7 @@ fun FleaMarketFavoritesList(
         it.ShortName?.contains(searchKey, ignoreCase = true) == true
                 || it.Name?.contains(searchKey, ignoreCase = true) == true
                 || it.itemType?.name?.contains(searchKey, ignoreCase = true) == true
-    }.filter {
-        Favorites.items.contains(it.id)
-        //extras.favoriteItems?.contains(it.id) ?: false
+    }
     }
 
     if (list.isEmpty()) {
@@ -440,7 +441,7 @@ fun FleaMarketFavoritesList(
                     bottom = paddingValues.calculateBottomPadding()
                 )
             ) {
-                items(items = list ?: emptyList()) { item ->
+                items(items = list, key = { item -> item.id }) { item ->
                     FleaItem(
                         item = item,
                         priceDisplay = priceDisplay,
@@ -482,7 +483,10 @@ fun FleaMarketListScreen(
     val traderPriceDisplay = UserSettingsModel.fleaVisibleTraderPrice.value
     val displayName = UserSettingsModel.fleaVisibleName.value
 
-    val list = when (sortBy.value) {
+    val sortValue = sortBy.value
+    // Sorting and filtering thousands of items is too heavy to redo on every recomposition.
+    val list = remember(data, sortValue, searchKey, priceDisplay, fleaHideTime, fleaHideNonFlea) {
+    when (sortValue) {
         0 -> data?.sortedBy { it.Name }
         1 -> data?.sortedBy {
             when (priceDisplay) {
@@ -543,6 +547,7 @@ fun FleaMarketListScreen(
         if (fleaHideNonFlea) {
             it.pricing?.noFlea == false
         } else true
+    }
     }
 
     AnimatedContent(targetState = data.isNullOrEmpty()) {
