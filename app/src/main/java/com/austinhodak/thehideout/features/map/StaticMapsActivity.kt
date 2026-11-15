@@ -2,6 +2,7 @@ package com.austinhodak.thehideout.features.map
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +35,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
 import com.austinhodak.tarkovapi.UserSettingsModel
@@ -42,6 +46,7 @@ import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.fadeImagePainter
+import com.austinhodak.thehideout.utils.keepScreenOn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -49,6 +54,8 @@ class StaticMapsActivity : AppCompatActivity() {
     @SuppressLint("CheckResult")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Maps are read while playing, so never let the screen time out here.
+        keepScreenOn(true)
 
         setContent {
             var selectedMap by remember {
@@ -64,6 +71,19 @@ class StaticMapsActivity : AppCompatActivity() {
             var isFullScreen by rememberSaveable {
                 mutableStateOf(false)
             }
+
+            val insetsController = remember { WindowCompat.getInsetsController(window, window.decorView) }
+            LaunchedEffect(isFullScreen) {
+                if (isFullScreen) {
+                    insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    insetsController.hide(WindowInsetsCompat.Type.systemBars())
+                } else {
+                    insetsController.show(WindowInsetsCompat.Type.systemBars())
+                }
+            }
+            // Restore the bars if the activity goes away while fullscreen.
+            DisposableEffect(Unit) { onDispose { insetsController.show(WindowInsetsCompat.Type.systemBars()) } }
+            BackHandler(enabled = isFullScreen) { isFullScreen = false }
 
             HideoutTheme {
                 Scaffold(
