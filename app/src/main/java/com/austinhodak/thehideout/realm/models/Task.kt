@@ -290,7 +290,7 @@ fun TasksQuery.Data.Task.toRealm(realm: MutableRealm): Task {
         traderLevelRequirements = t.traderLevelRequirements.filterNotNull().map {
             RequirementTrader().apply {
                 trader = it.trader.id.let { findObjectById(realm, it) }
-                level = it.level
+                level = it.level ?: 0
                 id = it.id
             }
         }.toRealmList()
