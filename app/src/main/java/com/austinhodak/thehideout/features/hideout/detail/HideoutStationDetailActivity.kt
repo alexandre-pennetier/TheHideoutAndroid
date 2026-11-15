@@ -31,9 +31,9 @@ import com.austinhodak.thehideout.features.hideout.detail.components.CraftsPage
 import com.austinhodak.thehideout.hideoutList
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.foundation.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -81,8 +81,8 @@ class HideoutStationDetailActivity : AppCompatActivity() {
             HideoutTheme {
                 val scaffoldState = rememberScaffoldState()
                 val navController = rememberNavController()
-                val pagerState = rememberPagerState()
-                val pagerStateCrafts = rememberPagerState()
+                val pagerState = rememberPagerState { modules?.size ?: 1 }
+                val pagerStateCrafts = rememberPagerState { modules?.size?.plus(1) ?: 1 }
                 val coroutineScope = rememberCoroutineScope()
                 val searchKey by navViewModel.searchKey.observeAsState("")
                 val isSearchOpen by navViewModel.isSearchOpen.observeAsState(false)
@@ -149,10 +149,7 @@ class HideoutStationDetailActivity : AppCompatActivity() {
                                     selectedTabIndex = pagerState.currentPage,
                                     indicator = { tabPositions ->
                                         TabRowDefaults.Indicator(
-                                            Modifier.pagerTabIndicatorOffset(
-                                                pagerState,
-                                                tabPositions
-                                            ), color = Red400
+                                            Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]), color = Red400
                                         )
                                     },
                                     backgroundColor = MaterialTheme.colors.primary
@@ -183,10 +180,7 @@ class HideoutStationDetailActivity : AppCompatActivity() {
                                     selectedTabIndex = pagerStateCrafts.currentPage,
                                     indicator = { tabPositions ->
                                         TabRowDefaults.Indicator(
-                                            Modifier.pagerTabIndicatorOffset(
-                                                pagerStateCrafts,
-                                                tabPositions
-                                            ), color = Red400
+                                            Modifier.tabIndicatorOffset(tabPositions[pagerStateCrafts.currentPage]), color = Red400
                                         )
                                     },
                                     backgroundColor = MaterialTheme.colors.primary
@@ -243,13 +237,10 @@ class HideoutStationDetailActivity : AppCompatActivity() {
                                         LoadingItem()
                                         return@Crossfade
                                     }
-                                    HorizontalPager(
-                                        count = modules?.size ?: 1,
-                                        state = pagerState,
-                                    ) {
+                                    HorizontalPager(state = pagerState) { page ->
                                         HideoutDetailModuleScreen(
                                             allItems,
-                                            this,
+                                            page,
                                             modules,
                                             station,
                                         )
@@ -257,11 +248,11 @@ class HideoutStationDetailActivity : AppCompatActivity() {
 
                                 }
                                 1 -> {
-                                    HorizontalPager(count = modules?.size?.plus(1) ?: 1, state = pagerStateCrafts) {
+                                    HorizontalPager(state = pagerStateCrafts) { page ->
                                         CraftsPage(
                                             crafts,
                                             navViewModel,
-                                            this,
+                                            page,
                                             modules,
                                             station
                                         ) { noCrafts ->

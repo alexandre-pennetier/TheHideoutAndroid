@@ -69,16 +69,15 @@ import com.austinhodak.thehideout.utils.userFirestore
 import com.austinhodak.thehideout.utils.userRefTracker
 import com.austinhodak.thehideout.workmanager.PriceUpdateFactory
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.auth.auth
+import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.ktx.get
+import com.google.firebase.remoteconfig.get
 import com.michaelflisar.materialpreferences.preferencescreen.PreferenceScreen
 import com.michaelflisar.materialpreferences.preferencescreen.PreferenceScreenConfig
 import com.michaelflisar.materialpreferences.preferencescreen.bool.switch
@@ -108,7 +107,6 @@ import javax.inject.Inject
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @ExperimentalFoundationApi
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {

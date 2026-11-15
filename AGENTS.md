@@ -23,13 +23,13 @@ Both modules have their own Apollo service and their own `schema.graphqls` + `.g
 | Build | Android Gradle Plugin / Gradle wrapper | 9.5.1 / 9.9.1 |
 | SDK | minSdk / targetSdk / compileSdk | 24 (23 in `:tarkovapi`) / 33 / 37 |
 | JVM | source/target + toolchain | Java 17 |
-| UI | Jetpack Compose (BOM 2023.01.00, compiler = Kotlin Compose plugin), Material 3 (1.0.1) + Material 2, ViewBinding for legacy screens, Accompanist 0.28.0 | |
-| Navigation | AndroidX Navigation 2.5.3, Mavericks 3.0.1 (state/ViewModels), mikepenz MaterialDrawer 8.4.5 | |
+| UI | Jetpack Compose (BOM 2026.09.00, compiler = Kotlin Compose plugin), Material 3 + Material 2 from the BOM, ViewBinding for legacy screens. Pager, FlowRow, insets and pull-to-refresh come from Compose foundation/Material 3; the only Accompanist module left is `systemuicontroller` (0.36.0) | |
+| Navigation | AndroidX Navigation 2.10.2, Mavericks 3.1.1 (state/ViewModels), mikepenz MaterialDrawer 8.4.5 | |
 | DI | Hilt / Dagger 2.60.1 (via **KSP**), androidx.hilt 1.4.0 | |
-| Networking | Apollo Kotlin 5.2.0 (GraphQL), Retrofit 2.9.0 + OkHttp 4.10.0 + Gson | |
+| Networking | Apollo Kotlin 5.2.0 (GraphQL), Retrofit 3.0.0 + OkHttp 5.5.1 + Gson | |
 | Local storage | krdb 3.3.7 (community fork of Realm Kotlin, package `io.github.xilinjia.krdb`, local only) in `:app`; Room 2.8.5 (KSP) in `:tarkovapi`; Apollo SQL normalized cache (currently disabled in `ApolloModule`) | |
-| Backend services | Firebase (BoM 31.2.0: Auth, Firestore, Messaging, Crashlytics, Perf, AppCheck, Functions), Sentry 8.64.0, Qonversion 4.1.3 (premium), Google Maps (maps-compose 2.9.1), ML Kit text recognition (item scanner), CameraX | |
-| Images/other | Coil 2.2.2, Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
+| Backend services | Firebase (BoM 35.2.0, main artifacts, no `-ktx`: Auth, Firestore, Messaging, Crashlytics, Perf, AppCheck, Functions; FirebaseUI Auth 9.1.1), Sentry 8.64.0, Qonversion 9.8.0 (premium), Google Maps (maps-compose 9.0.1), ML Kit text recognition (item scanner), CameraX | |
+| Images/other | Coil 2.7.0, Glide 4.16.0 (FirebaseUI Storage and legacy views), Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
 | Quality | ktlint Gradle plugin 14.2.0 with per-module baselines in `config/ktlint/` (existing violations are baselined; new code must pass), Maestro UI flows in `.maestro/` | |
 | CI/CD | GitHub Actions in `.github/workflows/` (package, beta, release, secrets decode, emulator + Maestro), Fastlane in `fastlane/` | |
 
@@ -78,8 +78,8 @@ On launch, `Application.kt` initialises Firebase App Check, Mavericks, Qonversio
 
 ## Known upgrade debt (tablet / current-Android readiness)
 
-- Toolchain is done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP). Compose BOM, Firebase, Accompanist, Qonversion and other libraries are still at their 2023 versions.
+- Toolchain and libraries are done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP, Compose BOM 2026.09, Firebase BoM 35, Qonversion 9). FirebaseUI Auth stays on 9.1.1 because 10.x changed its API. Team invites are plain `https://thehideout.io/invite/<teamId>` links handled in `NavActivity` (Firebase Dynamic Links was shut down); App Links verification for that host needs an `assetlinks.json` on thehideout.io.
 - compileSdk/targetSdk 33 (Android 13). Newer targets change notification, foreground-service, edge-to-edge and back-navigation behaviour.
 - No adaptive layouts: there is no `WindowSizeClass`, `NavigationRail` or permanent drawer usage, and the manifest sets no orientation lock or `resizeableActivity`, so on a tablet the phone UI is stretched. The README promises tablet/foldable support.
-- Deprecated or archived libraries: Accompanist pager/navigation-animation/swiperefresh/placeholder/insets (replaced by Compose foundation/navigation), Firebase `*-ktx` artifacts (merged into the main artifacts in newer Firebase BoMs) and `firebase-dynamic-links` (the Firebase Dynamic Links service was shut down in 2025), afollestad material-dialogs 3.3.0, StfalconImageViewer, Android Jetifier is enabled (`android.enableJetifier=true`).
+- Deprecated or archived libraries: Accompanist `systemuicontroller` (replace with `enableEdgeToEdge`), afollestad material-dialogs 3.3.0, StfalconImageViewer. Jetifier is off.
 - `AndroidManifest.xml` uses `requestLegacyExternalStorage` and `allowBackup="true"`; `largeHeap="true"` is set.

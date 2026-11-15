@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,8 +26,6 @@ import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.components.*
 import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.extras
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.stealthcopter.networktools.Ping
 import kotlinx.coroutines.*
 import timber.log.Timber
@@ -106,8 +105,8 @@ fun ServerPingScreen(
             }*/
         }
     ) {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true
                 scope.launch(Dispatchers.IO) {

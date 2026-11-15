@@ -8,9 +8,11 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
@@ -57,7 +59,6 @@ import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import com.google.accompanist.pager.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -67,7 +68,6 @@ import java.text.DecimalFormat
 @ExperimentalCoroutinesApi
 @ExperimentalCoilApi
 @ExperimentalFoundationApi
-@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @Composable
 fun QuestMainScreen(
@@ -617,7 +617,7 @@ fun QuestSearchBody(
         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 4.dp)
     ) {
         items(items = items, key = { it.id }) {
-            QuestCard(it, userData, questViewModel, scope, Modifier.animateItemPlacement())
+            QuestCard(it, userData, questViewModel, scope, Modifier.animateItem())
         }
     }
 }
@@ -626,7 +626,6 @@ fun QuestSearchBody(
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @Composable
 private fun QuestTradersScreen(
     questViewModel: QuestMainViewModel,
@@ -639,16 +638,16 @@ private fun QuestTradersScreen(
     val selectedView by questViewModel.view.observeAsState()
     val searchKey by questViewModel.searchKey.observeAsState("")
 
-    val pagerState = if (!isMapTab) {
-        rememberPagerState()
-    } else {
-        rememberPagerState()
-    }
-
     val count = if (!isMapTab) {
         Traders.values().size
     } else {
         Maps.values().size
+    }
+
+    val pagerState = if (!isMapTab) {
+        rememberPagerState { count }
+    } else {
+        rememberPagerState { count }
     }
 
     val completedQuests = userData?.progress?.getCompletedQuestIDs()
@@ -663,7 +662,7 @@ private fun QuestTradersScreen(
             MapsTab(pagerState, scope)
         }
 
-        HorizontalPager(modifier = Modifier.fillMaxWidth(), state = pagerState, count = count) { page ->
+        HorizontalPager(modifier = Modifier.fillMaxWidth(), state = pagerState) { page ->
             val questsList = if (!isMapTab) {
                 val trader = Traders.values()[page]
                 quests.filter { it.giver?.name == trader.id }
@@ -715,7 +714,7 @@ private fun QuestTradersScreen(
                 )
             ) {
                 items(items = data, key = { it.id }) {
-                    QuestCard(it, userData, questViewModel, scope, Modifier.animateItemPlacement())
+                    QuestCard(it, userData, questViewModel, scope, Modifier.animateItem())
                 }
             }
         }
@@ -958,7 +957,6 @@ private fun QuestObjectiveItem(
 }
 
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @Composable
 private fun TraderTabs(
     pagerState: PagerState,
@@ -969,7 +967,7 @@ private fun TraderTabs(
         selectedTabIndex = pagerState.currentPage,
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                 color = Red400
             )
         },
@@ -1000,7 +998,6 @@ private fun TraderTabs(
 }
 
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @Composable
 private fun MapsTab(
     pagerState: PagerState,
@@ -1011,7 +1008,7 @@ private fun MapsTab(
         selectedTabIndex = pagerState.currentPage,
         indicator = { tabPositions ->
             TabRowDefaults.Indicator(
-                Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                 color = Red400
             )
         },

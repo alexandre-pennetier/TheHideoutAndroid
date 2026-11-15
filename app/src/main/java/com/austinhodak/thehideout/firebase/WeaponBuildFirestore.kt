@@ -1,7 +1,7 @@
 package com.austinhodak.thehideout.firebase
 
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import java.io.Serializable
 
 data class WeaponBuildFirestore(

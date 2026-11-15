@@ -13,9 +13,9 @@ import com.austinhodak.tarkovapi.room.models.Weapon
 import com.austinhodak.thehideout.features.weapons.builder.WeaponBuild
 import com.austinhodak.thehideout.firebase.WeaponBuildFirestore
 import com.austinhodak.thehideout.utils.uid
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

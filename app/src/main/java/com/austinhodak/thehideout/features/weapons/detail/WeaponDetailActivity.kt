@@ -51,12 +51,11 @@ import com.austinhodak.thehideout.features.weapons.mods.ModDetailActivity
 import com.austinhodak.thehideout.features.weapons.viewmodel.WeaponDetailViewModel
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
@@ -93,226 +92,224 @@ class WeaponDetailActivity : GodActivity() {
 
         setContent {
             HideoutTheme {
-                ProvideWindowInsets {
-                    val weapon by tarkovRepo.getWeaponByID(weaponID).collectAsState(initial = null)
-                    val scaffoldState = rememberScaffoldState()
-                    val systemUiController = rememberSystemUiController()
+                val weapon by tarkovRepo.getWeaponByID(weaponID).collectAsState(initial = null)
+                val scaffoldState = rememberScaffoldState()
+                val systemUiController = rememberSystemUiController()
 
-                    val mods by modRepo.getAllMods().collectAsState(initial = null)
-                    val presetModIDs = presetList.getPresetsForWeapon(weaponID).flatMap {
-                        it.partsWithoutBase().map { it.id }
-                    }
+                val mods by modRepo.getAllMods().collectAsState(initial = null)
+                val presetModIDs = presetList.getPresetsForWeapon(weaponID).flatMap {
+                    it.partsWithoutBase().map { it.id }
+                }
 
-                    val allItems by tarkovRepo.getItemByID(presetModIDs).collectAsState(initial = null)
+                val allItems by tarkovRepo.getItemByID(presetModIDs).collectAsState(initial = null)
 
-                    var selectedNavItem by remember { mutableStateOf(0) }
+                var selectedNavItem by remember { mutableStateOf(0) }
 
-                    val items = listOf(
-                        ModDetailActivity.NavItem("Stats", R.drawable.ic_baseline_bar_chart_24),
-                        ModDetailActivity.NavItem("Mods", R.drawable.icons8_assault_rifle_mod_96),
-                        ModDetailActivity.NavItem("Presets", R.drawable.icons8_assault_rifle_custom),
-                    )
+                val items = listOf(
+                    ModDetailActivity.NavItem("Stats", R.drawable.ic_baseline_bar_chart_24),
+                    ModDetailActivity.NavItem("Mods", R.drawable.icons8_assault_rifle_mod_96),
+                    ModDetailActivity.NavItem("Presets", R.drawable.icons8_assault_rifle_custom),
+                )
 
-                    val defaultAmmo by tarkovRepo.getAmmoByID(weapon?.defAmmo ?: "").collectAsState(initial = null)
+                val defaultAmmo by tarkovRepo.getAmmoByID(weapon?.defAmmo ?: "").collectAsState(initial = null)
 
-                    Scaffold(
-                        scaffoldState = scaffoldState,
-                        topBar = {
-                            AnimatedContent(
-                                targetState = selectedNavItem,
-                                transitionSpec = {
-                                    fadeIn() with fadeOut()
-                                }
-                            ) {
-                                when (it) {
-                                    0 -> {
-                                        systemUiController.setStatusBarColor(
-                                            Color.Transparent,
-                                            darkIcons = false
-                                        )
-                                        systemUiController.setNavigationBarColor(DarkPrimary)
-                                        Column {
-                                            Box {
-                                                val painter = fadeImagePainter(
-                                                    weapon?.getTarkovMarketImageURL()
-                                                )
-                                                Column {
-                                                    Image(
-                                                        painter,
-                                                        contentDescription = null,
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .then(
-                                                                if (painter.state is AsyncImagePainter.State
-                                                                    .Loading || painter.state is AsyncImagePainter.State.Error
-                                                                ) {
-                                                                    Modifier.height(0.dp)
-                                                                } else {
-                                                                    (painter.state as? AsyncImagePainter.State.Success)
-                                                                        ?.painter
-                                                                        ?.intrinsicSize
-                                                                        ?.let { intrinsicSize ->
-                                                                            Modifier.aspectRatio(
-                                                                                intrinsicSize.width / intrinsicSize.height
-                                                                            )
-                                                                        } ?: Modifier
-                                                                }
-                                                            ),
-                                                        contentScale = ContentScale.FillWidth
-                                                    )
-                                                    Column(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .offset(y = (-4).dp)
-                                                            .background(if (painter.state is AsyncImagePainter.State.Success) Color.Black else DarkPrimary)
-                                                            .padding(
-                                                                start = 72.dp,
-                                                                bottom = 16.dp,
-                                                                top = if (painter.state is AsyncImagePainter.State.Success) 0.dp else 56.dp
-                                                            )
-                                                    ) {
-                                                        Text(
-                                                            text = weapon?.Name ?: "Loading...",
-                                                            color = MaterialTheme.colors.onPrimary,
-                                                            style = MaterialTheme.typography.h6,
-                                                            maxLines = 1,
-                                                            fontSize = 18.sp,
-                                                            overflow = TextOverflow.Ellipsis,
-                                                            modifier = Modifier.padding(end = 16.dp)
-                                                        )
-                                                        Text(
-                                                            text = "(${weapon?.ShortName})",
-                                                            color = MaterialTheme.colors.onPrimary,
-                                                            style = MaterialTheme.typography.caption,
-                                                            maxLines = 1,
-                                                            overflow = TextOverflow.Ellipsis
-                                                        )
-                                                    }
-                                                }
-
-                                                TopAppBar(
-                                                    title = { Spacer(modifier = Modifier.fillMaxWidth()) },
-                                                    backgroundColor = Color.Transparent,
-                                                    modifier = Modifier.statusBarsPadding(),
-                                                    navigationIcon = {
-                                                        IconButton(onClick = {
-                                                            onBackPressed()
-                                                        }) {
-                                                            Icon(Icons.Filled.ArrowBack, contentDescription = null)
-                                                        }
-                                                    },
-                                                    elevation = 0.dp,
-                                                    actions = {
-                                                        OverflowMenu {
-                                                            weapon?.pricing?.wikiLink?.let { WikiItem(url = it) }
-                                                        }
-                                                    }
-                                                )
-                                            }
-
-                                            if (weapon == null) {
-                                                LinearProgressIndicator(
-                                                    Modifier
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    topBar = {
+                        AnimatedContent(
+                            targetState = selectedNavItem,
+                            transitionSpec = {
+                                fadeIn() with fadeOut()
+                            }
+                        ) {
+                            when (it) {
+                                0 -> {
+                                    systemUiController.setStatusBarColor(
+                                        Color.Transparent,
+                                        darkIcons = false
+                                    )
+                                    systemUiController.setNavigationBarColor(DarkPrimary)
+                                    Column {
+                                        Box {
+                                            val painter = fadeImagePainter(
+                                                weapon?.getTarkovMarketImageURL()
+                                            )
+                                            Column {
+                                                Image(
+                                                    painter,
+                                                    contentDescription = null,
+                                                    modifier = Modifier
                                                         .fillMaxWidth()
-                                                        .height(2.dp),
-                                                    color = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                                                    backgroundColor = Color.Transparent
+                                                        .then(
+                                                            if (painter.state is AsyncImagePainter.State
+                                                                .Loading || painter.state is AsyncImagePainter.State.Error
+                                                            ) {
+                                                                Modifier.height(0.dp)
+                                                            } else {
+                                                                (painter.state as? AsyncImagePainter.State.Success)
+                                                                    ?.painter
+                                                                    ?.intrinsicSize
+                                                                    ?.let { intrinsicSize ->
+                                                                        Modifier.aspectRatio(
+                                                                            intrinsicSize.width / intrinsicSize.height
+                                                                        )
+                                                                    } ?: Modifier
+                                                            }
+                                                        ),
+                                                    contentScale = ContentScale.FillWidth
                                                 )
-                                            }
-                                        }
-                                    }
-                                    2,
-                                    1 -> {
-                                        systemUiController.setStatusBarColor(
-                                            MaterialTheme.colors.primary,
-                                            darkIcons = false
-                                        )
-                                        TopAppBar(
-                                            title = {
-                                                Column {
+                                                Column(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .offset(y = (-4).dp)
+                                                        .background(if (painter.state is AsyncImagePainter.State.Success) Color.Black else DarkPrimary)
+                                                        .padding(
+                                                            start = 72.dp,
+                                                            bottom = 16.dp,
+                                                            top = if (painter.state is AsyncImagePainter.State.Success) 0.dp else 56.dp
+                                                        )
+                                                ) {
                                                     Text(
-                                                        text = weapon?.Name ?: "Loading",
+                                                        text = weapon?.Name ?: "Loading...",
                                                         color = MaterialTheme.colors.onPrimary,
                                                         style = MaterialTheme.typography.h6,
                                                         maxLines = 1,
                                                         fontSize = 18.sp,
-                                                        overflow = TextOverflow.Ellipsis
+                                                        overflow = TextOverflow.Ellipsis,
+                                                        modifier = Modifier.padding(end = 16.dp)
                                                     )
                                                     Text(
-                                                        text = "(${weapon?.ShortName ?: ""})",
+                                                        text = "(${weapon?.ShortName})",
                                                         color = MaterialTheme.colors.onPrimary,
                                                         style = MaterialTheme.typography.caption,
                                                         maxLines = 1,
                                                         overflow = TextOverflow.Ellipsis
                                                     )
                                                 }
-                                            },
-                                            backgroundColor = if (isSystemInDarkTheme()) DarkPrimary else MaterialTheme.colors.primary,
-                                            modifier = Modifier.statusBarsPadding(),
-                                            navigationIcon = {
-                                                IconButton(onClick = {
-                                                    onBackPressed()
-                                                }) {
-                                                    Icon(Icons.Filled.ArrowBack, contentDescription = null)
-                                                }
-                                            },
-                                            actions = {
-                                                OverflowMenu {
-                                                    weapon?.pricing?.wikiLink?.let { WikiItem(url = it) }
-                                                }
                                             }
-                                        )
-                                    }
-                                }
-                            }
 
-                        },
-                        bottomBar = {
-                            BottomNav(selected = selectedNavItem, items) { selectedNavItem = it }
-                        },
-                        floatingActionButton = {
-                            FloatingActionButton(onClick = {
-                                this.openActivity(WeaponBuilderActivity::class.java) {
-                                    weapon?.let {
-                                        putSerializable("weapon", it)
+                                            TopAppBar(
+                                                title = { Spacer(modifier = Modifier.fillMaxWidth()) },
+                                                backgroundColor = Color.Transparent,
+                                                modifier = Modifier.statusBarsPadding(),
+                                                navigationIcon = {
+                                                    IconButton(onClick = {
+                                                        onBackPressed()
+                                                    }) {
+                                                        Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                                                    }
+                                                },
+                                                elevation = 0.dp,
+                                                actions = {
+                                                    OverflowMenu {
+                                                        weapon?.pricing?.wikiLink?.let { WikiItem(url = it) }
+                                                    }
+                                                }
+                                            )
+                                        }
+
+                                        if (weapon == null) {
+                                            LinearProgressIndicator(
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .height(2.dp),
+                                                color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                                                backgroundColor = Color.Transparent
+                                            )
+                                        }
                                     }
                                 }
-                            }) {
-                                Icon(painter = painterResource(id = R.drawable.ic_baseline_construction_24), contentDescription = "Build", tint = Color.Black)
+                                2,
+                                1 -> {
+                                    systemUiController.setStatusBarColor(
+                                        MaterialTheme.colors.primary,
+                                        darkIcons = false
+                                    )
+                                    TopAppBar(
+                                        title = {
+                                            Column {
+                                                Text(
+                                                    text = weapon?.Name ?: "Loading",
+                                                    color = MaterialTheme.colors.onPrimary,
+                                                    style = MaterialTheme.typography.h6,
+                                                    maxLines = 1,
+                                                    fontSize = 18.sp,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                Text(
+                                                    text = "(${weapon?.ShortName ?: ""})",
+                                                    color = MaterialTheme.colors.onPrimary,
+                                                    style = MaterialTheme.typography.caption,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                        },
+                                        backgroundColor = if (isSystemInDarkTheme()) DarkPrimary else MaterialTheme.colors.primary,
+                                        modifier = Modifier.statusBarsPadding(),
+                                        navigationIcon = {
+                                            IconButton(onClick = {
+                                                onBackPressed()
+                                            }) {
+                                                Icon(Icons.Filled.ArrowBack, contentDescription = null)
+                                            }
+                                        },
+                                        actions = {
+                                            OverflowMenu {
+                                                weapon?.pricing?.wikiLink?.let { WikiItem(url = it) }
+                                            }
+                                        }
+                                    )
+                                }
                             }
                         }
-                    ) {
-                        Crossfade(targetState = selectedNavItem, modifier = Modifier.padding(it)) {
-                            when (it) {
-                                0 -> {
-                                    LazyColumn(
-                                        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 64.dp)
-                                    ) {
-                                        item {
-                                            weapon?.let { WeaponDetailCard(weapon = it) }
+
+                    },
+                    bottomBar = {
+                        BottomNav(selected = selectedNavItem, items) { selectedNavItem = it }
+                    },
+                    floatingActionButton = {
+                        FloatingActionButton(onClick = {
+                            this.openActivity(WeaponBuilderActivity::class.java) {
+                                weapon?.let {
+                                    putSerializable("weapon", it)
+                                }
+                            }
+                        }) {
+                            Icon(painter = painterResource(id = R.drawable.ic_baseline_construction_24), contentDescription = "Build", tint = Color.Black)
+                        }
+                    }
+                ) {
+                    Crossfade(targetState = selectedNavItem, modifier = Modifier.padding(it)) {
+                        when (it) {
+                            0 -> {
+                                LazyColumn(
+                                    contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 64.dp)
+                                ) {
+                                    item {
+                                        weapon?.let { WeaponDetailCard(weapon = it) }
+                                    }
+                                    item {
+                                        if (weapon != null && defaultAmmo != null) {
+                                            AmmoCard(weapon = weapon!!, defaultAmmo = defaultAmmo!!)
                                         }
-                                        item {
-                                            if (weapon != null && defaultAmmo != null) {
-                                                AmmoCard(weapon = weapon!!, defaultAmmo = defaultAmmo!!)
-                                            }
-                                        }
-                                        item {
-                                            weapon?.pricing?.let {
-                                                PricingCard(pricing = it)
-                                            }
+                                    }
+                                    item {
+                                        weapon?.pricing?.let {
+                                            PricingCard(pricing = it)
                                         }
                                     }
                                 }
-                                1 -> {
-                                    weapon?.let { it1 -> WeaponModScreen(weapon = it1, mods) }
-                                }
-                                2 -> {
-                                    weapon?.let {
-                                        PresetScreen(
-                                            weapon = it,
-                                            allItems
-                                        )
-                                    }
+                            }
+                            1 -> {
+                                weapon?.let { it1 -> WeaponModScreen(weapon = it1, mods) }
+                            }
+                            2 -> {
+                                weapon?.let {
+                                    PresetScreen(
+                                        weapon = it,
+                                        allItems
+                                    )
                                 }
                             }
                         }

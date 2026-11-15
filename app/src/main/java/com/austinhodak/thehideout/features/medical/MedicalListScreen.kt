@@ -32,10 +32,9 @@ import com.austinhodak.thehideout.compose.components.SmallBuyPrice
 import com.austinhodak.thehideout.compose.theme.Red400
 import com.austinhodak.thehideout.compose.theme.White
 import com.austinhodak.thehideout.utils.getMedIcon
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.foundation.pager.rememberPagerState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
@@ -44,7 +43,6 @@ import kotlinx.coroutines.launch
 @ExperimentalFoundationApi
 @ExperimentalCoilApi
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @Composable
 fun MedicalListScreen (
     tarkovRepo: TarkovRepo,
@@ -52,7 +50,7 @@ fun MedicalListScreen (
 ) {
     val titles: List<String> = listOf(stringResource(R.string.meds), stringResource(R.string.stims))
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { titles.size }
     val coroutineScope = rememberCoroutineScope()
 
     var data by remember {
@@ -75,7 +73,7 @@ fun MedicalListScreen (
                 TabRow(
                     selectedTabIndex = pagerState.currentPage,
                     indicator = { tabPositions ->
-                        TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions), color = Red400)
+                        TabRowDefaults.Indicator(Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]), color = Red400)
                     },
                 ) {
                     titles.forEachIndexed { index, title ->
@@ -99,7 +97,7 @@ fun MedicalListScreen (
             if (it) {
                 LoadingItem()
             } else {
-                HorizontalPager(state = pagerState, count = titles.size) { page ->
+                HorizontalPager(state = pagerState) { page ->
                     MedList(data, page)
                 }
             }
@@ -126,7 +124,7 @@ private fun MedList(
             .sortedBy { it.ShortName }
 
         items(items = items, key = { it.id }) { item ->
-            MedCard(item = item, Modifier.animateItemPlacement())
+            MedCard(item = item, Modifier.animateItem())
         }
     }
 }

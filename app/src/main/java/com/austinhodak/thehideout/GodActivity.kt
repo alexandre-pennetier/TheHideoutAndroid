@@ -7,8 +7,8 @@ import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.thehideout.utils.keepScreenOn
 import com.austinhodak.thehideout.utils.userFirestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -43,12 +43,9 @@ import com.austinhodak.thehideout.features.map.models.CustomMarker
 import com.austinhodak.thehideout.utils.openWithCustomTab
 import com.austinhodak.thehideout.utils.userFirestore
 
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.MainAxisAlignment
-import com.google.accompanist.flowlayout.SizeMode
-import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.Firebase
 import timber.log.Timber
 import java.lang.reflect.Field
 
@@ -209,8 +206,8 @@ class CustomMapMarkerAddActivity : AppCompatActivity() {
                                     }
 
                                     FlowRow(
-                                        mainAxisSize = SizeMode.Expand,
-                                        mainAxisAlignment = MainAxisAlignment.SpaceEvenly
+                                        Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceEvenly
                                     ) {
                                         val drawablesFields: Array<Field> = com.austinhodak.tarkovapi.R.drawable::class.java.fields
 

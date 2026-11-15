@@ -60,14 +60,13 @@ import com.austinhodak.thehideout.tradersList
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.utils.*
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.pager.ExperimentalPagerApi
+import androidx.compose.foundation.layout.navigationBarsPadding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(
-    ExperimentalPagerApi::class, ExperimentalMaterialApi::class,
+    ExperimentalMaterialApi::class,
     ExperimentalCoilApi::class,
     androidx.compose.foundation.ExperimentalFoundationApi::class,
     kotlinx.coroutines.ExperimentalCoroutinesApi::class
@@ -262,7 +261,7 @@ fun TraderScreen(trader: String?, navViewModel: NavViewModel, tarkovRepo: Tarkov
                             )
                         ) {
                             items(items = itemList ?: emptyList(), key = { it.id }) { item ->
-                                TraderFleaItem(item = item, trader = trader, Modifier.animateItemPlacement()) {
+                                TraderFleaItem(item = item, trader = trader, Modifier.animateItem()) {
                                     context.openActivity(FleaItemDetail::class.java) {
                                         putString("id", item.id)
                                     }
@@ -298,7 +297,7 @@ fun TraderScreen(trader: String?, navViewModel: NavViewModel, tarkovRepo: Tarkov
                             )
                         ) {
                             items(items = barterList, key = { it.id.toString() }) { barter ->
-                                BarterItem(barter, Modifier.animateItemPlacement())
+                                BarterItem(barter, Modifier.animateItem())
                             }
                         }
                     }

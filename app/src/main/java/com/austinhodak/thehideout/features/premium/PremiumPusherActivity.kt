@@ -61,19 +61,18 @@ import com.austinhodak.thehideout.ui.theme3.HideoutTheme3
 import com.austinhodak.thehideout.ui.theme3.premium_gradient_color
 import com.austinhodak.thehideout.ui.theme3.rubik
 import com.austinhodak.thehideout.utils.openActivity
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.state.StateDialog
 import com.maxkeppeler.sheets.state.models.ProgressIndicator
 import com.maxkeppeler.sheets.state.models.State
 import com.maxkeppeler.sheets.state.models.StateConfig
-import com.qonversion.android.sdk.dto.products.QProductDuration
+import com.qonversion.android.sdk.dto.products.QProduct
 import com.qonversion.android.sdk.dto.products.QProductType
+import com.qonversion.android.sdk.dto.products.QSubscriptionPeriod
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
-@ExperimentalPagerApi
 @ExperimentalCoilApi
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
@@ -121,7 +120,7 @@ class PremiumPusherActivity : ComponentActivity() {
                 }
 
                 val state = State.Loading(labelText = "Processing...", ProgressIndicator.Linear())
-                val sheetState = rememberSheetState()
+                val sheetState = rememberUseCaseState()
                 StateDialog(
                     state = sheetState,
                     config = StateConfig(state = state)
@@ -174,7 +173,7 @@ class PremiumPusherActivity : ComponentActivity() {
                         visible = offers?.products == null,
                         modifier = Modifier
                             .fillMaxSize()
-                            .consumedWindowInsets(padding)
+                            .consumeWindowInsets(padding)
                     ) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             CircularProgressIndicator(
@@ -314,7 +313,7 @@ class PremiumPusherActivity : ComponentActivity() {
                                         )
                                         .padding(bottom = 32.dp)
                                 ) {
-                                    offers?.products?.sortedByDescending { it.skuDetail?.priceAmountMicros }
+                                    offers?.products?.sortedByDescending(::priceMicros)
                                         ?.forEach { offer ->
                                             if (offer.type == QProductType.InApp) {
                                                 Button(
@@ -371,12 +370,12 @@ class PremiumPusherActivity : ComponentActivity() {
                                                         modifier = Modifier.padding(8.dp),
                                                         horizontalAlignment = CenterHorizontally
                                                     ) {
-                                                        val title = when (offer.duration) {
-                                                            QProductDuration.Monthly -> {
+                                                        val title = when (offer.subscriptionPeriod?.unit) {
+                                                            QSubscriptionPeriod.Unit.Month -> {
                                                                 "${offer.prettyPrice}/Month"
                                                             }
 
-                                                            QProductDuration.Annual -> {
+                                                            QSubscriptionPeriod.Unit.Year -> {
                                                                 "${offer.prettyPrice}/Year"
                                                             }
 
@@ -421,12 +420,12 @@ class PremiumPusherActivity : ComponentActivity() {
                                                         modifier = Modifier.padding(8.dp),
                                                         horizontalAlignment = CenterHorizontally
                                                     ) {
-                                                        val title = when (offer.duration) {
-                                                            QProductDuration.Monthly -> {
+                                                        val title = when (offer.subscriptionPeriod?.unit) {
+                                                            QSubscriptionPeriod.Unit.Month -> {
                                                                 "Monthly"
                                                             }
 
-                                                            QProductDuration.Annual -> {
+                                                            QSubscriptionPeriod.Unit.Year -> {
                                                                 "Yearly"
                                                             }
 
@@ -462,4 +461,8 @@ class PremiumPusherActivity : ComponentActivity() {
     }
 }
 
-
+private fun priceMicros(product: QProduct): Long? {
+    val details = product.storeDetails ?: return null
+    return details.inAppOfferDetails?.price?.priceAmountMicros
+        ?: details.defaultSubscriptionOfferDetails?.basePlan?.price?.priceAmountMicros
+}

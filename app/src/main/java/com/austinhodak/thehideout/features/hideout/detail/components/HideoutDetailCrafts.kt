@@ -35,18 +35,17 @@ import com.austinhodak.thehideout.features.flea_market.detail.AvgPriceRow
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
 import com.austinhodak.thehideout.features.flea_market.detail.SavingsRow
 import com.austinhodak.thehideout.utils.openActivity
-import com.google.accompanist.pager.PagerScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CraftsPage(crafts: List<Craft>, navViewModel: NavViewModel, pagerState: PagerScope, modules: List<Hideout.Module?>?, station: Hideout.Station?, noCrafts: (Boolean) -> Unit) {
+fun CraftsPage(crafts: List<Craft>, navViewModel: NavViewModel, page: Int, modules: List<Hideout.Module?>?, station: Hideout.Station?, noCrafts: (Boolean) -> Unit) {
     val searchKey by navViewModel.searchKey.observeAsState("")
-    val selectedModule = modules?.getOrNull(pagerState.currentPage)
+    val selectedModule = modules?.getOrNull(page)
 
     val list = crafts.filter {
-        if (pagerState.currentPage == modules?.size) {
+        if (page == modules?.size) {
             //ALL TAB
             it.source?.contains(station?.getName().toString(), true) == true
         } else {
@@ -68,7 +67,7 @@ fun CraftsPage(crafts: List<Craft>, navViewModel: NavViewModel, pagerState: Page
     ) {
 
         items(list, key = { it.id.toString() }) {
-            CraftItem(craft = it, Modifier.animateItemPlacement())
+            CraftItem(craft = it, Modifier.animateItem())
         }
     }
 }

@@ -147,7 +147,7 @@ fun KeyListScreen(
                             userData,
                             scaffoldState,
                             keysViewModel,
-                            Modifier.animateItemPlacement()
+                            Modifier.animateItem()
                         )
                     }
                 }

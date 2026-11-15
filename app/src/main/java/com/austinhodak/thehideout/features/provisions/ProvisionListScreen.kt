@@ -96,7 +96,7 @@ fun ProvisionListScreen(
                     contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     items(items = items, key = { it.id }) { key ->
-                        ProvisionCard(item = key, Modifier.animateItemPlacement())
+                        ProvisionCard(item = key, Modifier.animateItem())
                     }
                 }
             }

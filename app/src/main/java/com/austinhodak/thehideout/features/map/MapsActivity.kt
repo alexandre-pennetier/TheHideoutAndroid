@@ -59,7 +59,6 @@ import com.austinhodak.thehideout.utils.*
 import com.austinhodak.thehideout.data.enums.Map
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.bumptech.glide.Glide
-import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -347,7 +346,7 @@ class MapsActivity : GodActivity() {
 
                                                 val groupCategories = group?.categories
 
-                                                FlowRow(crossAxisSpacing = 8.dp, mainAxisSpacing = 0.dp) {
+                                                FlowRow(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                                     groupCategories?.filter {
                                                         it?.id != 955
                                                     }?.forEach { category ->
@@ -426,7 +425,7 @@ class MapsActivity : GodActivity() {
 
                                                 val questSettings = listOf("Active", "Locked", "Completed")
 
-                                                FlowRow(crossAxisSpacing = 8.dp, mainAxisSpacing = 0.dp) {
+                                                FlowRow(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                                     questSettings.forEach { category ->
                                                         Chip(
                                                             string = category,
@@ -509,7 +508,7 @@ class MapsActivity : GodActivity() {
 
                                                 val questSettings = listOf("Show All")
 
-                                                FlowRow(crossAxisSpacing = 8.dp, mainAxisSpacing = 0.dp) {
+                                                FlowRow(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                                     questSettings.forEach { category ->
                                                         Chip(
                                                             string = category,

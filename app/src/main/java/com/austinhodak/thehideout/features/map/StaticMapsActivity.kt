@@ -13,7 +13,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
@@ -41,12 +45,6 @@ import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.fadeImagePainter
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -74,132 +72,130 @@ class StaticMapsActivity : AppCompatActivity() {
             }
 
             HideoutTheme {
-                ProvideWindowInsets {
-                    val systemUiController = rememberSystemUiController()
+                val systemUiController = rememberSystemUiController()
 
-                    if (!isFullScreen) {
-                        systemUiController.setStatusBarColor(
-                            Color(0xFE1F1F1F),
-                            darkIcons = false
-                        )
-                        systemUiController.setNavigationBarColor(
-                            DarkPrimary,
-                        )
-                    } else {
-                        systemUiController.setStatusBarColor(
-                            Color.Transparent,
-                            darkIcons = false
-                        )
-                        systemUiController.setNavigationBarColor(
-                            Color.Transparent,
-                        )
-                    }
+                if (!isFullScreen) {
+                    systemUiController.setStatusBarColor(
+                        Color(0xFE1F1F1F),
+                        darkIcons = false
+                    )
+                    systemUiController.setNavigationBarColor(
+                        DarkPrimary,
+                    )
+                } else {
+                    systemUiController.setStatusBarColor(
+                        Color.Transparent,
+                        darkIcons = false
+                    )
+                    systemUiController.setNavigationBarColor(
+                        Color.Transparent,
+                    )
+                }
 
-                    Scaffold(
-                        topBar = {
-                            val density = LocalDensity.current
-                            AnimatedVisibility(visible = !isFullScreen, enter = slideInVertically {
-                                -it / 2
-                            }, exit = slideOutVertically {
-                                -it
-                            }) {
-                                Column(
-                                    modifier = Modifier.statusBarsPadding()
-                                ) {
-                                    TopAppBar(
-                                        title = { Text(selectedMap?.map ?: "") },
-                                        navigationIcon = {
-                                            IconButton(onClick = {
-                                                finish()
-                                            }) {
-                                                Icon(Icons.Filled.ArrowBack, contentDescription = null)
-                                            }
-                                        },
-                                        backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
-                                        elevation = 5.dp,
-                                        actions = {
-
+                Scaffold(
+                    topBar = {
+                        val density = LocalDensity.current
+                        AnimatedVisibility(visible = !isFullScreen, enter = slideInVertically {
+                            -it / 2
+                        }, exit = slideOutVertically {
+                            -it
+                        }) {
+                            Column(
+                                modifier = Modifier.statusBarsPadding()
+                            ) {
+                                TopAppBar(
+                                    title = { Text(selectedMap?.map ?: "") },
+                                    navigationIcon = {
+                                        IconButton(onClick = {
+                                            finish()
+                                        }) {
+                                            Icon(Icons.Filled.ArrowBack, contentDescription = null)
                                         }
-                                    )
-                                    AnimatedVisibility(visible = selectedMap?.images?.size ?: 1 > 1) {
-                                        val pagerState = rememberPagerState()
-                                        Tabs(
-                                            pagerState = pagerState,
-                                            scope = scope,
-                                            items = selectedMap?.images?.map { it.name } ?: emptyList()
-                                        ) {
-                                            selectedMapImage = selectedMap?.images?.get(it)
-                                        }
+                                    },
+                                    backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
+                                    elevation = 5.dp,
+                                    actions = {
+
+                                    }
+                                )
+                                AnimatedVisibility(visible = selectedMap?.images?.size ?: 1 > 1) {
+                                    val pagerState = rememberPagerState { selectedMap?.images?.size ?: 1 }
+                                    Tabs(
+                                        pagerState = pagerState,
+                                        scope = scope,
+                                        items = selectedMap?.images?.map { it.name } ?: emptyList()
+                                    ) {
+                                        selectedMapImage = selectedMap?.images?.get(it)
                                     }
                                 }
                             }
                         }
-                    ) { paddingValues ->
-                        Box(Modifier.fillMaxSize()) {
-                            selectedMapImage?.let {
-                                ZoomableImage(
-                                    painter = fadeImagePainter(data = it.image),
-                                    modifier = Modifier
-                                        .fillMaxSize(),
-                                    minScale = 10f
+                    }
+                ) { paddingValues ->
+                    Box(Modifier.fillMaxSize()) {
+                        selectedMapImage?.let {
+                            ZoomableImage(
+                                painter = fadeImagePainter(data = it.image),
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                minScale = 10f
+                            )
+                        }
+                        Column(
+                            if (isFullScreen)
+                                Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .statusBarsPadding()
+                            else
+                                Modifier
+                                    .align(Alignment.TopEnd)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            FloatingActionButton(
+                                onClick = {
+                                    MaterialDialog(this@StaticMapsActivity).show {
+                                        title(text = "Choose Map")
+                                        listItemsSingleChoice(
+                                            items = maps.map { it.map },
+                                            initialSelection = maps.indexOf(selectedMap)
+                                        ) { _, _, text ->
+                                            selectedMap = maps.find { it.map == text.toString() }
+                                            selectedMapImage = maps.find { it.map.equals(text.toString(), true) }?.images?.first()
+                                        }
+                                    }
+                                },
+                                backgroundColor = DarkPrimary,
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .size(40.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_baseline_map_24),
+                                    contentDescription = "Choose Map",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
-                            Column(
-                                if (isFullScreen)
-                                    Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .statusBarsPadding()
-                                else
-                                    Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                            FloatingActionButton(
+                                onClick = {
+                                    isFullScreen = !isFullScreen
+                                },
+                                backgroundColor = DarkPrimary,
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .size(40.dp),
                             ) {
-                                FloatingActionButton(
-                                    onClick = {
-                                        MaterialDialog(this@StaticMapsActivity).show {
-                                            title(text = "Choose Map")
-                                            listItemsSingleChoice(
-                                                items = maps.map { it.map },
-                                                initialSelection = maps.indexOf(selectedMap)
-                                            ) { _, _, text ->
-                                                selectedMap = maps.find { it.map == text.toString() }
-                                                selectedMapImage = maps.find { it.map.equals(text.toString(), true) }?.images?.first()
-                                            }
-                                        }
-                                    },
-                                    backgroundColor = DarkPrimary,
-                                    modifier = Modifier
-                                        .padding(vertical = 8.dp)
-                                        .size(40.dp),
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_baseline_map_24),
-                                        contentDescription = "Choose Map",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                                FloatingActionButton(
-                                    onClick = {
-                                        isFullScreen = !isFullScreen
-                                    },
-                                    backgroundColor = DarkPrimary,
-                                    modifier = Modifier
-                                        .padding(vertical = 8.dp)
-                                        .size(40.dp),
-                                ) {
-                                    Icon(
-                                        painter = if (isFullScreen) fadeImagePainter(
-                                            R.drawable.ic_baseline_fullscreen_exit_24
-                                        ) else fadeImagePainter(
-                                            R.drawable.ic_baseline_fullscreen_24
-                                        ),
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
+                                Icon(
+                                    painter = if (isFullScreen) fadeImagePainter(
+                                        R.drawable.ic_baseline_fullscreen_exit_24
+                                    ) else fadeImagePainter(
+                                        R.drawable.ic_baseline_fullscreen_24
+                                    ),
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(24.dp)
+                                )
                             }
                         }
                     }
@@ -274,7 +270,6 @@ class StaticMapsActivity : AppCompatActivity() {
     }
 
     @ExperimentalMaterialApi
-    @ExperimentalPagerApi
     @Composable
     private fun Tabs(
         pagerState: PagerState,
@@ -287,7 +282,7 @@ class StaticMapsActivity : AppCompatActivity() {
             selectedTabIndex = pagerState.currentPage,
             indicator = { tabPositions ->
                 TabRowDefaults.Indicator(
-                    Modifier.pagerTabIndicatorOffset(pagerState, tabPositions),
+                    Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                     color = Red400
                 )
             },

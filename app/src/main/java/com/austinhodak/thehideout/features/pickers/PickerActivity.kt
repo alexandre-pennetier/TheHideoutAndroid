@@ -206,22 +206,22 @@ class PickerActivity : GodActivity() {
                         }) {
                             when (it) {
                                 is Ammo -> {
-                                    AmmoCard(ammo = it, Modifier.padding(vertical = 4.dp).animateItemPlacement()) {
+                                    AmmoCard(ammo = it, Modifier.padding(vertical = 4.dp).animateItem()) {
                                         selectedItem(it)
                                     }
                                 }
                                 is Item -> {
-                                    GearCard(item = it, Modifier.animateItemPlacement()) {
+                                    GearCard(item = it, Modifier.animateItem()) {
                                         selectedItem(it)
                                     }
                                 }
                                 is Character -> {
-                                    CharacterCard(character = it, Modifier.animateItemPlacement()) {
+                                    CharacterCard(character = it, Modifier.animateItem()) {
                                         selectedItem(it)
                                     }
                                 }
                                 is Weapon -> {
-                                    WeaponCard(weapon = it, Modifier.animateItemPlacement()) { id ->
+                                    WeaponCard(weapon = it, Modifier.animateItem()) { id ->
                                         selectedItem(it)
                                     }
                                 }

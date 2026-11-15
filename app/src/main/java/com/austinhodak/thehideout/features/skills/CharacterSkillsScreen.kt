@@ -77,7 +77,7 @@ fun CharacterSkillsScreen(
             contentPadding = PaddingValues(vertical = 4.dp)
         ) {
             items(items = skills, key = { it.name} ) { skill ->
-                SkillCard(skill, Modifier.animateItemPlacement())
+                SkillCard(skill, Modifier.animateItem())
             }
         }
     }

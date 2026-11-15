@@ -3,10 +3,10 @@ package com.austinhodak.thehideout.di
 import android.content.Context
 import com.austinhodak.thehideout.base.util.Dispatcher
 import com.austinhodak.thehideout.base.util.NiaDispatchers
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

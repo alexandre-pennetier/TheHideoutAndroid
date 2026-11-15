@@ -12,7 +12,7 @@ import com.austinhodak.thehideout.features.map.models.CustomMarker
 import com.austinhodak.thehideout.utils.userFirestore
 
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.toObject
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

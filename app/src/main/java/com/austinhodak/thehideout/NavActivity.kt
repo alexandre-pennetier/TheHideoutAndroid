@@ -15,7 +15,7 @@ import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.consumedWindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.material.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -72,15 +72,12 @@ import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
-import com.google.firebase.ktx.Firebase
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.SelectionButton
-import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.info.InfoDialog
 import com.maxkeppeler.sheets.info.models.InfoBody
 import com.maxkeppeler.sheets.info.models.InfoSelection
@@ -95,7 +92,6 @@ import javax.inject.Inject
 @ExperimentalFoundationApi
 @ExperimentalCoilApi
 @ExperimentalCoroutinesApi
-@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @AndroidEntryPoint
@@ -219,7 +215,7 @@ class NavActivity : GodActivity() {
             }
         }
 
-        setupDynamicLinks()
+        setupInviteLinks()
 
         setContent {
             val scaffoldState = rememberScaffoldState()
@@ -227,7 +223,7 @@ class NavActivity : GodActivity() {
             val lifeCycleOwner = this
             val navController = rememberNavController()
             val systemUiController = rememberSystemUiController()
-            val notificationDialogSheetState = rememberSheetState(visible = false)
+            val notificationDialogSheetState = rememberUseCaseState(visible = false)
 
             if (Build.VERSION.SDK_INT greaterThanOrEqualTo (33)) {
                 val notificationPermission = Manifest.permission.POST_NOTIFICATIONS
@@ -301,7 +297,7 @@ class NavActivity : GodActivity() {
                     NavHost(
                         navController = navController,
                         startDestination = tag,
-                        modifier = Modifier.consumedWindowInsets(padding)
+                        modifier = Modifier.consumeWindowInsets(padding)
                     ) {
                         composable("ammunition/{caliber}") {
                             AmmunitionListScreen(
@@ -465,7 +461,6 @@ class NavActivity : GodActivity() {
                                     .setAuthMethodPickerLayout(customLayout)
                                     .setTheme(R.style.LoginTheme2)
                                     .setLogo(R.drawable.hideout_shadow_1)
-                                    .setIsSmartLockEnabled(false)
                                     .build()
                                 signInLauncher.launch(signInIntent)
                             }
@@ -507,24 +502,19 @@ class NavActivity : GodActivity() {
 
 
 
-    private fun setupDynamicLinks() {
-        Firebase.dynamicLinks.getDynamicLink(intent).addOnSuccessListener(this) { pendingDynamicLinkData ->
-            if (pendingDynamicLinkData != null) {
-                val deepLink = pendingDynamicLinkData.link
-                MaterialDialog(this).show {
-                    title(text = "Join Team?")
-                    message(text = "You've clicked an invite link, do you want to join this team?")
-                    positiveButton(text = "JOIN") {
-                        deepLink?.acceptTeamInvite {
-                            Toast.makeText(this@NavActivity, "Team joined successfully!", Toast.LENGTH_SHORT).show()
-                            openActivity(TeamManagementActivity::class.java)
-                        }
-                    }
-                    negativeButton(text = "NEVERMIND")
+    // Team invites are plain https://thehideout.io/invite/<teamId> links (Firebase Dynamic Links was shut down).
+    private fun setupInviteLinks() {
+        val deepLink = intent.data?.takeIf { it.host == "thehideout.io" && it.path?.startsWith("/invite/") == true } ?: return
+        MaterialDialog(this).show {
+            title(text = "Join Team?")
+            message(text = "You've clicked an invite link, do you want to join this team?")
+            positiveButton(text = "JOIN") {
+                deepLink.acceptTeamInvite {
+                    Toast.makeText(this@NavActivity, "Team joined successfully!", Toast.LENGTH_SHORT).show()
+                    openActivity(TeamManagementActivity::class.java)
                 }
-
-                Timber.d(deepLink?.lastPathSegment)
             }
+            negativeButton(text = "NEVERMIND")
         }
     }
 

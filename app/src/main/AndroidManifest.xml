@@ -113,7 +113,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="thehideout.io/invite"
+                    android:host="thehideout.io"
+                    android:pathPrefix="/invite/"
                     android:scheme="https" />
             </intent-filter>
         </activity>

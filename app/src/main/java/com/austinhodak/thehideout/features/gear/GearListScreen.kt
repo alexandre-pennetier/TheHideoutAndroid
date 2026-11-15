@@ -40,10 +40,9 @@ import com.austinhodak.thehideout.compose.theme.White
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
 import com.austinhodak.thehideout.features.gear.viewmodels.GearViewModel
 import com.austinhodak.thehideout.utils.fadeImagePainter
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.foundation.pager.rememberPagerState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
@@ -52,7 +51,6 @@ import java.util.*
 @ExperimentalCoroutinesApi
 @ExperimentalFoundationApi
 @ExperimentalCoilApi
-@ExperimentalPagerApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
 @Composable
@@ -98,7 +96,7 @@ fun GearListScreen(
         else -> null
     }
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { titles?.size ?: 0 }
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
@@ -154,7 +152,7 @@ fun GearListScreen(
                     TabRow(
                         selectedTabIndex = pagerState.currentPage,
                         indicator = { tabPositions ->
-                            TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions), color = Red400)
+                            TabRowDefaults.Indicator(Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]), color = Red400)
                         },
                     ) {
                         titles.forEachIndexed { index, title ->
@@ -177,7 +175,7 @@ fun GearListScreen(
     ) {
         if (titles != null) {
 
-            HorizontalPager(state = pagerState, count = titles?.size ?: 0) { page ->
+            HorizontalPager(state = pagerState) { page ->
                 val items = when {
                     type == ItemTypes.RIG && page == 0 -> data.value.filter { it.cArmorClass() == 0 }.sortedBy { it.ShortName }
                     type == ItemTypes.RIG && page == 1 -> data.value.filter { it.cArmorClass() > 0 }.sortedBy { it.ShortName }
@@ -217,10 +215,10 @@ fun GearListScreen(
                         ) {
                             items(items = items, key = { it.id }) { item ->
                                 when {
-                                    type == ItemTypes.GLASSES && page == 0 -> HeadsetCard(item = item, Modifier.animateItemPlacement())
-                                    type == ItemTypes.RIG && page == 0 -> BackpackCard(item = item, Modifier.animateItemPlacement())
-                                    type == ItemTypes.HELMET && page == 1 -> HeadsetCard(item = item, Modifier.animateItemPlacement())
-                                    else -> GearCard(item = item, Modifier.animateItemPlacement()) {
+                                    type == ItemTypes.GLASSES && page == 0 -> HeadsetCard(item = item, Modifier.animateItem())
+                                    type == ItemTypes.RIG && page == 0 -> BackpackCard(item = item, Modifier.animateItem())
+                                    type == ItemTypes.HELMET && page == 1 -> HeadsetCard(item = item, Modifier.animateItem())
+                                    else -> GearCard(item = item, Modifier.animateItem()) {
                                         context.openActivity(GearDetailActivity::class.java) {
                                             putString("id", item.pricing?.id)
                                         }
@@ -264,10 +262,10 @@ fun GearListScreen(
 
                         items(items = items, key = { it.id }) { item ->
                             when (type) {
-                                ItemTypes.BACKPACK -> BackpackCard(item = item, Modifier.animateItemPlacement())
+                                ItemTypes.BACKPACK -> BackpackCard(item = item, Modifier.animateItem())
                                 ItemTypes.FACECOVER,
-                                ItemTypes.HEADSET -> HeadsetCard(item = item, Modifier.animateItemPlacement())
-                                else -> GearCard(item = item, Modifier.animateItemPlacement()) {
+                                ItemTypes.HEADSET -> HeadsetCard(item = item, Modifier.animateItem())
+                                else -> GearCard(item = item, Modifier.animateItem()) {
                                     context.openActivity(GearDetailActivity::class.java) {
                                         putString("id", item.pricing?.id)
                                     }

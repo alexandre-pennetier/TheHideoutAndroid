@@ -41,10 +41,9 @@ import com.austinhodak.thehideout.compose.theme.White
 import com.austinhodak.thehideout.ui.common.EmptyText
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.utils.*
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.pagerTabIndicatorOffset
-import com.google.accompanist.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.foundation.pager.rememberPagerState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -55,7 +54,6 @@ import kotlin.math.roundToInt
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @SuppressLint("CheckResult", "UnusedMaterialScaffoldPaddingParameter")
-@ExperimentalPagerApi
 @Composable
 fun AmmunitionListScreen(
     caliber: String?,
@@ -65,7 +63,7 @@ fun AmmunitionListScreen(
     val pages = AmmoCalibers()
     val context = LocalContext.current
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState { pages.size }
     val coroutineScope = rememberCoroutineScope()
 
     val sort = remember { mutableStateOf(UserSettingsModel.ammoSort.value) }
@@ -125,7 +123,7 @@ fun AmmunitionListScreen(
                     ScrollableTabRow(
                         selectedTabIndex = pagerState.currentPage,
                         indicator = { tabPositions ->
-                            TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions), color = Red400)
+                            TabRowDefaults.Indicator(Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]), color = Red400)
                         },
                         backgroundColor = MaterialTheme.colors.primary
                     ) {
@@ -184,7 +182,7 @@ fun AmmunitionListScreen(
                     if (it) {
                         LoadingItem()
                     } else {
-                        HorizontalPager(state = pagerState, count = pages.size) { page ->
+                        HorizontalPager(state = pagerState) { page ->
                             LazyColumn(
                                 Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp)
@@ -209,7 +207,7 @@ fun AmmunitionListScreen(
                                         ammo,
                                         Modifier
                                             .padding(vertical = 4.dp)
-                                            .animateItemPlacement()
+                                            .animateItem()
                                     ) {
                                         context.openActivity(AmmoDetailActivity::class.java) {
                                             putString("ammoID", ammo.id)
@@ -256,7 +254,7 @@ fun AmmoSearchBody(
                 ammo,
                 Modifier
                     .padding(vertical = 4.dp)
-                    .animateItemPlacement()
+                    .animateItem()
             ) {
                 context.openActivity(AmmoDetailActivity::class.java) {
                     putString("ammoID", ammo.id)

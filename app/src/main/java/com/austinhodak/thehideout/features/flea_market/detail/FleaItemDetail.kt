@@ -84,14 +84,12 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
+import com.google.firebase.database.getValue
 import com.stfalcon.imageviewer.StfalconImageViewer
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.Sentry
@@ -109,7 +107,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class FleaItemDetail : GodActivity() {
 
-    @OptIn(ExperimentalPagerApi::class)
     override fun onBackPressed() {
         if (intent.hasExtra("fromNoti")) {
             val intent = Intent(this, NavActivity::class.java)
@@ -140,259 +137,257 @@ class FleaItemDetail : GodActivity() {
         viewModel.getItemByID(itemID)
 
         setContent {
-            ProvideWindowInsets(windowInsetsAnimationsEnabled = true) {
 
-                HideoutTheme {
-                    scaffoldState = rememberScaffoldState()
-                    var selectedNavItem by remember { mutableStateOf(0) }
+            HideoutTheme {
+                scaffoldState = rememberScaffoldState()
+                var selectedNavItem by remember { mutableStateOf(0) }
 
-                    val item by viewModel.item.observeAsState()
+                val item by viewModel.item.observeAsState()
 
-                    //Timber.d(item?.getGridIDs()?.toString())
+                //Timber.d(item?.getGridIDs()?.toString())
 
-                    val quests by tarkovRepo.getQuestsWithItemID("%${item?.id}%").collectAsState(emptyList())
-                    val barters by tarkovRepo.getBartersWithItemID("%${item?.id}%").collectAsState(emptyList())
-                    val crafts by tarkovRepo.getCraftsWithItemID("%${item?.id}%").collectAsState(emptyList())
-                    val craftsFiltered = crafts.filter {
-                        it.rewardItem()?.item?.id == item?.id || it.requiredItems?.any { it?.item?.id == item?.id } == true
-                    }
+                val quests by tarkovRepo.getQuestsWithItemID("%${item?.id}%").collectAsState(emptyList())
+                val barters by tarkovRepo.getBartersWithItemID("%${item?.id}%").collectAsState(emptyList())
+                val crafts by tarkovRepo.getCraftsWithItemID("%${item?.id}%").collectAsState(emptyList())
+                val craftsFiltered = crafts.filter {
+                    it.rewardItem()?.item?.id == item?.id || it.requiredItems?.any { it?.item?.id == item?.id } == true
+                }
 
-                    val bartersFiltered = barters.filter {
-                        it.getRewardItem()?.containsItem?.any { it.item?.id == item?.id } == true || it.getRewardItem()?.id == item?.id || it.requiredItems?.any { it?.item?.id == item?.id } == true
-                    }
+                val bartersFiltered = barters.filter {
+                    it.getRewardItem()?.containsItem?.any { it.item?.id == item?.id } == true || it.getRewardItem()?.id == item?.id || it.requiredItems?.any { it?.item?.id == item?.id } == true
+                }
 
-                    var parents by remember {
-                        mutableStateOf(listOf<Item>())
-                    }
+                var parents by remember {
+                    mutableStateOf(listOf<Item>())
+                }
 
-                    LaunchedEffect(key1 = "parents") {
-                        parents = tarkovRepo.getItemsByContains("%${item?.id}%")
-                    }
+                LaunchedEffect(key1 = "parents") {
+                    parents = tarkovRepo.getItemsByContains("%${item?.id}%")
+                }
 
-                    val parentItems = parents.filter { it.id != itemID }
+                val parentItems = parents.filter { it.id != itemID }
 
-                    val userData by viewModel.userData.observeAsState()
-                    val userDataFS by fsUser.observeAsState()
+                val userData by viewModel.userData.observeAsState()
+                val userDataFS by fsUser.observeAsState()
 
-                    var priceAlerts by remember { mutableStateOf<List<PriceAlert>?>(null) }
+                var priceAlerts by remember { mutableStateOf<List<PriceAlert>?>(null) }
 
-                    val items = listOf(
-                        NavItem("Item", R.drawable.ic_baseline_storefront_24),
-                        NavItem("Barters", R.drawable.ic_baseline_compare_arrows_24, bartersFiltered.isNotEmpty()),
-                        NavItem("Crafts", R.drawable.ic_baseline_handyman_24, craftsFiltered.isNotEmpty()),
-                        NavItem("Quests", R.drawable.ic_baseline_assignment_24, quests.isNotEmpty())
-                    )
+                val items = listOf(
+                    NavItem("Item", R.drawable.ic_baseline_storefront_24),
+                    NavItem("Barters", R.drawable.ic_baseline_compare_arrows_24, bartersFiltered.isNotEmpty()),
+                    NavItem("Crafts", R.drawable.ic_baseline_handyman_24, craftsFiltered.isNotEmpty()),
+                    NavItem("Quests", R.drawable.ic_baseline_assignment_24, quests.isNotEmpty())
+                )
 
-                    var isFavorited by remember {
-                        mutableStateOf(Favorites.items.contains(itemID))
-                    }
+                var isFavorited by remember {
+                    mutableStateOf(Favorites.items.contains(itemID))
+                }
 
-                    Favorites.items.observe(lifecycleScope) {
-                        isFavorited = it.contains(itemID)
-                    }
+                Favorites.items.observe(lifecycleScope) {
+                    isFavorited = it.contains(itemID)
+                }
 
-                    if (isDebug()) {
-                        Timber.d(itemID)
-                    }
+                if (isDebug()) {
+                    Timber.d(itemID)
+                }
 
-                    rememberSystemUiController().setNavigationBarColor(DarkPrimary)
+                rememberSystemUiController().setNavigationBarColor(DarkPrimary)
 
-                    LaunchedEffect(key1 = "") {
-                        questsFirebase.child("priceAlerts").orderByChild("uid").equalTo(uid()).addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                priceAlerts = snapshot.children.map {
-                                    val alert = it.getValue<PriceAlert>()!!
-                                    alert.reference = it.ref
-                                    alert
-                                }.filter {
-                                    it.itemID == itemID
-                                }
+                LaunchedEffect(key1 = "") {
+                    questsFirebase.child("priceAlerts").orderByChild("uid").equalTo(uid()).addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            priceAlerts = snapshot.children.map {
+                                val alert = it.getValue<PriceAlert>()!!
+                                alert.reference = it.ref
+                                alert
+                            }.filter {
+                                it.itemID == itemID
                             }
+                        }
 
-                            override fun onCancelled(error: DatabaseError) {
+                        override fun onCancelled(error: DatabaseError) {
 
-                            }
-                        })
-                    }
+                        }
+                    })
+                }
 
-                    Scaffold(
-                        scaffoldState = scaffoldState,
-                        topBar = {
-                            FleaDetailToolbar(
-                                item = item,
-                                actions = {
-                                    IconButton(
-                                        modifier = Modifier.testTag("bookmark"),
-                                        onClick = {
-                                            isFavorited = if (isFavorited) {
-                                                Favorites.items.remove(lifecycleScope, itemID)
-                                                //extras.removeFavorite(itemID)
-                                                false
-                                            } else {
-                                                Favorites.items.add(lifecycleScope, itemID)
-                                                //extras.addFavorite(itemID)
-                                                true
-                                            }
-                                        }) {
-                                        if (isFavorited) {
-                                            Icon(
-                                                Icons.Filled.Favorite,
-                                                contentDescription = null,
-                                                tint = Pink500
-                                            )
+                Scaffold(
+                    scaffoldState = scaffoldState,
+                    topBar = {
+                        FleaDetailToolbar(
+                            item = item,
+                            actions = {
+                                IconButton(
+                                    modifier = Modifier.testTag("bookmark"),
+                                    onClick = {
+                                        isFavorited = if (isFavorited) {
+                                            Favorites.items.remove(lifecycleScope, itemID)
+                                            //extras.removeFavorite(itemID)
+                                            false
                                         } else {
-                                            Icon(
-                                                Icons.Filled.FavoriteBorder,
-                                                contentDescription = null,
-                                                tint = Color.White
-                                            )
+                                            Favorites.items.add(lifecycleScope, itemID)
+                                            //extras.addFavorite(itemID)
+                                            true
                                         }
-                                    }
-                                    OverflowMenu {
-                                        item?.pricing?.wikiLink?.let { WikiItem(url = it) }
-                                        OverflowMenuItem(text = "Add to Needed Items") {
-                                            item?.pricing?.addToNeededItemsDialog(this@FleaItemDetail)
-                                        }
-                                        OverflowMenuItem(text = "Add Price Alert") {
-                                            item?.pricing?.addPriceAlertDialog(this@FleaItemDetail)
-                                        }
+                                    }) {
+                                    if (isFavorited) {
+                                        Icon(
+                                            Icons.Filled.Favorite,
+                                            contentDescription = null,
+                                            tint = Pink500
+                                        )
+                                    } else {
+                                        Icon(
+                                            Icons.Filled.FavoriteBorder,
+                                            contentDescription = null,
+                                            tint = Color.White
+                                        )
                                     }
                                 }
-                            ) { finish() }
-                        },
-                        bottomBar = { FleaBottomNav(selected = selectedNavItem, items) { selectedNavItem = it } },
-                        floatingActionButton = {
-                            if (UserSettingsModel.showAddToCardButton.value)
-                                FloatingActionButton(onClick = {
-                                    item?.pricing?.addToCartDialog(this)
-                                    try {
-                                        throw Exception("Test")
-                                    } catch (e: Exception) {
-                                        Sentry.captureException(e)
+                                OverflowMenu {
+                                    item?.pricing?.wikiLink?.let { WikiItem(url = it) }
+                                    OverflowMenuItem(text = "Add to Needed Items") {
+                                        item?.pricing?.addToNeededItemsDialog(this@FleaItemDetail)
                                     }
-                                }) {
-                                    Icon(
-                                        painterResource(id = R.drawable.ic_baseline_add_shopping_cart_24),
-                                        contentDescription = "Add to Shopping Cart",
-                                        tint = MaterialTheme.colors.onSecondary
-                                    )
+                                    OverflowMenuItem(text = "Add Price Alert") {
+                                        item?.pricing?.addPriceAlertDialog(this@FleaItemDetail)
+                                    }
                                 }
-                        },
-                        snackbarHost = {
-                            SnackbarHost(it) { data ->
-                                Snackbar(
-                                    backgroundColor = Red400,
-                                    snackbarData = data,
-                                    contentColor = Color.Black,
-                                    actionColor = Color.Black
+                            }
+                        ) { finish() }
+                    },
+                    bottomBar = { FleaBottomNav(selected = selectedNavItem, items) { selectedNavItem = it } },
+                    floatingActionButton = {
+                        if (UserSettingsModel.showAddToCardButton.value)
+                            FloatingActionButton(onClick = {
+                                item?.pricing?.addToCartDialog(this)
+                                try {
+                                    throw Exception("Test")
+                                } catch (e: Exception) {
+                                    Sentry.captureException(e)
+                                }
+                            }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_baseline_add_shopping_cart_24),
+                                    contentDescription = "Add to Shopping Cart",
+                                    tint = MaterialTheme.colors.onSecondary
                                 )
                             }
-                        },
-                    ) { innerPadding ->
-                        Box(modifier = Modifier.padding(innerPadding)) {
-                            Crossfade(
-                                targetState = selectedNavItem,
-                                modifier = Modifier.fillMaxHeight()
-                            ) {
-                                when (it) {
-                                    0 -> {
-                                        LazyColumn(
-                                            contentPadding = PaddingValues(top = 4.dp, bottom = 60.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
-                                            item {
-                                                if (item?.pricing?.noFlea == true) {
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(
-                                                                horizontal = 8.dp,
-                                                                vertical = 4.dp
-                                                            ),
-                                                        backgroundColor = Red400
+                    },
+                    snackbarHost = {
+                        SnackbarHost(it) { data ->
+                            Snackbar(
+                                backgroundColor = Red400,
+                                snackbarData = data,
+                                contentColor = Color.Black,
+                                actionColor = Color.Black
+                            )
+                        }
+                    },
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        Crossfade(
+                            targetState = selectedNavItem,
+                            modifier = Modifier.fillMaxHeight()
+                        ) {
+                            when (it) {
+                                0 -> {
+                                    LazyColumn(
+                                        contentPadding = PaddingValues(top = 4.dp, bottom = 60.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        item {
+                                            if (item?.pricing?.noFlea == true) {
+                                                Card(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(
+                                                            horizontal = 8.dp,
+                                                            vertical = 4.dp
+                                                        ),
+                                                    backgroundColor = Red400
+                                                ) {
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
                                                     ) {
-                                                        Row(
-                                                            verticalAlignment = Alignment.CenterVertically,
-                                                            modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
-                                                        ) {
-                                                            Icon(
-                                                                painter = painterResource(id = R.drawable.icons8_online_store_96),
-                                                                contentDescription = "",
-                                                                modifier = Modifier.size(24.dp),
-                                                                tint = Color.Black
-                                                            )
-                                                            Text(
-                                                                text = "Not Sold on Flea Market",
-                                                                modifier = Modifier.padding(start = 16.dp),
-                                                                color = Color.Black,
-                                                                style = MaterialTheme.typography.subtitle2
-                                                            )
-                                                        }
+                                                        Icon(
+                                                            painter = painterResource(id = R.drawable.icons8_online_store_96),
+                                                            contentDescription = "",
+                                                            modifier = Modifier.size(24.dp),
+                                                            tint = Color.Black
+                                                        )
+                                                        Text(
+                                                            text = "Not Sold on Flea Market",
+                                                            modifier = Modifier.padding(start = 16.dp),
+                                                            color = Color.Black,
+                                                            style = MaterialTheme.typography.subtitle2
+                                                        )
                                                     }
-                                                }
-                                                Card1(item = item)
-                                                if (!item?.pricing?.sellFor?.filter { it.price != 0 }.isNullOrEmpty()) TradersSellCard(
-                                                    title = "SELL PRICES",
-                                                    item = item,
-                                                    item?.pricing?.sellFor
-                                                )
-                                                if (!item?.pricing?.buyFor?.filter { it.price != 0 }.isNullOrEmpty()) TradersBuyCard(
-                                                    title = "BUY PRICES",
-                                                    item = item,
-                                                    item?.pricing?.buyFor,
-                                                    fsUser
-                                                )
-                                                if (parentItems.isNotEmpty()) {
-                                                    ParentItems(parents = parentItems)
-                                                }
-                                                if (item?.pricing?.hasChild() == true) {
-                                                    ChildItems(item?.pricing?.containsItem)
-                                                }
-                                                if (userData?.items?.containsKey(itemID) == true) {
-                                                    val needed = userData?.items?.get(itemID)
-                                                    if (needed?.hideoutObjective == null && needed?.questObjective == null && needed?.user == null) {
-                                                        userRefTracker("items/$itemID").removeValue()
-                                                    }
-
-                                                    NeededCard(title = "NEEDED", item = item, needed, tarkovRepo)
-                                                }
-                                                if (UserSettingsModel.showPriceGraph.value) {
-                                                    Card(
-                                                        modifier = Modifier
-                                                            .padding(
-                                                                horizontal = 8.dp,
-                                                                vertical = 4.dp
-                                                            )
-                                                            .fillMaxWidth(),
-                                                        backgroundColor = Color(0xFE1F1F1F)
-                                                    ) {
-                                                        Chart()
-                                                    }
-                                                }
-                                                if (!priceAlerts.isNullOrEmpty()) {
-                                                    PriceAlertCard(priceAlerts = priceAlerts!!, item)
                                                 }
                                             }
-                                            item {
-                                                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                                                    Text(
-                                                        modifier = Modifier.padding(top = 8.dp),
-                                                        text = item?.getUpdatedTime() ?: "",
-                                                        style = MaterialTheme.typography.caption,
-                                                        fontSize = 10.sp
-                                                    )
+                                            Card1(item = item)
+                                            if (!item?.pricing?.sellFor?.filter { it.price != 0 }.isNullOrEmpty()) TradersSellCard(
+                                                title = "SELL PRICES",
+                                                item = item,
+                                                item?.pricing?.sellFor
+                                            )
+                                            if (!item?.pricing?.buyFor?.filter { it.price != 0 }.isNullOrEmpty()) TradersBuyCard(
+                                                title = "BUY PRICES",
+                                                item = item,
+                                                item?.pricing?.buyFor,
+                                                fsUser
+                                            )
+                                            if (parentItems.isNotEmpty()) {
+                                                ParentItems(parents = parentItems)
+                                            }
+                                            if (item?.pricing?.hasChild() == true) {
+                                                ChildItems(item?.pricing?.containsItem)
+                                            }
+                                            if (userData?.items?.containsKey(itemID) == true) {
+                                                val needed = userData?.items?.get(itemID)
+                                                if (needed?.hideoutObjective == null && needed?.questObjective == null && needed?.user == null) {
+                                                    userRefTracker("items/$itemID").removeValue()
                                                 }
+
+                                                NeededCard(title = "NEEDED", item = item, needed, tarkovRepo)
+                                            }
+                                            if (UserSettingsModel.showPriceGraph.value) {
+                                                Card(
+                                                    modifier = Modifier
+                                                        .padding(
+                                                            horizontal = 8.dp,
+                                                            vertical = 4.dp
+                                                        )
+                                                        .fillMaxWidth(),
+                                                    backgroundColor = Color(0xFE1F1F1F)
+                                                ) {
+                                                    Chart()
+                                                }
+                                            }
+                                            if (!priceAlerts.isNullOrEmpty()) {
+                                                PriceAlertCard(priceAlerts = priceAlerts!!, item)
+                                            }
+                                        }
+                                        item {
+                                            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                                                Text(
+                                                    modifier = Modifier.padding(top = 8.dp),
+                                                    text = item?.getUpdatedTime() ?: "",
+                                                    style = MaterialTheme.typography.caption,
+                                                    fontSize = 10.sp
+                                                )
                                             }
                                         }
                                     }
-                                    1 -> {
-                                        BartersPage(item = item, bartersFiltered, userData)
-                                    }
-                                    2 -> {
-                                        CraftsPage(item = item, craftsFiltered, userDataFS)
-                                    }
-                                    3 -> QuestsPage(item = item, quests, tarkovRepo, userData)
                                 }
+                                1 -> {
+                                    BartersPage(item = item, bartersFiltered, userData)
+                                }
+                                2 -> {
+                                    CraftsPage(item = item, craftsFiltered, userDataFS)
+                                }
+                                3 -> QuestsPage(item = item, quests, tarkovRepo, userData)
                             }
                         }
                     }
@@ -919,7 +914,6 @@ class FleaItemDetail : GodActivity() {
         }
     }
 
-    @OptIn(ExperimentalPagerApi::class)
     private fun launchPremiumPusher() {
         launchPremiumPusherResult()
     }

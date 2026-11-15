@@ -51,7 +51,7 @@ import com.austinhodak.thehideout.features.weapons.mods.ModPickerActivity
 import com.austinhodak.thehideout.features.weapons.mods.StatItem
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
-import com.google.accompanist.insets.statusBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi

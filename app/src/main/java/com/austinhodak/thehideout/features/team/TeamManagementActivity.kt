@@ -48,13 +48,9 @@ import com.austinhodak.thehideout.utils.userFirestore
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.dynamiclinks.ShortDynamicLink
-import com.google.firebase.dynamiclinks.ktx.androidParameters
-import com.google.firebase.dynamiclinks.ktx.dynamicLinks
-import com.google.firebase.dynamiclinks.ktx.shortLinkAsync
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
+import com.google.firebase.Firebase
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -281,16 +277,7 @@ class TeamManagementActivity : GodActivity() {
 
     private fun createInviteLink(team: Team?, teamID: String?) {
         if (team != null && teamID != null) {
-            val shortLinkTask =
-                Firebase.dynamicLinks.shortLinkAsync(ShortDynamicLink.Suffix.SHORT) {
-                    link = Uri.parse("https://thehideout.io/invite/$teamID")
-                    domainUriPrefix = "https://thehideout.io/invite"
-                    androidParameters("com.austinhodak.thehideout") {
-
-                    }
-                }.addOnSuccessListener {
-                    it.shortLink?.let { it1 -> shareLink(it1) }
-                }
+            shareLink(Uri.parse("https://thehideout.io/invite/$teamID"))
 
         }
     }

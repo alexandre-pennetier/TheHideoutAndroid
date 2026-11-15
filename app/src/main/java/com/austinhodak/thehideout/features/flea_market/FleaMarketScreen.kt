@@ -63,7 +63,7 @@ import com.austinhodak.thehideout.ui.theme3.HideoutTheme3
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.userRefTracker
 import com.google.firebase.database.ServerValue
-import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.list.ListDialog
 import com.maxkeppeler.sheets.list.models.ListOption
 import com.maxkeppeler.sheets.list.models.ListSelection
@@ -110,7 +110,7 @@ fun FleaMarketScreen(
                         }
                     )
                 } else {
-                    val sheetState = rememberSheetState()
+                    val sheetState = rememberUseCaseState()
 
                     val items = listOf(
                         "Name",
@@ -571,7 +571,7 @@ fun FleaMarketListScreen(
                         item = item,
                         priceDisplay,
                         iconDisplay,
-                        modifier = Modifier.animateItemPlacement(),
+                        modifier = Modifier.animateItem(),
                         traderPrice = traderPriceDisplay,
                         settings = listOf(
                             priceDisplay,

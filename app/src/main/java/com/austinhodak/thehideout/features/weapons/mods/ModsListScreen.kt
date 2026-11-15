@@ -352,7 +352,7 @@ fun ModsListScreen(
                         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp)
                     ) {
                         items(items = items, key = { it.id }) { item ->
-                            ModsBasicCard(item = item, Modifier.animateItemPlacement()) {
+                            ModsBasicCard(item = item, Modifier.animateItem()) {
                                 context.openModDetail(item.id)
                             }
                         }
@@ -392,7 +392,7 @@ fun ModsListScreen(
                                     modifier = Modifier.fillMaxHeight()
                                 ) {
                                     items(items = items ?: emptyList(), key = { it.id }) { item ->
-                                        ModsBasicCard(item = item, Modifier.animateItemPlacement()) {
+                                        ModsBasicCard(item = item, Modifier.animateItem()) {
                                             context.openModDetail(it.id)
                                         }
                                     }

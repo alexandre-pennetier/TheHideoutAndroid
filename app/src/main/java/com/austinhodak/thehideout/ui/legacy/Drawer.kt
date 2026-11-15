@@ -48,9 +48,8 @@ import com.austinhodak.thehideout.features.status.ServerStatusActivity
 import com.austinhodak.thehideout.utils.launchPremiumPusher
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.openWithCustomTab
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.auth.auth
+import com.google.firebase.Firebase
 import com.mikepenz.materialdrawer.holder.BadgeStyle
 import com.mikepenz.materialdrawer.holder.ColorHolder
 import com.mikepenz.materialdrawer.holder.DimenHolder
@@ -505,7 +504,6 @@ class Drawer(context: Context, lifecycleOwner: LifecycleOwner) :
 
 @SuppressLint("CheckResult")
 @ExperimentalCoroutinesApi
-@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalFoundationApi
 @ExperimentalCoilApi

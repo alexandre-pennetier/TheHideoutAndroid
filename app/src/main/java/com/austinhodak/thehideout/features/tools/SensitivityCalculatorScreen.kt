@@ -37,7 +37,6 @@ import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.features.pickers.PickerActivity
 import com.austinhodak.thehideout.features.tools.viewmodels.SensitivityViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.math.roundToInt
 
@@ -45,7 +44,6 @@ import kotlin.math.roundToInt
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @ExperimentalFoundationApi
 @Composable
 fun SensitivityCalculatorScreen(navViewModel: NavViewModel, tarkovRepo: TarkovRepo, sensitivityViewModel: SensitivityViewModel, armorPickerLauncher: ActivityResultLauncher<Intent>) {

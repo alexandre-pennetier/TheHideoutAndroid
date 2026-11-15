@@ -57,13 +57,12 @@ import com.austinhodak.thehideout.features.premium.PremiumPusherActivity
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity
 import com.austinhodak.thehideout.features.weapons.detail.WeaponDetailActivity
 import com.austinhodak.thehideout.features.weapons.mods.ModDetailActivity
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.android.material.textfield.TextInputEditText
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.Firebase
+import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.database.*
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import okhttp3.internal.toLongOrDefault
@@ -233,7 +232,6 @@ fun Pricing.BuySellPrice.traderImage(showLevel: Boolean? = true): String {
 }
 
 
-@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalCoilApi
@@ -311,7 +309,6 @@ fun Context.openModDetail(id: String) {
     }
 }
 
-@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalCoilApi
@@ -321,7 +318,6 @@ fun Context.launchPremiumPusher() {
     this.openActivity(PremiumPusherActivity::class.java)
 }
 
-@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalCoilApi
@@ -333,7 +329,6 @@ fun Context.launchPremiumPusherResult() {
     }
 }
 
-@ExperimentalPagerApi
 @ExperimentalAnimationApi
 @ExperimentalCoroutinesApi
 @ExperimentalCoilApi

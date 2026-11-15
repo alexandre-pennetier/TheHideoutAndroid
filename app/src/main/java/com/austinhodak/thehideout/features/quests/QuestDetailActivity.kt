@@ -66,13 +66,12 @@ import com.austinhodak.thehideout.features.quests.viewmodels.QuestDetailViewMode
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
 import com.bumptech.glide.Glide
-import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.insets.navigationBarsPadding
-import com.google.accompanist.insets.statusBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
+import com.google.firebase.Firebase
 import com.stfalcon.imageviewer.StfalconImageViewer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -107,270 +106,268 @@ class QuestDetailActivity : GodActivity() {
 
         setContent {
             HideoutTheme {
-                ProvideWindowInsets {
-                    val quest by questViewModel.questDetails.observeAsState()
-                    questViewModel.getQuest(questID)
+                val quest by questViewModel.questDetails.observeAsState()
+                questViewModel.getQuest(questID)
 
-                    val quests by tarkovRepo.getAllQuests().collectAsState(initial = null)
+                val quests by tarkovRepo.getAllQuests().collectAsState(initial = null)
 
-                    this.quest = quest
+                this.quest = quest
 
-                    val questExtra = questViewModel.questsExtra.observeAsState().value?.find { it.id == questID.toInt() }
+                val questExtra = questViewModel.questsExtra.observeAsState().value?.find { it.id == questID.toInt() }
 
-                    val objectiveTypes = quest?.objective?.groupBy { it.type }
+                val objectiveTypes = quest?.objective?.groupBy { it.type }
 
-                    val userData by fsUser.observeAsState()
-                    val teamData by questViewModel.teamsData.observeAsState()
+                val userData by fsUser.observeAsState()
+                val teamData by questViewModel.teamsData.observeAsState()
 
-                    Timber.d(teamData.toString())
+                Timber.d(teamData.toString())
 
-                    val systemUiController = rememberSystemUiController()
+                val systemUiController = rememberSystemUiController()
 
-                    systemUiController.setStatusBarColor(
-                        Color.Transparent,
-                        darkIcons = false
-                    )
+                systemUiController.setStatusBarColor(
+                    Color.Transparent,
+                    darkIcons = false
+                )
 
-                    systemUiController.setNavigationBarColor(DarkPrimary)
+                systemUiController.setNavigationBarColor(DarkPrimary)
 
-                    val navController = rememberNavController()
+                val navController = rememberNavController()
 
-                    Scaffold(
-                        topBar = {
-                            Column {
-                                Box {
-                                    val painter = fadeImagePainter(
-                                        questExtra?.image
-                                    )
+                Scaffold(
+                    topBar = {
+                        Column {
+                            Box {
+                                val painter = fadeImagePainter(
+                                    questExtra?.image
+                                )
 
-                                    //Hide if landscape
-                                    /*if (resources.configuration.orientation != ORIENTATION_LANDSCAPE) {
-                                        Column {
-                                            Image(
-                                                painter,
-                                                contentDescription = null,
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .then(
-                                                        if (painter.state is ImagePainter.State.Loading || painter.state is ImagePainter.State.Error) {
-                                                            Modifier.height(0.dp)
-                                                        } else {
-                                                            (painter.state as? ImagePainter.State.Success)
-                                                                ?.painter
-                                                                ?.intrinsicSize
-                                                                ?.let { intrinsicSize ->
-                                                                    Modifier.aspectRatio(
-                                                                        intrinsicSize.width / intrinsicSize.height
-                                                                    )
-                                                                } ?: Modifier
-                                                        }
-                                                    ),
-                                                contentScale = ContentScale.FillWidth
-                                            )
-                                        }
-                                    }*/
-
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(
-                                                start = 72.dp,
-                                                bottom = 16.dp,
-                                                top = 56.dp
-                                            )
-                                            .align(Alignment.BottomStart)
-                                    ) {
-                                        Text(
-                                            text = quest?.title ?: "Loading...",
-                                            color = MaterialTheme.colors.onPrimary,
-                                            style = MaterialTheme.typography.h6.copy(
-                                                shadow = Shadow(
-                                                    color = Color.Black,
-                                                    offset = Offset(4f, 4f),
-                                                    blurRadius = 8f
-                                                )
-                                            ),
-                                            maxLines = 1,
-                                            fontSize = 22.sp,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        Text(
-                                            text = "Unlocks at Level ${quest?.requirement?.level}",
-                                            color = MaterialTheme.colors.onPrimary,
-                                            style = MaterialTheme.typography.caption.copy(
-                                                shadow = Shadow(
-                                                    color = Color.Black,
-                                                    offset = Offset(4f, 4f),
-                                                    blurRadius = 8f
-                                                )
-                                            ),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                //Hide if landscape
+                                /*if (resources.configuration.orientation != ORIENTATION_LANDSCAPE) {
+                                    Column {
+                                        Image(
+                                            painter,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .then(
+                                                    if (painter.state is ImagePainter.State.Loading || painter.state is ImagePainter.State.Error) {
+                                                        Modifier.height(0.dp)
+                                                    } else {
+                                                        (painter.state as? ImagePainter.State.Success)
+                                                            ?.painter
+                                                            ?.intrinsicSize
+                                                            ?.let { intrinsicSize ->
+                                                                Modifier.aspectRatio(
+                                                                    intrinsicSize.width / intrinsicSize.height
+                                                                )
+                                                            } ?: Modifier
+                                                    }
+                                                ),
+                                            contentScale = ContentScale.FillWidth
                                         )
                                     }
+                                }*/
 
-                                    TopAppBar(
-                                        title = { Spacer(modifier = Modifier.fillMaxWidth()) },
-                                        backgroundColor = Color.Transparent,
-                                        modifier = Modifier.statusBarsPadding(),
-                                        navigationIcon = {
-                                            IconButton(onClick = {
-                                                onBackPressed()
-                                            }) {
-                                                Icon(Icons.Filled.ArrowBack, contentDescription = null)
-                                            }
-                                        },
-                                        elevation = 0.dp,
-                                        actions = {
-                                            OverflowMenu {
-                                                quest?.wikiLink?.let {
-                                                    WikiItem(url = it)
-                                                }
-                                                //weapon?.pricing?.wikiLink?.let { WikiItem(url = it) }
-                                            }
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(
+                                            start = 72.dp,
+                                            bottom = 16.dp,
+                                            top = 56.dp
+                                        )
+                                        .align(Alignment.BottomStart)
+                                ) {
+                                    Text(
+                                        text = quest?.title ?: "Loading...",
+                                        color = MaterialTheme.colors.onPrimary,
+                                        style = MaterialTheme.typography.h6.copy(
+                                            shadow = Shadow(
+                                                color = Color.Black,
+                                                offset = Offset(4f, 4f),
+                                                blurRadius = 8f
+                                            )
+                                        ),
+                                        maxLines = 1,
+                                        fontSize = 22.sp,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = "Unlocks at Level ${quest?.requirement?.level}",
+                                        color = MaterialTheme.colors.onPrimary,
+                                        style = MaterialTheme.typography.caption.copy(
+                                            shadow = Shadow(
+                                                color = Color.Black,
+                                                offset = Offset(4f, 4f),
+                                                blurRadius = 8f
+                                            )
+                                        ),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+
+                                TopAppBar(
+                                    title = { Spacer(modifier = Modifier.fillMaxWidth()) },
+                                    backgroundColor = Color.Transparent,
+                                    modifier = Modifier.statusBarsPadding(),
+                                    navigationIcon = {
+                                        IconButton(onClick = {
+                                            onBackPressed()
+                                        }) {
+                                            Icon(Icons.Filled.ArrowBack, contentDescription = null)
                                         }
-                                    )
-                                }
-
-                                if (quest == null) {
-                                    LinearProgressIndicator(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .height(2.dp),
-                                        color = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                                        backgroundColor = Color.Transparent
-                                    )
-                                }
-                            }
-                            /*QuestDetailToolbar(
-                                title = "${quest?.title}",
-                                onBackPressed = {
-                                    finish()
-                                },
-                                actions = {
-                                    OverflowMenu {
-                                        quest?.wikiLink?.let { WikiItem(url = it) }
+                                    },
+                                    elevation = 0.dp,
+                                    actions = {
+                                        OverflowMenu {
+                                            quest?.wikiLink?.let {
+                                                WikiItem(url = it)
+                                            }
+                                            //weapon?.pricing?.wikiLink?.let { WikiItem(url = it) }
+                                        }
                                     }
-                                }
-                            )*/
-                        },
-                        floatingActionButton = {
-                            //if (isDebug())
-                            quest?.let {
-                                if (it.isAvailable(userData) || userData == null) {
-                                    ExtendedFloatingActionButton(
-                                        icon = {
-                                            Icon(
-                                                painterResource(id = R.drawable.ic_baseline_assignment_turned_in_24),
-                                                contentDescription = null,
-                                                tint = Color.Black
-                                            )
-                                        },
-                                        text = { Text("COMPLETED", color = Color.Black, style = MaterialTheme.typography.button) },
-                                        onClick = {
-                                            it.completed()
-                                        },
-                                        //modifier = Modifier.navigationBarsPadding()
-                                    )
-                                }
+                                )
+                            }
 
-                                if (userData?.progress?.isQuestCompleted(it) == true) {
-                                    ExtendedFloatingActionButton(
-                                        icon = {
-                                            Icon(
-                                                painterResource(id = R.drawable.ic_baseline_assignment_return_24),
-                                                contentDescription = null,
-                                                tint = Color.Black
-                                            )
-                                        },
-                                        text = { Text("UNDO", color = Color.Black, style = MaterialTheme.typography.button) },
-                                        onClick = {
-                                            it.undo(true)
-                                        },
-                                        //modifier = Modifier.navigationBarsPadding()
-                                    )
-                                }
-
-                                if (it.isLocked(userData)) {
-                                    ExtendedFloatingActionButton(
-                                        icon = {
-                                            Icon(
-                                                painterResource(id = R.drawable.ic_baseline_lock_24),
-                                                contentDescription = null,
-                                                tint = Color.White
-                                            )
-                                        },
-                                        text = { Text("LOCKED", color = Color.White, style = MaterialTheme.typography.button) },
-                                        onClick = {
-
-                                        },
-                                        backgroundColor = Color.DarkGray,
-                                        //modifier = Modifier.navigationBarsPadding()
-                                    )
+                            if (quest == null) {
+                                LinearProgressIndicator(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(2.dp),
+                                    color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                                    backgroundColor = Color.Transparent
+                                )
+                            }
+                        }
+                        /*QuestDetailToolbar(
+                            title = "${quest?.title}",
+                            onBackPressed = {
+                                finish()
+                            },
+                            actions = {
+                                OverflowMenu {
+                                    quest?.wikiLink?.let { WikiItem(url = it) }
                                 }
                             }
-                        },
-                        bottomBar = {
-                            QuestDetailBottomNav(navController)
-                        },
-                        isFloatingActionButtonDocked = true,
-                        floatingActionButtonPosition = FabPosition.Center
-                    ) {
-                        if (quest == null) return@Scaffold
-                        NavHost(navController = navController, startDestination = BottomNavigationScreens.You.route) {
-                            composable("You") { _ ->
-                                LazyColumn(contentPadding = PaddingValues(top = 4.dp, bottom = it.calculateBottomPadding() + 64.dp)) {
+                        )*/
+                    },
+                    floatingActionButton = {
+                        //if (isDebug())
+                        quest?.let {
+                            if (it.isAvailable(userData) || userData == null) {
+                                ExtendedFloatingActionButton(
+                                    icon = {
+                                        Icon(
+                                            painterResource(id = R.drawable.ic_baseline_assignment_turned_in_24),
+                                            contentDescription = null,
+                                            tint = Color.Black
+                                        )
+                                    },
+                                    text = { Text("COMPLETED", color = Color.Black, style = MaterialTheme.typography.button) },
+                                    onClick = {
+                                        it.completed()
+                                    },
+                                    //modifier = Modifier.navigationBarsPadding()
+                                )
+                            }
+
+                            if (userData?.progress?.isQuestCompleted(it) == true) {
+                                ExtendedFloatingActionButton(
+                                    icon = {
+                                        Icon(
+                                            painterResource(id = R.drawable.ic_baseline_assignment_return_24),
+                                            contentDescription = null,
+                                            tint = Color.Black
+                                        )
+                                    },
+                                    text = { Text("UNDO", color = Color.Black, style = MaterialTheme.typography.button) },
+                                    onClick = {
+                                        it.undo(true)
+                                    },
+                                    //modifier = Modifier.navigationBarsPadding()
+                                )
+                            }
+
+                            if (it.isLocked(userData)) {
+                                ExtendedFloatingActionButton(
+                                    icon = {
+                                        Icon(
+                                            painterResource(id = R.drawable.ic_baseline_lock_24),
+                                            contentDescription = null,
+                                            tint = Color.White
+                                        )
+                                    },
+                                    text = { Text("LOCKED", color = Color.White, style = MaterialTheme.typography.button) },
+                                    onClick = {
+
+                                    },
+                                    backgroundColor = Color.DarkGray,
+                                    //modifier = Modifier.navigationBarsPadding()
+                                )
+                            }
+                        }
+                    },
+                    bottomBar = {
+                        QuestDetailBottomNav(navController)
+                    },
+                    isFloatingActionButtonDocked = true,
+                    floatingActionButtonPosition = FabPosition.Center
+                ) {
+                    if (quest == null) return@Scaffold
+                    NavHost(navController = navController, startDestination = BottomNavigationScreens.You.route) {
+                        composable("You") { _ ->
+                            LazyColumn(contentPadding = PaddingValues(top = 4.dp, bottom = it.calculateBottomPadding() + 64.dp)) {
+                                item {
+                                    DetailCardTop(quest!!, questExtra)
+                                }
+                                objectiveTypes?.forEach { entry ->
+                                    val type = entry.key
+                                    val objectives = entry.value
+                                    if (type == null) return@forEach
                                     item {
-                                        DetailCardTop(quest!!, questExtra)
+                                        ObjectiveCategoryCard(type = valueOf(type.uppercase()), objectives, questExtra, userData)
                                     }
-                                    objectiveTypes?.forEach { entry ->
-                                        val type = entry.key
-                                        val objectives = entry.value
-                                        if (type == null) return@forEach
+                                }
+                                if (quest!!.requirement?.quests?.isNotEmpty() == true) {
+                                    val preQuests = quest!!.requirement?.quests?.flatMap { it ?: emptyList() }
+                                    preQuests?.let {
                                         item {
-                                            ObjectiveCategoryCard(type = valueOf(type.uppercase()), objectives, questExtra, userData)
-                                        }
-                                    }
-                                    if (quest!!.requirement?.quests?.isNotEmpty() == true) {
-                                        val preQuests = quest!!.requirement?.quests?.flatMap { it ?: emptyList() }
-                                        preQuests?.let {
-                                            item {
-                                                PreQuestCard(it, userData)
-                                            }
-                                        }
-                                    }
-                                    val postQuests = quests?.filter { it.requiredQuestsList()?.contains(quest?.id?.toInt()) == true }
-                                    postQuests?.let {
-                                        if (it.isNotEmpty()) {
-                                            item {
-                                                PostQuestCard(list = it.map { it.id.toInt() }, userData = userData)
-                                            }
-                                        }
-                                    }
-                                    if (questExtra?.guideImages?.isNullOrEmpty() == false) {
-                                        item {
-                                            GuideImages(questExtra)
+                                            PreQuestCard(it, userData)
                                         }
                                     }
                                 }
+                                val postQuests = quests?.filter { it.requiredQuestsList()?.contains(quest?.id?.toInt()) == true }
+                                postQuests?.let {
+                                    if (it.isNotEmpty()) {
+                                        item {
+                                            PostQuestCard(list = it.map { it.id.toInt() }, userData = userData)
+                                        }
+                                    }
+                                }
+                                if (questExtra?.guideImages?.isNullOrEmpty() == false) {
+                                    item {
+                                        GuideImages(questExtra)
+                                    }
+                                }
                             }
-                            composable("Team") { _ ->
-                                if (teamData == null) {
-                                    LoadingItem()
-                                } else if (teamData?.isEmpty() == true) {
-                                    EmptyText(text = "No teams.")
-                                } else {
-                                    LazyColumn(
-                                        contentPadding = PaddingValues(
-                                            top = 4.dp,
-                                            bottom = it.calculateBottomPadding() + 64.dp
-                                        )
-                                    ) {
-                                        teamData?.forEach {
-                                            Timber.d(it.toString())
-                                            item {
-                                                TeamCard(it)
-                                            }
+                        }
+                        composable("Team") { _ ->
+                            if (teamData == null) {
+                                LoadingItem()
+                            } else if (teamData?.isEmpty() == true) {
+                                EmptyText(text = "No teams.")
+                            } else {
+                                LazyColumn(
+                                    contentPadding = PaddingValues(
+                                        top = 4.dp,
+                                        bottom = it.calculateBottomPadding() + 64.dp
+                                    )
+                                ) {
+                                    teamData?.forEach {
+                                        Timber.d(it.toString())
+                                        item {
+                                            TeamCard(it)
                                         }
                                     }
                                 }

@@ -23,7 +23,6 @@ allprojects {
                 "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
                 "-opt-in=androidx.compose.runtime.ExperimentalComposeApi",
                 "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-                "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi",
                 "-opt-in=kotlin.ExperimentalUnsignedTypes",
                 "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-opt-in=kotlinx.coroutines.InternalCoroutinesApi",

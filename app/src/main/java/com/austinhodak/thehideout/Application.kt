@@ -37,28 +37,28 @@ import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.utils.*
 import com.austinhodak.thehideout.workmanager.PriceUpdateFactory
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
-import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.database.ktx.database
+import com.google.firebase.auth.auth
+import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.database.database
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.firestoreSettings
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
-import com.google.firebase.remoteconfig.ktx.remoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.firestoreSettings
+import com.google.firebase.firestore.toObject
+import com.google.firebase.messaging.messaging
+import com.google.firebase.remoteconfig.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.QonversionConfig
-import com.qonversion.android.sdk.dto.QEntitlementRenewState
 import com.qonversion.android.sdk.dto.QEnvironment
 import com.qonversion.android.sdk.dto.QLaunchMode
-import com.qonversion.android.sdk.dto.QUserProperty
+import com.qonversion.android.sdk.dto.entitlements.QEntitlementRenewState
+import com.qonversion.android.sdk.dto.properties.QUserPropertyKey
 import com.skydoves.only.Only
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
@@ -148,7 +148,7 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
         )
 
         Firebase.analytics.appInstanceId.addOnSuccessListener { instanceId ->
-            Qonversion.shared.setProperty(QUserProperty.FirebaseAppInstanceId, instanceId)
+            Qonversion.shared.setUserProperty(QUserPropertyKey.FirebaseAppInstanceId, instanceId)
         }
 
         Qonversion.shared.checkEntitlement { map, qonversionError ->
@@ -341,14 +341,14 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
         Firebase.auth.addAuthStateListener { auth ->
             auth.currentUser?.let { currentUser ->
                 Qonversion.shared.identify(currentUser.uid)
-                Qonversion.shared.setProperty(QUserProperty.CustomUserId, currentUser.uid)
+                Qonversion.shared.setUserProperty(QUserPropertyKey.CustomUserId, currentUser.uid)
 
                 currentUser.email?.let { email ->
-                    Qonversion.shared.setProperty(QUserProperty.Email, email)
+                    Qonversion.shared.setUserProperty(QUserPropertyKey.Email, email)
                 }
 
                 currentUser.displayName?.let { name ->
-                    Qonversion.shared.setProperty(QUserProperty.Name, name)
+                    Qonversion.shared.setUserProperty(QUserPropertyKey.Name, name)
                 }
             } ?: run {
                 //Current user is null

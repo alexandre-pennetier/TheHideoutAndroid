@@ -63,7 +63,7 @@ android {
 
     buildTypes {
         named("debug").configure {
-            //applicationIdSuffix = ".debug"
+            // applicationIdSuffix = ".debug"
         }
         named("release").configure {
             isDebuggable = false
@@ -104,7 +104,7 @@ dependencies {
     implementation(platform(androidx.compose.bom))
     implementation(platform(libs.kotlin.bom))
 
-    implementation("com.google.firebase:firebase-appcheck-debug:16.1.1")
+    implementation("com.google.firebase:firebase-appcheck-debug")
 
     api(libs.kotlinx.datetime)
 
@@ -117,7 +117,6 @@ dependencies {
     implementation(androidx.bundles.camera)
     implementation(androidx.bundles.lifecycle)
 
-    implementation(androidx.compose.runtime.tracing)
     implementation(androidx.tracing)
 
     implementation(libs.realm)
@@ -126,12 +125,13 @@ dependencies {
 
     implementation(libs.oss.licenses)
 
+    implementation(platform(libs.coil.bom))
     implementation(libs.bundles.coil)
 
     implementation(androidx.compose.ui.tooling.preview)
 
-
     implementation(libs.gson)
+    implementation(libs.glide)
 
     // Tests
     testImplementation(libs.junit4)
@@ -155,8 +155,6 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
     implementation(androidx.compose.runtime.livedata)
 
-
-
     implementation(androidx.appcompat)
     implementation(androidx.recyclerview)
     implementation(androidx.constraintlayout)
@@ -166,36 +164,26 @@ dependencies {
     implementation(androidx.navigation.ui)
     implementation(androidx.fragment)
 
-
     api(platform(libs.firebase.bom))
     api(libs.bundles.firebase)
     implementation(libs.mlkit.text)
 
     implementation(libs.firebase.auth.ui)
-    //Drawer
+    // Drawer
 
     implementation(libs.drawer)
 
-    //END Drawer
+    // END Drawer
 
-    //Dialogs
+    // Dialogs
     implementation(libs.bundles.afollestad.dialogs)
-    //END Dialogs
-
+    // END Dialogs
 
     implementation(libs.skydoves.only)
 
     api(libs.timber)
 
     implementation(libs.lottie.compose)
-
-    api("com.google.accompanist:accompanist-insets:0.28.0")
-    api(libs.accompanist.pager)
-    api(libs.accompanist.pager.indicators)
-    api(libs.accompanist.navigation.animation)
-    api(libs.accompanist.flowlayout)
-    api(libs.accompanist.placeholder.material)
-    api(libs.accompanist.swiperefresh)
 
     implementation(libs.bundles.google.play)
 
@@ -214,7 +202,6 @@ dependencies {
     implementation(androidx.core.splashscreen)
     implementation(androidx.compose.ui.text.googleFonts)
     implementation(androidx.compose.animation.graphics)
-
 
     implementation(androidx.compose.material3)
 

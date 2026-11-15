@@ -48,15 +48,12 @@ import com.austinhodak.thehideout.features.quests.Chip
 import com.austinhodak.thehideout.features.quests.QuestFilter
 import com.austinhodak.thehideout.features.quests.viewmodels.QuestMainViewModel
 import com.austinhodak.thehideout.utils.*
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.SizeMode
-import com.google.accompanist.pager.*
+import androidx.compose.foundation.pager.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @ExperimentalMaterialApi
-@ExperimentalPagerApi
 @ExperimentalFoundationApi
 @Composable
 fun ItemQuestHideoutGridScreen(navViewModel: NavViewModel, tarkovRepo: TarkovRepo, questViewModel: QuestMainViewModel, hideoutViewModel: HideoutMainViewModel) {
@@ -361,7 +358,7 @@ fun ItemQuestHideoutGridScreen(navViewModel: NavViewModel, tarkovRepo: TarkovRep
                 }?.lowercase()?.capitalize(Locale.current)
                 Text(text = name ?: "", style = MaterialTheme.typography.subtitle1, modifier = Modifier.padding(16.dp))
                 FlowRow(
-                    mainAxisSize = SizeMode.Expand
+                    Modifier.fillMaxWidth()
                 ) {
                     data.forEach { item ->
 

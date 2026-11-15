@@ -10,9 +10,8 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.austinhodak.thehideout.features.premium.PremiumThanksActivity
 import com.austinhodak.thehideout.utils.openActivity
 import com.qonversion.android.sdk.Qonversion
-import com.qonversion.android.sdk.dto.QEntitlement
 import com.qonversion.android.sdk.dto.QonversionError
-import com.qonversion.android.sdk.dto.QonversionErrorCode
+import com.qonversion.android.sdk.dto.entitlements.QEntitlement
 import com.qonversion.android.sdk.dto.offerings.QOffering
 import com.qonversion.android.sdk.dto.offerings.QOfferings
 import com.qonversion.android.sdk.dto.products.QProduct

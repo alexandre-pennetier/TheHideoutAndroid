@@ -91,7 +91,7 @@ fun WeaponListScreen(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             items(items = data.sortedBy { it.ShortName }, key = { it.id }) { weapon ->
-                                WeaponCard(weapon, Modifier.animateItemPlacement()) {
+                                WeaponCard(weapon, Modifier.animateItem()) {
                                     weaponClicked(it)
                                 }
                             }
@@ -132,7 +132,7 @@ fun WeaponSearchBody(
         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 8.dp)
     ) {
         items(items = items, key = { it.id }) { weapon ->
-            WeaponCard(weapon = weapon, Modifier.animateItemPlacement()) {
+            WeaponCard(weapon = weapon, Modifier.animateItem()) {
                 weaponClicked(it)
             }
         }

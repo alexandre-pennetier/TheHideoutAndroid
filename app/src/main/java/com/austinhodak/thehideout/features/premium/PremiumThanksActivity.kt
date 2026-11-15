@@ -25,8 +25,7 @@ import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.openWithCustomTab
 import com.austinhodak.thehideout.utils.restartNavActivity
-import com.google.accompanist.insets.statusBarsPadding
-import com.google.accompanist.pager.ExperimentalPagerApi
+import androidx.compose.foundation.layout.statusBarsPadding
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -34,7 +33,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @ExperimentalCoroutinesApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
-@ExperimentalPagerApi
 class PremiumThanksActivity : AppCompatActivity() {
 
     @OptIn(ExperimentalFoundationApi::class)
