@@ -4,13 +4,13 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -50,17 +50,17 @@ import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.tarkovapi.utils.asCurrency
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.features.barters.BarterDetailActivity
 import com.austinhodak.thehideout.compose.components.*
 import com.austinhodak.thehideout.compose.theme.*
+import com.austinhodak.thehideout.features.barters.BarterDetailActivity
 import com.austinhodak.thehideout.features.flea_market.detail.AvgPriceRow
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
 import com.austinhodak.thehideout.features.flea_market.detail.SavingsRow
 import com.austinhodak.thehideout.tradersList
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.utils.*
-import androidx.compose.foundation.layout.navigationBarsPadding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -146,11 +146,7 @@ fun TraderScreen(trader: String?, navViewModel: NavViewModel, tarkovRepo: Tarkov
                             }
                         },
                         navigationIcon = {
-                            IconButton(onClick = {
-                                navViewModel.isDrawerOpen.value = true
-                            }) {
-                                Icon(Icons.Filled.Menu, contentDescription = null)
-                            }
+                            DrawerMenuButton(navViewModel)
                         },
                         actions = {
                             IconButton(onClick = { navViewModel.setSearchOpen(true) }) {

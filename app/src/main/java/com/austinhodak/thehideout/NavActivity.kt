@@ -73,6 +73,7 @@ import com.austinhodak.thehideout.features.weapons.builder.WeaponLoadoutScreen
 import com.austinhodak.thehideout.features.weapons.builder.viewmodel.WeaponLoadoutViewModel
 import com.austinhodak.thehideout.features.weapons.detail.WeaponDetailActivity
 import com.austinhodak.thehideout.features.weapons.mods.ModsListScreen
+import com.austinhodak.thehideout.ui.common.PERMANENT_DRAWER_MIN_WIDTH_DP
 import com.austinhodak.thehideout.ui.legacy.MainDrawer
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
@@ -95,9 +96,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-
-// Expanded window width (Material window size classes).
-private const val PERMANENT_DRAWER_MIN_WIDTH_DP = 840
 
 @ExperimentalFoundationApi
 @ExperimentalCoilApi

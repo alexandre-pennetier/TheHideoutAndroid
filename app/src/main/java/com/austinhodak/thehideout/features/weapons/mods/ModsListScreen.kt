@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,6 +31,7 @@ import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.components.*
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
 import com.austinhodak.thehideout.ui.common.EmptyText
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.utils.*
@@ -103,11 +103,7 @@ fun ModsListScreen(
                         }
                     },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            navViewModel.isDrawerOpen.value = true
-                        }) {
-                            Icon(Icons.Filled.Menu, contentDescription = null)
-                        }
+                        DrawerMenuButton(navViewModel)
                     },
                     actions = {
                         IconButton(onClick = { navViewModel.setSearchOpen(true) }) {

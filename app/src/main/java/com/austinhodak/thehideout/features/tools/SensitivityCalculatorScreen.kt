@@ -11,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -37,6 +36,7 @@ import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.features.pickers.PickerActivity
 import com.austinhodak.thehideout.features.tools.viewmodels.SensitivityViewModel
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.math.roundToInt
 
@@ -67,11 +67,7 @@ fun SensitivityCalculatorScreen(navViewModel: NavViewModel, tarkovRepo: TarkovRe
                     Text("Sensitivity Calculator", modifier = Modifier.padding(end = 16.dp))
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navViewModel.isDrawerOpen.value = true
-                    }) {
-                        Icon(Icons.Filled.Menu, contentDescription = null, tint = White)
-                    }
+                    DrawerMenuButton(navViewModel, tint = White)
                 },
                 backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                 elevation = 0.dp,

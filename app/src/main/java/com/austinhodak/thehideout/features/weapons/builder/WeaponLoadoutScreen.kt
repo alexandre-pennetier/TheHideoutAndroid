@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,15 +31,16 @@ import com.austinhodak.tarkovapi.repository.TarkovRepo
 import com.austinhodak.tarkovapi.utils.asCurrency
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.ui.common.EmptyText
 import com.austinhodak.thehideout.compose.components.SearchToolbar
 import com.austinhodak.thehideout.compose.theme.BorderColor
 import com.austinhodak.thehideout.compose.theme.DividerDark
 import com.austinhodak.thehideout.compose.theme.White
-import com.austinhodak.thehideout.firebase.WeaponBuildFirestore
 import com.austinhodak.thehideout.features.pickers.PickerActivity
-import com.austinhodak.thehideout.utils.*
 import com.austinhodak.thehideout.features.weapons.builder.viewmodel.WeaponLoadoutViewModel
+import com.austinhodak.thehideout.firebase.WeaponBuildFirestore
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
+import com.austinhodak.thehideout.ui.common.EmptyText
+import com.austinhodak.thehideout.utils.*
 
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
@@ -87,11 +87,7 @@ fun WeaponLoadoutScreen(loadoutViewModel: WeaponLoadoutViewModel, navViewModel: 
                         Text("Loadouts", modifier = Modifier.padding(end = 16.dp))
                     },
                     navigationIcon = {
-                        IconButton(onClick = {
-                            navViewModel.isDrawerOpen.value = true
-                        }) {
-                            Icon(Icons.Filled.Menu, contentDescription = null, tint = White)
-                        }
+                        DrawerMenuButton(navViewModel, tint = White)
                     },
                     backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                     elevation = 0.dp,

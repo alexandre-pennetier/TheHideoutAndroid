@@ -2,9 +2,8 @@ package com.austinhodak.thehideout.features.bitcoin
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,10 +22,11 @@ import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.theme.BorderColor
 import com.austinhodak.thehideout.compose.theme.White
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
+import com.austinhodak.thehideout.ui.legacy.PriceChartMarkerView
 import com.austinhodak.thehideout.utils.addQuotes
 import com.austinhodak.thehideout.utils.fleaFirebase
 import com.austinhodak.thehideout.utils.openFleaDetail
-import com.austinhodak.thehideout.ui.legacy.PriceChartMarkerView
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
@@ -35,7 +35,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import androidx.compose.foundation.layout.statusBarsPadding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -67,11 +66,7 @@ fun BitcoinPriceScreen(
                     Text("Bitcoin Price", modifier = Modifier.padding(end = 16.dp))
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navViewModel.isDrawerOpen.value = true
-                    }) {
-                        Icon(Icons.Filled.Menu, contentDescription = null, tint = White)
-                    }
+                    DrawerMenuButton(navViewModel, tint = White)
                 },
                 backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                 elevation = 0.dp,

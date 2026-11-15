@@ -13,7 +13,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BuildCircle
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -51,21 +50,22 @@ import com.austinhodak.tarkovapi.utils.fromDtoR
 import com.austinhodak.tarkovapi.utils.openActivity
 import com.austinhodak.thehideout.*
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.ui.common.EmptyText
-import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.compose.components.SearchToolbar
 import com.austinhodak.thehideout.compose.components.SmallBuyPrice
 import com.austinhodak.thehideout.compose.theme.*
 import com.austinhodak.thehideout.features.crafts.CompactItem
 import com.austinhodak.thehideout.features.crafts.CraftDetailActivity
 import com.austinhodak.thehideout.features.currency.euroToRouble
-import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.features.flea_market.detail.AvgPriceRow
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
 import com.austinhodak.thehideout.features.flea_market.detail.SavingsRow
 import com.austinhodak.thehideout.features.hideout.detail.HideoutStationDetailActivity
 import com.austinhodak.thehideout.features.hideout.viewmodels.HideoutMainViewModel
 import com.austinhodak.thehideout.features.quests.Chip
+import com.austinhodak.thehideout.firebase.FSUser
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
+import com.austinhodak.thehideout.ui.common.EmptyText
+import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
@@ -150,11 +150,7 @@ fun HideoutMainScreen(
                             }
                         },
                         navigationIcon = {
-                            IconButton(onClick = {
-                                navViewModel.isDrawerOpen.value = true
-                            }) {
-                                Icon(Icons.Filled.Menu, contentDescription = null)
-                            }
+                            DrawerMenuButton(navViewModel)
                         },
                         backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                         elevation = 4.dp,

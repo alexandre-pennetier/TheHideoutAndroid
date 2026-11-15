@@ -4,8 +4,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -20,6 +18,7 @@ import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.compose.theme.DarkGrey
 import com.austinhodak.thehideout.compose.theme.White
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
 import kotlin.math.roundToLong
 
 @Composable
@@ -40,11 +39,7 @@ fun CurrenyConverterScreen(
                     Text("Currency Converter", modifier = Modifier.padding(end = 16.dp))
                 },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        navViewModel.isDrawerOpen.value = true
-                    }) {
-                        Icon(Icons.Filled.Menu, contentDescription = null, tint = White)
-                    }
+                    DrawerMenuButton(navViewModel, tint = White)
                 },
                 backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                 elevation = 0.dp,

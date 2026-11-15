@@ -54,6 +54,7 @@ import com.austinhodak.thehideout.features.quests.viewmodels.QuestMainViewModel
 import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.fsUser
 import com.austinhodak.thehideout.mapsList
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
 import com.austinhodak.thehideout.ui.common.EmptyText
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme.Bender
@@ -227,11 +228,7 @@ fun QuestMainScreen(
                                 }
                             },
                             navigationIcon = {
-                                IconButton(onClick = {
-                                    navViewModel.isDrawerOpen.value = true
-                                }) {
-                                    Icon(Icons.Filled.Menu, contentDescription = null, tint = White)
-                                }
+                                DrawerMenuButton(navViewModel, tint = White)
                             },
                             backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
                             elevation = 0.dp,

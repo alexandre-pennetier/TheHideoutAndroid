@@ -3,11 +3,11 @@ package com.austinhodak.thehideout.features.flea_market.grid
 import android.annotation.SuppressLint
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -35,20 +35,20 @@ import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.tarkovapi.room.models.Quest
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.compose.components.SearchToolbar
-import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.compose.theme.BorderColor
 import com.austinhodak.thehideout.compose.theme.Red400
 import com.austinhodak.thehideout.compose.theme.White
-import com.austinhodak.thehideout.fsUser
 import com.austinhodak.thehideout.features.hideout.viewmodels.HideoutMainViewModel
-import com.austinhodak.thehideout.hideoutList
 import com.austinhodak.thehideout.features.quests.Chip
 import com.austinhodak.thehideout.features.quests.QuestFilter
 import com.austinhodak.thehideout.features.quests.viewmodels.QuestMainViewModel
+import com.austinhodak.thehideout.fsUser
+import com.austinhodak.thehideout.hideoutList
+import com.austinhodak.thehideout.ui.common.DrawerMenuButton
+import com.austinhodak.thehideout.ui.common.LoadingItem
+import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.utils.*
-import androidx.compose.foundation.pager.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -484,11 +484,7 @@ private fun TopBar(questViewModel: QuestMainViewModel, navViewModel: NavViewMode
             }
         },
         navigationIcon = {
-            IconButton(onClick = {
-                navViewModel.isDrawerOpen.value = true
-            }) {
-                Icon(Icons.Filled.Menu, contentDescription = null, tint = White)
-            }
+            DrawerMenuButton(navViewModel, tint = White)
         },
         backgroundColor = if (isSystemInDarkTheme()) Color(0xFE1F1F1F) else MaterialTheme.colors.primary,
         elevation = 0.dp,
