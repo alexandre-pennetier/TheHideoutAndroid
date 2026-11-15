@@ -6,7 +6,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.R
 import com.austinhodak.tarkovapi.di.ApplicationScope
 import com.austinhodak.tarkovapi.room.dao.AmmoDao

@@ -36,8 +36,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.exception.ApolloNetworkException
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.exception.ApolloNetworkException
 import com.austinhodak.tarkovapi.TraderResetTimersQuery
 import com.austinhodak.tarkovapi.models.TraderInfo
 import com.austinhodak.tarkovapi.models.TraderReset

@@ -1,9 +1,9 @@
 package com.austinhodak.thehideout.realm.models
 
 import com.austinhodak.thehideout.QuestItemsQuery
-import io.realm.kotlin.MutableRealm
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.github.xilinjia.krdb.MutableRealm
+import io.github.xilinjia.krdb.types.RealmObject
+import io.github.xilinjia.krdb.types.annotations.PrimaryKey
 
 class QuestItem : RealmObject {
     @PrimaryKey

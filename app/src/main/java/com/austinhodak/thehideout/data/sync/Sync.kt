@@ -1,6 +1,6 @@
 package com.austinhodak.thehideout.data.sync
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.austinhodak.thehideout.AmmoQuery
 import com.austinhodak.thehideout.BossesQuery
 import com.austinhodak.thehideout.QuestItemsQuery
@@ -16,10 +16,10 @@ import com.austinhodak.thehideout.realm.models.Item
 import com.austinhodak.thehideout.realm.models.asRealmTrader
 import com.austinhodak.thehideout.realm.models.toRealm
 import com.austinhodak.thehideout.type.ItemType
-import io.realm.kotlin.MutableRealm
-import io.realm.kotlin.Realm
-import io.realm.kotlin.UpdatePolicy
-import io.realm.kotlin.ext.query
+import io.github.xilinjia.krdb.MutableRealm
+import io.github.xilinjia.krdb.Realm
+import io.github.xilinjia.krdb.UpdatePolicy
+import io.github.xilinjia.krdb.ext.query
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber

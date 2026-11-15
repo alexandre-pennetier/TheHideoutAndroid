@@ -2,9 +2,9 @@ package com.austinhodak.tarkovapi.room
 
 import android.util.Log
 import androidx.work.ListenableWorker
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.FetchPolicy
-import com.apollographql.apollo3.cache.normalized.fetchPolicy
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.austinhodak.tarkovapi.BartersQuery
 import com.austinhodak.tarkovapi.CraftsQuery
 import com.austinhodak.tarkovapi.ItemsByTypeQuery

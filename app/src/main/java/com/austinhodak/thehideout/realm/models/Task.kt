@@ -23,13 +23,13 @@ import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTa
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveSkill
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveTaskStatus
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveTraderLevel
-import io.realm.kotlin.MutableRealm
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.ext.toRealmList
-import io.realm.kotlin.types.EmbeddedRealmObject
-import io.realm.kotlin.types.RealmList
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.github.xilinjia.krdb.MutableRealm
+import io.github.xilinjia.krdb.ext.realmListOf
+import io.github.xilinjia.krdb.ext.toRealmList
+import io.github.xilinjia.krdb.types.EmbeddedRealmObject
+import io.github.xilinjia.krdb.types.RealmList
+import io.github.xilinjia.krdb.types.RealmObject
+import io.github.xilinjia.krdb.types.annotations.PrimaryKey
 import kotlinx.coroutines.flow.callbackFlow
 import com.austinhodak.thehideout.base.Result
 import com.google.android.gms.tasks.Task as FSTask

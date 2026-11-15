@@ -16,7 +16,7 @@ jobs:
 #    outputs:
 #      gplay: ${{ steps.gplay.outputs.filePath }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Touch local properties
         run: touch local.properties
 
@@ -54,7 +54,7 @@ jobs:
       group: playstore_deploy
     needs: app_build
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Touch local properties
         run: touch local.properties
 
@@ -65,10 +65,10 @@ jobs:
           bundler-cache: true
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v3.9.0
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "11"
+          java-version: "17"
 
       - name: Decode Service Account Key JSON File
         uses: timheuer/base64-to-file@v1
@@ -103,7 +103,6 @@ jobs:
 #        run: echo "VERSION_NAME=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
 
       - name: Setup & Build Gradle
-        uses: gradle/gradle-build-action@v2
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -113,9 +112,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-        with:
-          arguments: bundleBetaRelease
-          cache-disabled: true
+        run: ./gradlew bundleBetaRelease
 
       - name: Build & deploy Android beta release
         run: bundle exec fastlane android internal

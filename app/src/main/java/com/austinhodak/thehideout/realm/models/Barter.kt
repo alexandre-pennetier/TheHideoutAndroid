@@ -3,12 +3,12 @@ package com.austinhodak.thehideout.realm.models
 import com.austinhodak.thehideout.BartersQuery
 import com.austinhodak.thehideout.realm.converters.findObjectById
 import com.austinhodak.thehideout.fragment.TaskItem
-import io.realm.kotlin.MutableRealm
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.ext.toRealmList
-import io.realm.kotlin.types.RealmList
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.github.xilinjia.krdb.MutableRealm
+import io.github.xilinjia.krdb.ext.realmListOf
+import io.github.xilinjia.krdb.ext.toRealmList
+import io.github.xilinjia.krdb.types.RealmList
+import io.github.xilinjia.krdb.types.RealmObject
+import io.github.xilinjia.krdb.types.annotations.PrimaryKey
 
 class Barter : RealmObject {
     @PrimaryKey

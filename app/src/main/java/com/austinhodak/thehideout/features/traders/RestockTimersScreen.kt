@@ -16,8 +16,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.exception.ApolloNetworkException
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.exception.ApolloNetworkException
 import com.austinhodak.tarkovapi.TraderResetTimersQuery
 import com.austinhodak.tarkovapi.TraderRestockTime
 import com.austinhodak.tarkovapi.UserSettingsModel

@@ -32,7 +32,7 @@ interface QuestDao {
     suspend fun insertAll(crafts: List<Quest>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(crafts: List<Quest>?)
+    suspend fun insert(crafts: List<Quest>)
 
     @Query("SELECT EXISTS (SELECT * FROM quests WHERE id IS '195' AND requirement LIKE '%' + :id + '%')")
     fun isQuestRequiredForKappa(id: String): Flow<Int>

@@ -1,7 +1,9 @@
 package com.austinhodak.thehideout.realm.models
 
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.github.xilinjia.krdb.ext.realmListOf
+import io.github.xilinjia.krdb.types.RealmList
+import io.github.xilinjia.krdb.types.RealmObject
+import io.github.xilinjia.krdb.types.annotations.PrimaryKey
 
 class ItemCategory : RealmObject {
     @PrimaryKey
@@ -9,5 +11,5 @@ class ItemCategory : RealmObject {
     var name: String = ""
     var normalizedName: String = ""
     var parent: ItemCategory? = null
-    var children: List<ItemCategory>? = null
+    var children: RealmList<ItemCategory> = realmListOf()
 }

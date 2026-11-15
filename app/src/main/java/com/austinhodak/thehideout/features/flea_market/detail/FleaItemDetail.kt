@@ -952,7 +952,7 @@ class FleaItemDetail : GodActivity() {
                         val quest by tarkovRepo.getQuestsWithObjectiveID("%id\":${it.key}%").collectAsState(null)
 
                         BasicStatRow(
-                            title = ("${quest?.trader()?.id} Quest: ${quest?.title ?: "Unknown"}").toUpperCase(),
+                            title = ("${quest?.trader()?.id} Quest: ${quest?.title ?: "Unknown"}").uppercase(),
                             text = "${it.value}",
                             Modifier.clickable {
                                 userRefTracker("items/$itemID/questObjective/${it.key}").removeValue()
@@ -973,7 +973,7 @@ class FleaItemDetail : GodActivity() {
                         }
 
                         BasicStatRow(
-                            title = hideoutModule.toString().toUpperCase(),
+                            title = hideoutModule.toString().uppercase(),
                             text = "${hide.value}",
                             Modifier.clickable {
                                 userRefTracker("items/$itemID/hideoutObjective/${hide.key}").removeValue()
@@ -985,7 +985,7 @@ class FleaItemDetail : GodActivity() {
                     needed.user?.forEach { userKey ->
                         val user = userKey.value
                         BasicStatRow(
-                            title = (user.reason ?: "User Defined Reason").toUpperCase(),
+                            title = (user.reason ?: "User Defined Reason").uppercase(),
                             text = "${user.quantity}",
                             Modifier.clickable {
                                 userRefTracker("items/$itemID/user/${userKey.key}").removeValue()

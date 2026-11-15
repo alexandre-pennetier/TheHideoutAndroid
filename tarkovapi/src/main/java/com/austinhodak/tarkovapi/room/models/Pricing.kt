@@ -1,7 +1,6 @@
 package com.austinhodak.tarkovapi.room.models
 
 import android.text.format.DateUtils
-import com.apollographql.apollo3.mpp.currentTimeMillis
 import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.tarkovapi.fragment.ItemFragment
 import com.austinhodak.tarkovapi.room.enums.ItemTypes
@@ -51,7 +50,7 @@ data class Pricing(
         updated?.let {
             return sdf.parse(it)?.time
         }
-        return currentTimeMillis()
+        return System.currentTimeMillis()
     }
 
     fun getCheapestBuyRequirements(): BuySellPrice {

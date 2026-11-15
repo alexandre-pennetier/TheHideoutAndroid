@@ -6,9 +6,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.realm.kotlin.Realm
-import io.realm.kotlin.RealmConfiguration
-import io.realm.kotlin.log.LogLevel
+import io.github.xilinjia.krdb.Realm
+import io.github.xilinjia.krdb.RealmConfiguration
 import javax.inject.Singleton
 import kotlin.collections.setOf
 
@@ -106,7 +105,7 @@ object RealmModule {
             )
         )
             .deleteRealmIfMigrationNeeded()
-            .log(LogLevel.ALL).build()
+            .build()
         return Realm.open(config)
     }
 

@@ -17,7 +17,7 @@ interface BarterDao {
     fun getBartersWithItemID(id: String): Flow<List<Barter>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(crafts: List<Barter>?)
+    suspend fun insert(crafts: List<Barter>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(barter: Barter)

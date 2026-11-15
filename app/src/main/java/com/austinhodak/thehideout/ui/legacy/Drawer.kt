@@ -27,8 +27,8 @@ import androidx.lifecycle.lifecycleScope
 import coil.annotation.ExperimentalCoilApi
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.exception.ApolloNetworkException
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.exception.ApolloNetworkException
 import com.austinhodak.tarkovapi.MenuDrawerLayout
 import com.austinhodak.tarkovapi.ServerStatusQuery
 import com.austinhodak.tarkovapi.UserSettingsModel

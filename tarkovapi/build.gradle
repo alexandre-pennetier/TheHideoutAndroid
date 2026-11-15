@@ -1,63 +1,53 @@
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
-    id("com.apollographql.apollo3").version("3.7.4")
-    id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.apollo)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.room)
 }
 
 apollo {
     service("service") {
         packageName.set("com.austinhodak.tarkovapi")
+        introspection {
+            endpointUrl.set("https://api.tarkov.dev/graphql")
+            schemaFile.set(file("src/main/graphql/com/austinhodak/tarkovapi/schema.graphqls"))
+        }
     }
 }
 
 android {
-    compileSdkVersion 33
+    compileSdk 37
 
     defaultConfig {
-        minSdkVersion 23
-        targetSdkVersion 33
+        minSdk 23
 
 //        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "proguard-rules.pro"
-
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    kapt {
-        correctErrorTypes = true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'com.austinhodak.tarkovapi'
 
 }
 
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    jvmToolchain(17)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 dependencies {
     implementation(platform(androidx.compose.bom))
 
-    api('com.apollographql.apollo3:apollo-runtime:3.7.4')
-    api('com.apollographql.apollo3:apollo-api:3.7.4')
-    api('com.apollographql.apollo3:apollo-normalized-cache:3.7.4')
-    api('com.apollographql.apollo3:apollo-normalized-cache-sqlite:3.7.4')
+    api(libs.apollo.runtime)
+    api(libs.apollo.normalized.cache)
+    api(libs.apollo.normalized.cache.sqlite)
 
     implementation(androidx.core)
     implementation(libs.material)
@@ -66,10 +56,10 @@ dependencies {
     implementation(libs.kotlinx.datetime)
 
     implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
 
     api(androidx.room.runtime)
-    kapt(androidx.room.compiler)
+    ksp(androidx.room.compiler)
 
     implementation(androidx.room)
 

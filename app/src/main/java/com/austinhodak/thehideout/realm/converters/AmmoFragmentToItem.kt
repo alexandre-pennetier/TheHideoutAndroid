@@ -2,7 +2,7 @@ package com.austinhodak.thehideout.realm.converters
 
 import com.austinhodak.thehideout.AmmoQuery
 import com.austinhodak.thehideout.realm.models.Ammo
-import io.realm.kotlin.MutableRealm
+import io.github.xilinjia.krdb.MutableRealm
 
 fun AmmoQuery.Data.Ammo.toRealmAmmo(realm: MutableRealm): Ammo {
     val fragment = this

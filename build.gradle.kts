@@ -1,26 +1,23 @@
-@file:Suppress("DSL_SCOPE_VIOLATION")
-
-import org.slf4j.LoggerFactory
-
 plugins {
     alias(libs.plugins.android.application).apply(false)
-    alias(libs.plugins.kotlin.android).apply(false)
-    alias(libs.plugins.kotlin.kapt).apply(false)
-    alias(libs.plugins.kotlin.parcelize).apply(false)
+    alias(libs.plugins.android.library).apply(false)
+    alias(libs.plugins.kotlin.compose).apply(false)
     alias(libs.plugins.dagger.hilt.android).apply(false)
     alias(libs.plugins.ksp).apply(false)
     alias(libs.plugins.gms.googleServices).apply(false)
     alias(libs.plugins.firebase.crashlytics).apply(false)
-    alias(libs.plugins.secrets).apply(false)
     alias(libs.plugins.realm).apply(false)
     alias(libs.plugins.firebase.perf).apply(false)
-    id("org.jlleitschuh.gradle.ktlint") version "11.1.0"
+    alias(libs.plugins.room).apply(false)
+    alias(libs.plugins.apollo).apply(false)
+    alias(libs.plugins.sentry).apply(false)
+    alias(libs.plugins.ktlint)
 }
 
 allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + listOf(
+        compilerOptions {
+            freeCompilerArgs.addAll(
                 // Avoid having to stutter experimental annotations all over the codebase
                 "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
                 "-opt-in=androidx.compose.material.ExperimentalMaterialApi",
@@ -30,36 +27,17 @@ allprojects {
                 "-opt-in=kotlin.ExperimentalUnsignedTypes",
                 "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-opt-in=kotlinx.coroutines.InternalCoroutinesApi",
-                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+                "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             )
         }
     }
-
 }
 
 subprojects {
-    apply(plugin = "org.jlleitschuh.gradle.ktlint") // Version should be inherited from parent
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
 
-    repositories {
-        // Required to download KtLint
-        mavenCentral()
-    }
-
-    // Optionally configure plugin
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        debug.set(true)
+        // Existing violations live in config/ktlint/baseline.xml; only new code is checked.
+        baseline.set(rootProject.file("config/ktlint/baseline-${project.name}.xml"))
     }
 }
-
-val loggerFactory: org.slf4j.ILoggerFactory = LoggerFactory.getILoggerFactory()
-val addNoOpLogger: java.lang.reflect.Method =
-    loggerFactory.javaClass.getDeclaredMethod("addNoOpLogger", String::class.java)
-addNoOpLogger.isAccessible = true
-addNoOpLogger.invoke(
-    loggerFactory,
-    "com.android.build.api.component.impl.MutableListBackedUpWithListProperty"
-)
-addNoOpLogger.invoke(
-    loggerFactory,
-    "com.android.build.api.component.impl.MutableMapBackedUpWithMapProperty"
-)

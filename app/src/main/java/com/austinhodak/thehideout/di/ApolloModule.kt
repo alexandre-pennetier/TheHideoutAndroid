@@ -1,10 +1,10 @@
 package com.austinhodak.thehideout.di
 
 import android.content.Context
-import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.cache.normalized.api.MemoryCacheFactory
-import com.apollographql.apollo3.cache.normalized.api.NormalizedCacheFactory
-import com.apollographql.apollo3.cache.normalized.sql.SqlNormalizedCacheFactory
+import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
+import com.apollographql.apollo.cache.normalized.api.NormalizedCacheFactory
+import com.apollographql.apollo.cache.normalized.sql.SqlNormalizedCacheFactory
 import com.austinhodak.thehideout.data.sync.SyncStatusMonitor
 import dagger.Binds
 import dagger.Module

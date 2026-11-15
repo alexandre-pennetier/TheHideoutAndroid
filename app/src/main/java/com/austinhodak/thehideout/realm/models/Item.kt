@@ -1,11 +1,11 @@
 package com.austinhodak.thehideout.realm.models
 
 import android.text.format.DateUtils
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.EmbeddedRealmObject
-import io.realm.kotlin.types.RealmList
-import io.realm.kotlin.types.RealmObject
-import io.realm.kotlin.types.annotations.PrimaryKey
+import io.github.xilinjia.krdb.ext.realmListOf
+import io.github.xilinjia.krdb.types.EmbeddedRealmObject
+import io.github.xilinjia.krdb.types.RealmList
+import io.github.xilinjia.krdb.types.RealmObject
+import io.github.xilinjia.krdb.types.annotations.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone

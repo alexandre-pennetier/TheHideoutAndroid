@@ -61,9 +61,6 @@ import com.qonversion.android.sdk.dto.QLaunchMode
 import com.qonversion.android.sdk.dto.QUserProperty
 import com.skydoves.only.Only
 import dagger.hilt.android.HiltAndroidApp
-import io.realm.kotlin.log.LogLevel
-import io.realm.kotlin.mongodb.App
-import io.realm.kotlin.mongodb.AppConfiguration
 import kotlinx.coroutines.*
 import timber.log.Timber
 import timber.log.Timber.DebugTree
@@ -195,7 +192,6 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
         )
 
-        val atlas = App.Companion.create(AppConfiguration.Builder("android-quwic").log(LogLevel.ALL).build())
 
         Mavericks.initialize(this)
 

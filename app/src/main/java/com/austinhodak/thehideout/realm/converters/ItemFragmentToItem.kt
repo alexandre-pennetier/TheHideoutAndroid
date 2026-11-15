@@ -1,6 +1,6 @@
 package com.austinhodak.thehideout.realm.converters
 
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.austinhodak.thehideout.AmmoQuery
 import com.austinhodak.thehideout.BartersQuery
 import com.austinhodak.thehideout.BossesQuery
@@ -52,10 +52,10 @@ import com.austinhodak.thehideout.realm.models.MobInfo
 import com.austinhodak.thehideout.realm.models.QuestItem
 import com.austinhodak.thehideout.realm.models.StimEffect
 import com.austinhodak.thehideout.realm.models.Task
-import io.realm.kotlin.MutableRealm
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.ext.toRealmList
-import io.realm.kotlin.types.RealmObject
+import io.github.xilinjia.krdb.MutableRealm
+import io.github.xilinjia.krdb.ext.realmListOf
+import io.github.xilinjia.krdb.ext.toRealmList
+import io.github.xilinjia.krdb.types.RealmObject
 import timber.log.Timber
 import kotlin.math.roundToInt
 

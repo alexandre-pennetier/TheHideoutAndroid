@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.MapEnums
 import com.austinhodak.tarkovapi.MapsQuery
 import com.austinhodak.tarkovapi.repository.TarkovRepo

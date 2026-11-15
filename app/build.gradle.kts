@@ -2,30 +2,33 @@ import io.sentry.android.gradle.extensions.InstrumentationFeature
 import java.util.EnumSet
 
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
-    id("kotlin-kapt")
-    id("dagger.hilt.android.plugin")
-    id("io.realm.kotlin")
-    id("com.apollographql.apollo3").version("3.7.4")
-    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    id("com.google.firebase.firebase-perf")
-    id("io.sentry.android.gradle").version("3.4.1")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.gms.googleServices)
+    alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.realm)
+    alias(libs.plugins.apollo)
+    alias(libs.plugins.firebase.perf)
+    alias(libs.plugins.sentry)
 }
 
 apollo {
     service("service") {
         packageName.set("com.austinhodak.thehideout")
         codegenModels.set("responseBased")
+        introspection {
+            endpointUrl.set("https://api.tarkov.dev/graphql")
+            schemaFile.set(file("src/main/graphql/com/austinhodak/thehideout/schema.graphqls"))
+        }
     }
 }
 
 android {
     namespace = "com.austinhodak.thehideout"
 
-    compileSdk = 33
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.austinhodak.thehideout"
@@ -38,21 +41,13 @@ android {
 
     buildFeatures {
         viewBinding = true
-        dataBinding = true
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        buildConfig = true
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     signingConfigs {
@@ -87,13 +82,11 @@ android {
             dimension = "version"
         }
     }
-
-    kapt {
-        correctErrorTypes = true
-    }
 }
 
 sentry {
+    // Mapping upload needs the CI secrets; skip it for local release builds.
+    autoUploadProguardMapping.set(System.getenv("SENTRY_AUTH_TOKEN") != null)
     tracingInstrumentation {
         enabled.set(true)
         features.set(EnumSet.allOf(InstrumentationFeature::class.java) - InstrumentationFeature.DATABASE)
@@ -101,9 +94,7 @@ sentry {
 }
 
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -153,8 +144,9 @@ dependencies {
 
     // Hilt
     implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.compiler)
+    ksp(libs.dagger.hilt.compiler)
     implementation(androidx.hilt.work)
+    ksp(androidx.hilt.compiler)
 
     implementation(androidx.compose.ui)
     implementation(androidx.compose.material)

@@ -2,7 +2,6 @@ package com.austinhodak.tarkovapi.room.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.apollographql.apollo3.mpp.currentTimeMillis
 import com.austinhodak.tarkovapi.fragment.TaskItem
 import com.austinhodak.tarkovapi.models.Hideout
 import com.austinhodak.tarkovapi.utils.euroToRouble
@@ -91,7 +90,7 @@ data class Craft(
 
     fun getFinishTime(): String {
         val ms = duration?.times(1000) ?: 0
-        val finishTime = currentTimeMillis() + ms
+        val finishTime = System.currentTimeMillis() + ms
         val simpleDateFormat = SimpleDateFormat("EEE '@' hh:mm")
         return simpleDateFormat.format(finishTime)
     }

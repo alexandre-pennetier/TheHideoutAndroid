@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.ServerStatusQuery
 import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.tarkovapi.models.ServerStatus

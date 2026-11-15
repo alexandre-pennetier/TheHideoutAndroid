@@ -3,7 +3,7 @@ package com.austinhodak.thehideout
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
-import com.apollographql.apollo3.ApolloClient
+import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.thehideout.utils.keepScreenOn
 import com.austinhodak.thehideout.utils.userFirestore

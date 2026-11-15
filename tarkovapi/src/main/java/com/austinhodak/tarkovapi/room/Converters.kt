@@ -99,13 +99,13 @@ class Converters {
     }
 
     @TypeConverter
-    fun fromCraftItem(value: List<Craft.CraftItem>?): String? {
+    fun fromCraftItem(value: List<Craft.CraftItem?>?): String? {
         if (value == null) return null
         return Gson().toJson(value)
     }
 
     @TypeConverter
-    fun toCraftItem(value: String?): List<Craft.CraftItem>? {
+    fun toCraftItem(value: String?): List<Craft.CraftItem?>? {
         val filterType: Type = object : TypeToken<ArrayList<Craft.CraftItem>?>() {}.type
         if (value == null) return null
         return Gson().fromJson(value, filterType)
@@ -126,6 +126,12 @@ class Converters {
     fun fromStringArray(value: List<String>?): String? {
         return value?.joinToString(",")
     }
+
+    @TypeConverter
+    fun toNullableStringArray(value: String?): List<String?>? = value?.split(",")
+
+    @TypeConverter
+    fun fromNullableStringArray(value: List<String?>?): String? = value?.joinToString(",")
 
     @TypeConverter
     fun toTraderFragment(value: String?): Quest.TraderFragment? {

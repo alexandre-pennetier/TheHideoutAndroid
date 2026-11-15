@@ -3,7 +3,6 @@ package com.austinhodak.thehideout.features.ocr.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apollographql.apollo3.mpp.currentTimeMillis
 import com.austinhodak.tarkovapi.repository.TarkovRepo
 import com.austinhodak.tarkovapi.room.enums.ItemTypes
 import com.austinhodak.tarkovapi.room.models.Ammo
@@ -38,7 +37,7 @@ class ItemScannerViewModel @Inject constructor(
     }
 
     fun processText(result: Text) {
-        if (lastScannedItem < (currentTimeMillis() - (10 * 1000))) {
+        if (lastScannedItem < (System.currentTimeMillis() - (10 * 1000))) {
             clearAll()
         }
 
@@ -62,12 +61,12 @@ class ItemScannerViewModel @Inject constructor(
                     }?.let { item ->
                         if (item.itemType == ItemTypes.AMMO) {
                             allAmmo.value?.find { it.id == item.id }?.let {
-                                found[currentTimeMillis()] = it
+                                found[System.currentTimeMillis()] = it
                             }
                         } else {
-                            found[currentTimeMillis()] = item
+                            found[System.currentTimeMillis()] = item
                         }
-                        lastScannedItem = currentTimeMillis()
+                        lastScannedItem = System.currentTimeMillis()
                     }
                 }
             }
@@ -75,7 +74,7 @@ class ItemScannerViewModel @Inject constructor(
             found.forEach { (t, i) ->
                 if (_scannedItems.value?.containsValue(i) == false) {
                     viewModelScope.launch(Dispatchers.Main) {
-                        _scannedItems.value = _scannedItems.value?.plus(Pair(currentTimeMillis(), i))?.toSortedMap(compareBy { it })
+                        _scannedItems.value = _scannedItems.value?.plus(Pair(System.currentTimeMillis(), i))?.toSortedMap(compareBy { it })
                     }
                 }
             }

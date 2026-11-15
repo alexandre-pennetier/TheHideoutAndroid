@@ -4,8 +4,8 @@ import com.austinhodak.thehideout.data.enums.ItemType
 import com.austinhodak.thehideout.realm.models.Ammo
 import com.austinhodak.thehideout.realm.models.Item
 import com.austinhodak.thehideout.realm.models.Task
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
+import io.github.xilinjia.krdb.Realm
+import io.github.xilinjia.krdb.ext.query
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton

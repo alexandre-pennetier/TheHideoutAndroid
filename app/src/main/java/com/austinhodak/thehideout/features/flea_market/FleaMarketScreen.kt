@@ -42,7 +42,6 @@ import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import com.afollestad.materialdialogs.MaterialDialog
-import com.apollographql.apollo3.mpp.currentTimeMillis
 import com.austinhodak.tarkovapi.FleaHideTime
 import com.austinhodak.tarkovapi.FleaVisiblePrice
 import com.austinhodak.tarkovapi.UserSettingsModel
@@ -534,10 +533,10 @@ fun FleaMarketListScreen(
             ?.contains(searchKey, ignoreCase = true) == true
     }?.filter {
         when (fleaHideTime) {
-            FleaHideTime.HOUR24 -> it.pricing?.getTime() ?: currentTimeMillis() > (currentTimeMillis() - (1000 * 60 * 60 * 24))
-            FleaHideTime.DAY7 -> it.pricing?.getTime() ?: currentTimeMillis() > (currentTimeMillis() - (604800000))
-            FleaHideTime.DAY14 -> it.pricing?.getTime() ?: currentTimeMillis() > (currentTimeMillis() - (1209600000))
-            FleaHideTime.DAY30 -> it.pricing?.getTime() ?: currentTimeMillis() > (currentTimeMillis() - (2592000000))
+            FleaHideTime.HOUR24 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (1000 * 60 * 60 * 24))
+            FleaHideTime.DAY7 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (604800000))
+            FleaHideTime.DAY14 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (1209600000))
+            FleaHideTime.DAY30 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (2592000000))
             else -> true
         }
     }?.filter {
