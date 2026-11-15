@@ -2,7 +2,7 @@
 
 Guidance for humans and AI coding agents working on **The Hideout: Tarkov Sidekick**, an unofficial open-source Android companion app for Escape from Tarkov (flea prices, quests, hideout, barters, crafts, maps, ammo/weapon tools). Package: `com.austinhodak.thehideout`. App version in `app/build.gradle.kts` (currently 1.6.7).
 
-> The project started as a snapshot from early 2023 and is being upgraded in phases (see PR #1 and "Known upgrade debt"). Toolchain, libraries, API usage and targetSdk are current; tablet layouts are not done yet.
+> The project started as a snapshot from early 2023 and is being upgraded in phases (see PR #1 and "Known upgrade debt"). Toolchain, libraries, API usage and targetSdk are current; tablet support is partial (see below).
 
 ## Modules
 
@@ -85,6 +85,6 @@ None: Apollo codegen reports zero deprecated-field warnings in either module (ch
 - targetSdk 36 is done. Edge-to-edge is on for every activity (`EdgeToEdgeCallbacks` in `Application.kt`), and `HideoutTheme` / `HideoutTheme3` wrap content in `ui/common/SystemBarsBox`, which pads `WindowInsets.safeDrawing` and paints the bar areas. Screens that want to draw behind the bars must opt out of that box deliberately; nested inset modifiers add nothing because the box consumes the insets. Do not use `window.statusBarColor` or `setDecorFitsSystemWindows`.
 - Back handling: `onBackPressed()` overrides are not called at targetSdk 36 (predictive back). Use `onBackPressedDispatcher.addCallback` or Compose `BackHandler`; in `NavActivity` the `BackHandler` sits after `NavHost` so it runs first.
 - Native libraries are 16 KB page aligned (checked on the APK's arm64/x86_64 `.so` files).
-- No adaptive layouts: there is no `WindowSizeClass`, `NavigationRail` or permanent drawer usage, and the manifest sets no orientation lock or `resizeableActivity`, so on a tablet the phone UI is stretched. The README promises tablet/foldable support.
+- Tablets: at expanded width (>= 840dp, `PERMANENT_DRAWER_MIN_WIDTH_DP` in `NavActivity`) the main drawer is shown permanently beside the content. Still missing: list-detail panes (item/quest/hideout details are separate Activities, so lists and details cannot sit side by side yet), hiding the hamburger buttons when the drawer is permanent, and width limits for detail screens. The README promises tablet/foldable support.
 - Deprecated or archived libraries: afollestad material-dialogs 3.3.0, StfalconImageViewer. Jetifier is off.
 - `AndroidManifest.xml` still sets `allowBackup="true"` (no backup rules) and `largeHeap="true"`, and many internal activities are `exported="true"` without needing it.

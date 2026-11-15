@@ -15,14 +15,20 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.*
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -89,6 +95,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+
+// Expanded window width (Material window size classes).
+private const val PERMANENT_DRAWER_MIN_WIDTH_DP = 840
 
 @ExperimentalFoundationApi
 @ExperimentalCoilApi
@@ -248,6 +257,8 @@ class NavActivity : GodActivity() {
 
             navViewModel.isDrawerOpen.observe(lifeCycleOwner) { isOpen ->
                 coroutineScope.launch {
+                    // No modal drawer is composed when it is shown permanently.
+                    if (resources.configuration.screenWidthDp >= PERMANENT_DRAWER_MIN_WIDTH_DP) return@launch
                     if (isOpen) {
                         scaffoldState.drawerState.open()
                     } else {
@@ -277,221 +288,227 @@ class NavActivity : GodActivity() {
                     ),
                 )
 
-                Scaffold(
-                    scaffoldState = scaffoldState,
-                    drawerContent = {
-                        MainDrawer(
-                            navViewModel = navViewModel,
-                            lifeCycleOwner,
-                            this@NavActivity,
-                            apolloClient
-                        )
-                        val testUser by fsUser.observeAsState()
-                        Timber.d("USER: $testUser")
-                    },
-                    drawerScrimColor = Color(0xFF121212)
-                ) { padding ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = tag,
-                        modifier = Modifier.consumeWindowInsets(padding)
-                    ) {
-                        composable("ammunition/{caliber}") {
-                            AmmunitionListScreen(
-                                caliber = it.arguments?.getString("caliber", null),
-                                navViewModel = navViewModel,
-                                tarkovRepo = tarkovRepo
-                            )
-                        }
-                        composable("gear/{category}") {
-                            GearListScreen(
-                                category = it.arguments?.getString("category", null),
-                                navViewModel = navViewModel,
-                                tarkovRepo = tarkovRepo,
-                                gearViewModel
-                            )
-                        }
-                        composable("keys") {
-                            KeyListScreen(
-                                navViewModel = navViewModel,
-                                tarkovRepo,
-                                keysViewModel
-                            )
-                        }
-                        composable("medical") {
-                            MedicalListScreen(
-                                tarkovRepo,
-                                navViewModel = navViewModel
-                            )
-                        }
-                        composable("food") {
-                            ProvisionListScreen(navViewModel = navViewModel, tarkovRepo = tarkovRepo)
-                        }
-                        composable("flea") {
-                            FleaMarketScreen(navViewModel = navViewModel, fleaViewModel = fleaViewModel, tarkovRepo = tarkovRepo)
-                        }
-                        composable("weaponmods") {
-                            ModsListScreen(
-                                tarkovRepo,
-                                navViewModel
-                            )
-                        }
-                        composable("weapons/{classID}") {
-                            WeaponListScreen(
-                                classID = it.arguments?.getString("classID") ?: "assaultRifle",
-                                navViewModel,
-                                tarkovRepo
-                            ) {
-                                val intent = Intent(this@NavActivity, WeaponDetailActivity::class.java).apply {
-                                    putExtra("weaponID", it)
-                                }
-                                weaponDetailLauncher.launch(intent)
-                            }
-                        }
-                        composable("quests") {
-                            QuestMainScreen(
-                                navViewModel,
-                                questViewModel,
-                                tarkovRepo
-                            )
-                        }
-                        composable("hideout") {
-                            HideoutMainScreen(
-                                navViewModel,
-                                hideoutViewModel,
-                                tarkovRepo
-                            )
-                        }
-                        composable("weaponloadouts") {
-                            WeaponLoadoutScreen(
-                                loadoutViewModel,
-                                navViewModel,
-                                tarkovRepo
-                            )
-                        }
-                        composable("bitcoin") {
-                            BitcoinPriceScreen(navViewModel, tarkovRepo)
-                        }
-                        composable("currency_converter") {
-                            CurrenyConverterScreen(navViewModel, tarkovRepo)
-                        }
-                        composable("sensitivity") {
-                            SensitivityCalculatorScreen(navViewModel, tarkovRepo, sensitivityViewModel, armorPickerLauncher)
-                        }
-                        composable("trader/{trader}") {
-                            TraderScreen(
-                                it.arguments?.getString("trader"),
-                                navViewModel,
-                                tarkovRepo,
-                                apolloClient
-                            )
-                        }
-                        composable("news") {
-                            NewsScreen(
-                                navViewModel
-                            )
-                        }
-                        composable("skills") {
-                            CharacterSkillsScreen(navViewModel = navViewModel)
-                        }
-                        composable("restock") {
-                            RestockTimersScreen(
-                                navViewModel,
-                                apolloClient
-                            )
-                        }
-                        composable("price_alerts") {
-                            PriceAlertsScreen(navViewModel, tarkovRepo)
-                        }
-                        composable("server_pings") {
-                            ServerPingScreen(navViewModel, tarkovRepo)
-                        }
-                        composable("neededGrid") {
-                            ItemQuestHideoutGridScreen(
-                                navViewModel,
-                                tarkovRepo,
-                                questViewModel,
-                                hideoutViewModel
-                            )
-                        }
-                        composable("bosses") {
-                            BossesListScreen(
-                                navViewModel,
-                                apolloClient
-                            )
-                        }
-                        composable("map_info") {
-                            MapsListScreen(navViewModel = navViewModel, apolloClient = apolloClient)
-                        }
+                // Large screens (expanded width) keep the drawer open beside the content.
+                val permanentDrawer = LocalConfiguration.current.screenWidthDp >= PERMANENT_DRAWER_MIN_WIDTH_DP
+                val drawer: @Composable () -> Unit = {
+                    MainDrawer(
+                        navViewModel = navViewModel,
+                        lifeCycleOwner,
+                        this@NavActivity,
+                        apolloClient,
+                    )
+                }
+                Row {
+                    if (permanentDrawer) {
+                        Box(Modifier.width(320.dp).fillMaxHeight()) { drawer() }
                     }
-
-                    // After NavHost so it runs before NavHost's own back callback, as onBackPressed did.
-                    BackHandler { handleBack(navController) }
-
-                    navViewModel.selectedDrawerItem.observe(lifeCycleOwner) { selectedItem ->
-                        if (selectedItem == null) return@observe
-                        val route = selectedItem.tag.toString()
-                        val identifier = selectedItem.identifier.toInt()
-                        when {
-                            route == "activity:sim" -> openActivity(CalculatorMainActivity::class.java)
-                            route == "activity:map" -> openActivity(MapsActivity::class.java)
-                            route.contains("url:") -> {
-                                route.split(":")[1].openWithCustomTab(this@NavActivity)
-                            }
-
-                            identifier == 999 -> {
-                                val customLayout = AuthMethodPickerLayout
-                                    .Builder(R.layout.login_picker)
-                                    .setEmailButtonId(R.id.login_email)
-                                    .setPhoneButtonId(R.id.login_phone)
-                                    .setGoogleButtonId(R.id.login_google)
-                                    .setGithubButtonId(R.id.login_github)
-                                    .build()
-
-                                val providers = arrayListOf(
-                                    AuthUI.IdpConfig.EmailBuilder().build(),
-                                    AuthUI.IdpConfig.PhoneBuilder().build(),
-                                    AuthUI.IdpConfig.GoogleBuilder().build(),
-                                    AuthUI.IdpConfig.GitHubBuilder().build()
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        drawerContent = if (permanentDrawer) null else ({ drawer() }),
+                        drawerScrimColor = Color(0xFF121212)
+                    ) { padding ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = tag,
+                            modifier = Modifier.consumeWindowInsets(padding)
+                        ) {
+                            composable("ammunition/{caliber}") {
+                                AmmunitionListScreen(
+                                    caliber = it.arguments?.getString("caliber", null),
+                                    navViewModel = navViewModel,
+                                    tarkovRepo = tarkovRepo
                                 )
-                                val signInIntent = AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setAvailableProviders(providers)
-                                    .enableAnonymousUsersAutoUpgrade()
-                                    .setAuthMethodPickerLayout(customLayout)
-                                    .setTheme(R.style.LoginTheme2)
-                                    .setLogo(R.drawable.hideout_shadow_1)
-                                    .build()
-                                signInLauncher.launch(signInIntent)
                             }
+                            composable("gear/{category}") {
+                                GearListScreen(
+                                    category = it.arguments?.getString("category", null),
+                                    navViewModel = navViewModel,
+                                    tarkovRepo = tarkovRepo,
+                                    gearViewModel
+                                )
+                            }
+                            composable("keys") {
+                                KeyListScreen(
+                                    navViewModel = navViewModel,
+                                    tarkovRepo,
+                                    keysViewModel
+                                )
+                            }
+                            composable("medical") {
+                                MedicalListScreen(
+                                    tarkovRepo,
+                                    navViewModel = navViewModel
+                                )
+                            }
+                            composable("food") {
+                                ProvisionListScreen(navViewModel = navViewModel, tarkovRepo = tarkovRepo)
+                            }
+                            composable("flea") {
+                                FleaMarketScreen(navViewModel = navViewModel, fleaViewModel = fleaViewModel, tarkovRepo = tarkovRepo)
+                            }
+                            composable("weaponmods") {
+                                ModsListScreen(
+                                    tarkovRepo,
+                                    navViewModel
+                                )
+                            }
+                            composable("weapons/{classID}") {
+                                WeaponListScreen(
+                                    classID = it.arguments?.getString("classID") ?: "assaultRifle",
+                                    navViewModel,
+                                    tarkovRepo
+                                ) {
+                                    val intent = Intent(this@NavActivity, WeaponDetailActivity::class.java).apply {
+                                        putExtra("weaponID", it)
+                                    }
+                                    weaponDetailLauncher.launch(intent)
+                                }
+                            }
+                            composable("quests") {
+                                QuestMainScreen(
+                                    navViewModel,
+                                    questViewModel,
+                                    tarkovRepo
+                                )
+                            }
+                            composable("hideout") {
+                                HideoutMainScreen(
+                                    navViewModel,
+                                    hideoutViewModel,
+                                    tarkovRepo
+                                )
+                            }
+                            composable("weaponloadouts") {
+                                WeaponLoadoutScreen(
+                                    loadoutViewModel,
+                                    navViewModel,
+                                    tarkovRepo
+                                )
+                            }
+                            composable("bitcoin") {
+                                BitcoinPriceScreen(navViewModel, tarkovRepo)
+                            }
+                            composable("currency_converter") {
+                                CurrenyConverterScreen(navViewModel, tarkovRepo)
+                            }
+                            composable("sensitivity") {
+                                SensitivityCalculatorScreen(navViewModel, tarkovRepo, sensitivityViewModel, armorPickerLauncher)
+                            }
+                            composable("trader/{trader}") {
+                                TraderScreen(
+                                    it.arguments?.getString("trader"),
+                                    navViewModel,
+                                    tarkovRepo,
+                                    apolloClient
+                                )
+                            }
+                            composable("news") {
+                                NewsScreen(
+                                    navViewModel
+                                )
+                            }
+                            composable("skills") {
+                                CharacterSkillsScreen(navViewModel = navViewModel)
+                            }
+                            composable("restock") {
+                                RestockTimersScreen(
+                                    navViewModel,
+                                    apolloClient
+                                )
+                            }
+                            composable("price_alerts") {
+                                PriceAlertsScreen(navViewModel, tarkovRepo)
+                            }
+                            composable("server_pings") {
+                                ServerPingScreen(navViewModel, tarkovRepo)
+                            }
+                            composable("neededGrid") {
+                                ItemQuestHideoutGridScreen(
+                                    navViewModel,
+                                    tarkovRepo,
+                                    questViewModel,
+                                    hideoutViewModel
+                                )
+                            }
+                            composable("bosses") {
+                                BossesListScreen(
+                                    navViewModel,
+                                    apolloClient
+                                )
+                            }
+                            composable("map_info") {
+                                MapsListScreen(navViewModel = navViewModel, apolloClient = apolloClient)
+                            }
+                        }
 
-                            else -> {
-                                navController.navigate(route) {
-                                    restoreState = true
-                                    navController.popBackStack()
+                        // After NavHost so it runs before NavHost's own back callback, as onBackPressed did.
+                        BackHandler { handleBack(navController) }
+
+                        navViewModel.selectedDrawerItem.observe(lifeCycleOwner) { selectedItem ->
+                            if (selectedItem == null) return@observe
+                            val route = selectedItem.tag.toString()
+                            val identifier = selectedItem.identifier.toInt()
+                            when {
+                                route == "activity:sim" -> openActivity(CalculatorMainActivity::class.java)
+                                route == "activity:map" -> openActivity(MapsActivity::class.java)
+                                route.contains("url:") -> {
+                                    route.split(":")[1].openWithCustomTab(this@NavActivity)
+                                }
+
+                                identifier == 999 -> {
+                                    val customLayout = AuthMethodPickerLayout
+                                        .Builder(R.layout.login_picker)
+                                        .setEmailButtonId(R.id.login_email)
+                                        .setPhoneButtonId(R.id.login_phone)
+                                        .setGoogleButtonId(R.id.login_google)
+                                        .setGithubButtonId(R.id.login_github)
+                                        .build()
+
+                                    val providers = arrayListOf(
+                                        AuthUI.IdpConfig.EmailBuilder().build(),
+                                        AuthUI.IdpConfig.PhoneBuilder().build(),
+                                        AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        AuthUI.IdpConfig.GitHubBuilder().build()
+                                    )
+                                    val signInIntent = AuthUI.getInstance()
+                                        .createSignInIntentBuilder()
+                                        .setAvailableProviders(providers)
+                                        .enableAnonymousUsersAutoUpgrade()
+                                        .setAuthMethodPickerLayout(customLayout)
+                                        .setTheme(R.style.LoginTheme2)
+                                        .setLogo(R.drawable.hideout_shadow_1)
+                                        .build()
+                                    signInLauncher.launch(signInIntent)
+                                }
+
+                                else -> {
+                                    navController.navigate(route) {
+                                        restoreState = true
+                                        navController.popBackStack()
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    navViewModel.selectedDrawerItemIdentifier.observe(lifeCycleOwner) {
-                        if (it != null)
-                            navController.navigate(it.second)
-                    }
+                        navViewModel.selectedDrawerItemIdentifier.observe(lifeCycleOwner) {
+                            if (it != null)
+                                navController.navigate(it.second)
+                        }
 
-                    coroutineScope.launch {
-                        //TODO Default drawer selection still stays selected, needs fixed but works for now.
-                        delay(100)
-                        if (intent.hasExtra("fromNoti") && intent.hasExtra("trader")) {
-                            val trader = "trader/${intent.getStringExtra("trader")?.lowercase() ?: "prapor"}"
-                            when (intent.getStringExtra("trader")?.lowercase() ?: "prapor") {
-                                "prapor" -> navViewModel.drawerItemSelected(Pair((501).toLong(), trader))
-                                "therapist" -> navViewModel.drawerItemSelected(Pair((502).toLong(), trader))
-                                "skier" -> navViewModel.drawerItemSelected(Pair((503).toLong(), trader))
-                                "peacekeeper" -> navViewModel.drawerItemSelected(Pair((504).toLong(), trader))
-                                "mechanic" -> navViewModel.drawerItemSelected(Pair((505).toLong(), trader))
-                                "ragman" -> navViewModel.drawerItemSelected(Pair((506).toLong(), trader))
-                                "jaeger" -> navViewModel.drawerItemSelected(Pair((507).toLong(), trader))
+                        coroutineScope.launch {
+                            //TODO Default drawer selection still stays selected, needs fixed but works for now.
+                            delay(100)
+                            if (intent.hasExtra("fromNoti") && intent.hasExtra("trader")) {
+                                val trader = "trader/${intent.getStringExtra("trader")?.lowercase() ?: "prapor"}"
+                                when (intent.getStringExtra("trader")?.lowercase() ?: "prapor") {
+                                    "prapor" -> navViewModel.drawerItemSelected(Pair((501).toLong(), trader))
+                                    "therapist" -> navViewModel.drawerItemSelected(Pair((502).toLong(), trader))
+                                    "skier" -> navViewModel.drawerItemSelected(Pair((503).toLong(), trader))
+                                    "peacekeeper" -> navViewModel.drawerItemSelected(Pair((504).toLong(), trader))
+                                    "mechanic" -> navViewModel.drawerItemSelected(Pair((505).toLong(), trader))
+                                    "ragman" -> navViewModel.drawerItemSelected(Pair((506).toLong(), trader))
+                                    "jaeger" -> navViewModel.drawerItemSelected(Pair((507).toLong(), trader))
+                                }
                             }
                         }
                     }
