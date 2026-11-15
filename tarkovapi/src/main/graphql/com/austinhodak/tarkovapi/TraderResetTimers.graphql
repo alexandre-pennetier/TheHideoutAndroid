@@ -1,6 +1,6 @@
 query TraderResetTimers {
-    traderResetTimes {
-        name
-        resetTimestamp
+    traderResetTimes: traders {
+        name: normalizedName
+        resetTimestamp: resetTime
     }
 }

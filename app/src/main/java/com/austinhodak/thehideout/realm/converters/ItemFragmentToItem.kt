@@ -203,7 +203,7 @@ suspend fun ItemFragment.toRealmItem(realm: MutableRealm, apollo: ApolloClient):
                         speedPenalty = armorAttachment.speedPenalty
                         turnPenalty = armorAttachment.turnPenalty
                         ergoPenalty = armorAttachment.ergoPenalty?.toDouble()
-                        armorAttachment.headZones?.let {
+                        armorAttachment.zones?.let {
                             headZones = it.filterNotNull().toRealmList()
                         }
                         material = ArmorMaterial().apply {

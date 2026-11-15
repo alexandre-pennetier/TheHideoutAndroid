@@ -24,12 +24,13 @@ fragment TaskFragment on Task {
             id
         }
     }
-    traderLevelRequirements {
+    traderRequirements {
         id
         trader {
             id
         }
-        level
+        requirementType
+        value
     }
     objectives {
         id
@@ -75,7 +76,7 @@ fragment TaskFragment on Task {
         ... on TaskObjectiveItem {
             minDurability
             maxDurability
-            item {
+            items {
                 id
             }
             count
@@ -102,7 +103,7 @@ fragment TaskFragment on Task {
             count
             zoneNames
             bodyParts
-            target
+            targetNames
             distance {
                 value
                 compareMethod
@@ -154,6 +155,41 @@ fragment TaskFragment on Task {
                 id
             }
             level
+        }
+        ... on TaskObjectiveBasic {
+            requiredKeys {
+                id
+            }
+        }
+        ... on TaskObjectiveExtract {
+            requiredKeys {
+                id
+            }
+        }
+        ... on TaskObjectiveItem {
+            requiredKeys {
+                id
+            }
+        }
+        ... on TaskObjectiveMark {
+            requiredKeys {
+                id
+            }
+        }
+        ... on TaskObjectiveQuestItem {
+            requiredKeys {
+                id
+            }
+        }
+        ... on TaskObjectiveShoot {
+            requiredKeys {
+                id
+            }
+        }
+        ... on TaskObjectiveUseItem {
+            requiredKeys {
+                id
+            }
         }
     }
     startRewards {
@@ -219,14 +255,6 @@ fragment TaskFragment on Task {
         }
     }
     factionName
-    neededKeys {
-        keys {
-            id
-        }
-        map {
-            id
-        }
-    }
     descriptionMessageId
     failMessageId
     startMessageId

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.MapEnums
 import com.austinhodak.tarkovapi.MapsQuery
+import com.austinhodak.tarkovapi.models.name
 import com.austinhodak.tarkovapi.utils.openActivity
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R

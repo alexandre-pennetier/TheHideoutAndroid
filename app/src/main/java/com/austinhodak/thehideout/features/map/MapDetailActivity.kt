@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.MapEnums
 import com.austinhodak.tarkovapi.MapsQuery
+import com.austinhodak.tarkovapi.models.name
 import com.austinhodak.tarkovapi.repository.TarkovRepo
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.ui.common.LoadingItem

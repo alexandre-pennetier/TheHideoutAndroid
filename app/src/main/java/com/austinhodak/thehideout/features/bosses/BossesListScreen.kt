@@ -21,6 +21,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.apollographql.apollo.ApolloClient
 import com.austinhodak.tarkovapi.MapEnums
 import com.austinhodak.tarkovapi.MapsQuery
+import com.austinhodak.tarkovapi.models.name
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.ui.common.LoadingItem

@@ -1,17 +1,9 @@
-query Item(
-    $id: ID!
-) {
-    item(id: $id) {
-        ...ItemFragment
-    }
-}
-
 fragment ItemFragment on Item {
     id
     name
     shortName
     iconLink
-    imageLink
+    imageLink: inspectImageLink
     gridImageLink
     avg24hPrice
     basePrice
@@ -43,7 +35,7 @@ fragment ContainsItem on ContainedItem {
         name
         shortName
         iconLink
-        imageLink
+        imageLink: inspectImageLink
         gridImageLink
         avg24hPrice
         basePrice
@@ -66,11 +58,18 @@ fragment ContainsItem on ContainedItem {
 }
 
 fragment ItemPrice on ItemPrice {
-    source
-    price
-    requirements {
-        type
-        value
+    vendor {
+        normalizedName
+        ... on TraderOffer {
+            minTraderLevel
+            taskUnlock {
+                tarkovDataId
+            }
+        }
+        ... on FleaMarket {
+            minPlayerLevel
+        }
     }
+    price
     currency
 }

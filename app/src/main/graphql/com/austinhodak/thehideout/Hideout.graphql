@@ -37,7 +37,7 @@ query Hideout {
                 trader {
                     id
                 }
-                level
+                value
             }
             crafts {
                 id

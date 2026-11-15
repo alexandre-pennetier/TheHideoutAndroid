@@ -9,14 +9,18 @@ query Maps {
         raidDuration
         players
         bosses {
-            name
+            boss {
+                name
+            }
             spawnChance
             spawnLocations {
                 name
                 chance
             }
             escorts {
-                name
+                boss {
+                    name
+                }
                 amount {
                     count
                     chance

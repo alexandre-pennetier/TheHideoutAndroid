@@ -1,6 +1,9 @@
 query Barters {
     barters {
-        source
+        trader {
+            name
+        }
+        level
         requiredItems {
             ...TaskItem
         }

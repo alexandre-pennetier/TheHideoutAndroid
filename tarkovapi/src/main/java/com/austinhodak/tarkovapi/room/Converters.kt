@@ -1,8 +1,6 @@
 package com.austinhodak.tarkovapi.room
 
 import androidx.room.TypeConverter
-import com.austinhodak.tarkovapi.fragment.RepFragment
-import com.austinhodak.tarkovapi.fragment.TraderFragment
 import com.austinhodak.tarkovapi.room.enums.ItemTypes
 import com.austinhodak.tarkovapi.room.models.*
 import com.austinhodak.tarkovapi.type.ItemType
@@ -140,19 +138,6 @@ class Converters {
 
     @TypeConverter
     fun fromTraderFragment(value: Quest.TraderFragment?): String? {
-        if (value == null) return null
-        return Gson().toJson(value)
-    }
-
-    @TypeConverter
-    fun toRepFragment(value: String?): List<RepFragment>? {
-        val filterType: Type = object : TypeToken<ArrayList<RepFragment>?>() {}.type
-        if (value == null) return null
-        return Gson().fromJson(value, filterType)
-    }
-
-    @TypeConverter
-    fun fromRepFragment(value: List<RepFragment>?): String? {
         if (value == null) return null
         return Gson().toJson(value)
     }

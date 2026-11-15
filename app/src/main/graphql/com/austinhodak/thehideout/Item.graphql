@@ -81,7 +81,7 @@ fragment ItemFragment on Item {
             speedPenalty
             turnPenalty
             ergoPenalty
-            headZones
+            zones
             material {
                 ...ArmorMaterial
             }

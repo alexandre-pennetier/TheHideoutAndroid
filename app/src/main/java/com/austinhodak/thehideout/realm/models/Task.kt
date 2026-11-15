@@ -9,9 +9,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.austinhodak.thehideout.TasksQuery
-import com.austinhodak.thehideout.realm.converters.findObjectById
+import com.austinhodak.thehideout.base.Result
 import com.austinhodak.thehideout.firebase.models.TaskStatus
 import com.austinhodak.thehideout.firebase.models.UserData
+import com.austinhodak.thehideout.fragment.TaskFragment
+import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveBasic
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveBuildItem
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveExperience
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveExtract
@@ -23,6 +25,8 @@ import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTa
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveSkill
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveTaskStatus
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveTraderLevel
+import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveUseItem
+import com.austinhodak.thehideout.realm.converters.findObjectById
 import io.github.xilinjia.krdb.MutableRealm
 import io.github.xilinjia.krdb.ext.realmListOf
 import io.github.xilinjia.krdb.ext.toRealmList
@@ -31,7 +35,6 @@ import io.github.xilinjia.krdb.types.RealmList
 import io.github.xilinjia.krdb.types.RealmObject
 import io.github.xilinjia.krdb.types.annotations.PrimaryKey
 import kotlinx.coroutines.flow.callbackFlow
-import com.austinhodak.thehideout.base.Result
 import com.google.android.gms.tasks.Task as FSTask
 
 class Task : RealmObject {
@@ -286,14 +289,17 @@ fun TasksQuery.Data.Task.toRealm(realm: MutableRealm): Task {
                 status = it.status.filterNotNull().toRealmList()
             }
         }.toRealmList() ?: realmListOf()
-        //traderLevelRequirements.addAll(t.traderLevelRequirements.map { it.toRealm(realmObject) })
-        traderLevelRequirements = t.traderLevelRequirements.filterNotNull().map {
-            RequirementTrader().apply {
-                trader = it.trader.id.let { findObjectById(realm, it) }
-                level = it.level ?: 0
-                id = it.id
-            }
-        }.toRealmList()
+        traderLevelRequirements =
+            t.traderRequirements
+                .filterNotNull()
+                .filter { it.requirementType == "level" }
+                .map {
+                    RequirementTrader().apply {
+                        trader = it.trader.id.let { findObjectById(realm, it) }
+                        level = it.value ?: 0
+                        id = it.id
+                    }
+                }.toRealmList()
         //objectives.addAll(t.objectives.map { it.toRealm(realmObject) })
         objectives = t.objectives.map { task ->
             TaskObjective().apply {
@@ -357,7 +363,7 @@ fun TasksQuery.Data.Task.toRealm(realm: MutableRealm): Task {
 
                 taskObjectiveItem = task?.asTaskObjectiveItem()?.let {
                     TaskObjective.TaskObjectiveItem().apply {
-                        item = findObjectById(realm, it.item.id)
+                        item = it.items.firstOrNull()?.let { i -> findObjectById(realm, i.id) }
                         count = it.count
                         foundInRaid = it.foundInRaid
                         dogTagLevel = it.dogTagLevel
@@ -387,7 +393,7 @@ fun TasksQuery.Data.Task.toRealm(realm: MutableRealm): Task {
 
                 taskObjectiveShoot = task?.asTaskObjectiveShoot()?.let { s ->
                     TaskObjective.TaskObjectiveShoot().apply {
-                        target = s.target
+                        target = s.targetNames.filterNotNull().joinToString(", ")
                         count = s.count
                         zoneNames = s.zoneNames.filterNotNull().toRealmList()
                         bodyParts = s.bodyParts.filterNotNull().toRealmList()
@@ -537,13 +543,18 @@ fun TasksQuery.Data.Task.toRealm(realm: MutableRealm): Task {
             }
         }
         factionName = t.factionName
-        neededKeys = t.neededKeys?.filterNotNull()?.map {
-            TaskKey().apply {
-                keys = it.keys.filterNotNull().mapNotNull { findObjectById<Item>(realm, it.id) }
-                    .toRealmList()
-                map = it.map?.id?.let { findObjectById(realm, it) }
-            }
-        }?.toRealmList() ?: realmListOf()
+        // Keys now live on each objective (requiredKeys); keep the per-map TaskKey list the UI reads.
+        neededKeys =
+            t.objectives
+                .filterNotNull()
+                .mapNotNull { o ->
+                    val keyIds = o.requiredKeyIds()
+                    if (keyIds.isEmpty()) return@mapNotNull null
+                    TaskKey().apply {
+                        keys = keyIds.mapNotNull { findObjectById<Item>(realm, it) }.toRealmList()
+                        map = o.maps.firstOrNull()?.id?.let { findObjectById(realm, it) }
+                    }
+                }.toRealmList()
         descriptionMessageId = t.descriptionMessageId
         successMessageId = t.successMessageId
         failMessageId = t.failMessageId
@@ -585,4 +596,17 @@ val sampleTask = Task().apply {
             }
         }
     ).toRealmList()
+}
+
+// requiredKeys is declared per objective type, not on the TaskObjective interface.
+private fun TaskFragment.Objective.requiredKeyIds(): List<String> {
+    val ids =
+        asTaskObjectiveBasic()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+            ?: asTaskObjectiveExtract()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+            ?: asTaskObjectiveItem()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+            ?: asTaskObjectiveMark()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+            ?: asTaskObjectiveQuestItem()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+            ?: asTaskObjectiveShoot()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+            ?: asTaskObjectiveUseItem()?.requiredKeys?.flatMap { it.orEmpty() }?.map { it?.id }
+    return ids.orEmpty().filterNotNull()
 }

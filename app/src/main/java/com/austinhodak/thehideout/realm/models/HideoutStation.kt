@@ -89,7 +89,7 @@ fun HideoutQuery.Data.HideoutStation.toRealm(realm: MutableRealm): HideoutStatio
                 it.traderRequirements.filterNotNull().map {
                     RequirementTrader().apply {
                         trader = it.trader.id.let { findObjectById(realm, it) }
-                        level = it.level ?: 0
+                        level = it.value ?: 0
                     }
                 }.let { traderRequirements = it.toRealmList() }
             }

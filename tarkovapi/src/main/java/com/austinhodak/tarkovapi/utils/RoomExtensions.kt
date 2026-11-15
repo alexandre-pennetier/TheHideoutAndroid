@@ -7,47 +7,68 @@ import com.austinhodak.tarkovapi.QuestsQuery
 import com.austinhodak.tarkovapi.fragment.ContainsItem
 import com.austinhodak.tarkovapi.fragment.ItemFragment
 import com.austinhodak.tarkovapi.fragment.ItemPrice
+import com.austinhodak.tarkovapi.fragment.QuestFragment
 import com.austinhodak.tarkovapi.room.enums.ItemTypes
 import com.austinhodak.tarkovapi.room.models.Barter
 import com.austinhodak.tarkovapi.room.models.Craft
 import com.austinhodak.tarkovapi.room.models.Pricing
 import com.austinhodak.tarkovapi.room.models.Quest
+import com.austinhodak.tarkovapi.type.ItemSourceName
 import com.austinhodak.tarkovapi.type.ItemType
+import com.austinhodak.tarkovapi.type.RequirementType
 import org.json.JSONObject
 import kotlin.math.roundToInt
 
-//Maps TarkovTools Quest Item to our Quest item.
+// Maps a tarkov.dev Task onto the legacy Room Quest (tarkovdata ids and objective type names).
 fun QuestsQuery.Quest.toQuest(): Quest {
-    val quest = this.questFragment
+    val task = this.questFragment
+    val trader = Quest.TraderFragment(task.trader.name, task.trader.id)
     return Quest(
-        quest.id,
-        quest.title,
-        quest.wikiLink,
-        quest.exp,
-        Quest.TraderFragment(
-            quest.giver.traderFragment.name,
-            quest.giver.traderFragment.id
-        ),
-        Quest.TraderFragment(
-            quest.turnin.traderFragment.name,
-            quest.turnin.traderFragment.id
-        ),
-        quest.unlocks,
-        Quest.QuestRequirement(
-            level = quest.requirements?.level,
-            quests = quest.requirements?.quests
-        ),
-        quest.objectives.map {
-            val obj = it?.objectiveFragment
-            Quest.QuestObjective(
-                obj?.id,
-                obj?.type,
-                obj?.target,
-                obj?.number,
-                obj?.location,
-                obj?.targetItem?.itemFragment?.toClass()
-            )
+        id = task.tarkovDataId?.toString() ?: task.id ?: "",
+        title = task.name,
+        wikiLink = task.wikiLink,
+        exp = task.experience,
+        giver = trader,
+        turnin = trader,
+        unlocks = task.finishRewards?.offerUnlock?.mapNotNull { it?.item?.id },
+        requirement =
+            Quest.QuestRequirement(
+                level = task.minPlayerLevel,
+                quests = task.taskRequirements.mapNotNull { it?.task?.tarkovDataId }.map { listOf(it) },
+            ),
+        objective = task.objectives.filterNotNull().map { it.toLegacyObjective() },
+    )
+}
+
+private fun QuestFragment.Objective.toLegacyObjective(): Quest.QuestObjective {
+    val item = onTaskObjectiveItem
+    val questItem = onTaskObjectiveQuestItem
+    val shoot = onTaskObjectiveShoot
+    val skill = onTaskObjectiveSkill
+    val traderLevel = onTaskObjectiveTraderLevel
+    val firstItem = item?.items?.firstOrNull()?.itemFragment
+    val (legacyType, target, number) =
+        when {
+            type == "findItem" && item != null -> Triple("find", firstItem?.name, item.count)
+            type == "giveItem" && item != null -> Triple("collect", firstItem?.name, item.count)
+            type == "findQuestItem" -> Triple("pickup", questItem?.questItem?.name, questItem?.count)
+            type == "giveQuestItem" -> Triple("collect", questItem?.questItem?.name, questItem?.count)
+            type == "plantItem" || type == "plantQuestItem" -> Triple("place", firstItem?.name ?: questItem?.questItem?.name, null)
+            type == "mark" -> Triple("mark", description, null)
+            type == "visit" -> Triple("locate", description, null)
+            shoot != null -> Triple("kill", shoot.targetNames.filterNotNull().joinToString(", "), shoot.count)
+            skill != null -> Triple("skill", skill.skillLevel.name, skill.skillLevel.level.toInt())
+            traderLevel != null -> Triple("reputation", traderLevel.trader.tarkovDataId?.toString(), traderLevel.level)
+            else -> Triple("warning", description, null)
         }
+    return Quest.QuestObjective(
+        id = id,
+        type = legacyType,
+        target = listOfNotNull(target),
+        number = number,
+        // Legacy code parses location as an Int map id; newer maps have none.
+        location = maps.firstOrNull()?.tarkovDataId?.takeIf { it.toIntOrNull() != null },
+        targetItem = firstItem?.toClass(),
     )
 }
 
@@ -155,19 +176,21 @@ fun ContainsItem.toClass(): Pricing.ContainsItem {
 }
 
 fun ItemPrice?.toBuySell(): Pricing.BuySellPrice {
-    val s = this
+    val vendor = this?.vendor
+    val trader = vendor?.onTraderOffer
+    val flea = vendor?.onFleaMarket
+    // Rebuild the legacy source/requirements shape from ItemPrice.vendor.
+    val requirements =
+        listOfNotNull(
+            trader?.minTraderLevel?.let { Pricing.BuySellPrice.Requirement(RequirementType.loyaltyLevel.rawValue, it) },
+            trader?.taskUnlock?.tarkovDataId?.let { Pricing.BuySellPrice.Requirement(RequirementType.questCompleted.rawValue, it) },
+            flea?.minPlayerLevel?.let { Pricing.BuySellPrice.Requirement(RequirementType.playerLevel.rawValue, it) },
+        )
     return Pricing.BuySellPrice(
-        s?.source?.rawValue,
-        s?.price,
-        s?.requirements?.mapNotNull { requirement ->
-            if (requirement?.type?.rawValue != null && requirement.value != null) {
-                Pricing.BuySellPrice.Requirement(
-                    requirement.type.rawValue,
-                    requirement.value
-                )
-            } else null
-        } ?: emptyList(),
-        s?.currency
+        if (flea != null) ItemSourceName.fleaMarket.rawValue else vendor?.normalizedName,
+        this?.price,
+        requirements,
+        this?.currency,
     )
 }
 
@@ -202,7 +225,7 @@ fun CraftsQuery.Craft.toCraft(): Craft {
                 }
             )
         },
-        source = source
+        source = "${station.name} level $level"
     )
 }
 
@@ -221,7 +244,7 @@ fun BartersQuery.Barter.toBarter(): Barter {
                 it?.taskItem?.item?.itemFragment?.toClass()
             )
         },
-        source = source
+        source = "${trader.name} LL$level"
     )
 }
 

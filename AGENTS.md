@@ -47,11 +47,14 @@ On launch, `Application.kt` initialises Firebase App Check, Mavericks, Qonversio
 - Refresh the local schemas: both modules have an Apollo `introspection {}` block, so run `gradlew.bat downloadServiceApolloSchemaFromIntrospection` (writes `schema.graphqls` in each module), then rebuild. If the endpoint is unreachable, print the SDL from upstream `schema-static.mjs` with graphql-js `printSchema` instead (that is how the current files were made).
 - Newer API features not used yet: the `gameMode` argument (regular vs PVE) on most queries, and new root queries (`achievements`, `skills`, `mastering`, `prestige`, `goonReports`, `lootContainers`, `stationaryWeapons`).
 
-### Known mismatches with the live API (found by validating the repo's `.graphql` files against upstream `schema-static.mjs`, commit 92f40c6, 2026-08-13)
+### Deprecated API usage
 
-1. Fixed: `app/.../Items.graphql` declared `ItemCategoryName` / `HandbookCategoryName` variables, which no longer exist upstream; they are `[String]` now.
-2. Deprecated (not yet removed) fields still used in `:app` queries: `Task.neededKeys`, `Task.traderLevelRequirements`, `RequirementTrader.level`, `TaskObjectiveItem.item`, `TaskObjectiveShoot.target`, `ItemPropertiesArmorAttachment.headZones`.
-3. `:tarkovapi` queries rely heavily on deprecated API: root `quests`, `traderResetTimes`, `itemsByName`, plus `Quest.*`, `Item.imageLink`, `Barter.source`, `Craft.source`, `ItemPrice.source/requirements`, `BossSpawn.name`, `BossEscort.name`. These can be removed upstream at any time; migrate to `tasks`, `traders { resetTime }`, `items(name:)`, etc.
+None: Apollo codegen reports zero deprecated-field warnings in either module (check with `gradlew.bat generateApolloSources --rerun-tasks` and look for "Use of deprecated field"). Keep it that way. How the legacy `:tarkovapi` data was moved off the deprecated API:
+
+- `Quests.graphql` aliases `quests: tasks` and `RoomExtensions.toQuest()` maps each Task onto the legacy Room `Quest` (id = `tarkovDataId`, which matches the ids stored in users' Firebase progress; objective types are translated to the old names such as `find`, `collect`, `kill` or `place`).
+- `ItemPrice.vendor` is turned back into the old `source` + `requirements` (`loyaltyLevel`, `questCompleted`, `playerLevel`) in `toBuySell()`. `ItemSourceName` and `RequirementType` are kept through `alwaysGenerateTypesMatching` in `tarkovapi/build.gradle`.
+- `Barter.source` / `Craft.source` strings are rebuilt as "<Trader> LL<n>" / "<Station> level <n>". Trader restock timers alias `traders { normalizedName resetTime }`. Boss and escort names come from `boss.name` via the extension properties in `tarkovapi/models/MapsQueryExtensions.kt`.
+- In `:app`, task keys come from `requiredKeys` on the objectives, trader levels from `traderRequirements` (`requirementType == "level"`, `value`), item objectives from `items`, shoot targets from `targetNames`, and armour zones from `zones`.
 
 ## Build and run
 

@@ -1,59 +1,67 @@
+# Legacy Room quest data, now built from the tasks API (root quests was deprecated).
 query Quests {
-    quests {
+    quests: tasks {
         ...QuestFragment
     }
 }
 
-fragment QuestFragment on Quest {
+fragment QuestFragment on Task {
     id
-    title
+    tarkovDataId
+    name
     wikiLink
-    exp
-    unlocks
-    requirements {
-        level
-        quests
-        ...PreRequisite
+    experience
+    minPlayerLevel
+    trader {
+        id
+        name
     }
-    giver {
-        ...TraderFragment
+    taskRequirements {
+        task {
+            tarkovDataId
+        }
     }
-    turnin {
-        ...TraderFragment
-    }
-    reputation {
-        ...RepFragment
+    finishRewards {
+        offerUnlock {
+            item {
+                id
+            }
+        }
     }
     objectives {
-        ...ObjectiveFragment
-    }
-}
-
-fragment PreRequisite on QuestRequirement {
-    prerequisiteQuests {
         id
+        type
+        description
+        maps {
+            tarkovDataId
+        }
+        ... on TaskObjectiveItem {
+            count
+            items {
+                ...ItemFragment
+            }
+        }
+        ... on TaskObjectiveQuestItem {
+            count
+            questItem {
+                name
+            }
+        }
+        ... on TaskObjectiveShoot {
+            count
+            targetNames
+        }
+        ... on TaskObjectiveSkill {
+            skillLevel {
+                name
+                level
+            }
+        }
+        ... on TaskObjectiveTraderLevel {
+            level
+            trader {
+                tarkovDataId
+            }
+        }
     }
-}
-
-fragment RepFragment on QuestRewardReputation {
-    trader {
-        ...TraderFragment
-    }
-    amount
-}
-
-fragment TraderFragment on Trader {
-    id
-    name
-}
-
-fragment ObjectiveFragment on QuestObjective {
-    id
-    type
-    target
-    targetItem {
-        ...ItemFragment
-    }
-    number
-    location
 }

@@ -9,6 +9,8 @@ plugins {
 apollo {
     service("service") {
         packageName.set("com.austinhodak.tarkovapi")
+        // Enums no longer selected by any query but still used by Kotlin code.
+        alwaysGenerateTypesMatching.set(["ItemSourceName", "RequirementType"])
         introspection {
             endpointUrl.set("https://api.tarkov.dev/graphql")
             schemaFile.set(file("src/main/graphql/com/austinhodak/tarkovapi/schema.graphqls"))
