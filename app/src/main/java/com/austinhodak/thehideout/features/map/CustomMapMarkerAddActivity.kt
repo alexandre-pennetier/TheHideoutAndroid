@@ -1,7 +1,6 @@
 package com.austinhodak.thehideout.features.map
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -33,20 +32,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.res.ResourcesCompat
-import coil.compose.rememberAsyncImagePainter
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.ui.theme.Bender
-import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.compose.theme.White
 import com.austinhodak.thehideout.features.map.models.CustomMarker
+import com.austinhodak.thehideout.features.map.models.CustomMarkers
+import com.austinhodak.thehideout.ui.theme.Bender
+import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.openWithCustomTab
-import com.austinhodak.thehideout.utils.userFirestore
-
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.Firebase
-import timber.log.Timber
 import java.lang.reflect.Field
 
 class CustomMapMarkerAddActivity : AppCompatActivity() {
@@ -92,13 +84,9 @@ class CustomMapMarkerAddActivity : AppCompatActivity() {
                             actions = {
                                 if (!customMarker.id.isNullOrEmpty()) {
                                     IconButton(onClick = {
-                                        userFirestore()?.collection("markers")?.document(customMarker.id!!)?.delete()?.addOnSuccessListener {
-                                            Toast.makeText(this@CustomMapMarkerAddActivity, "Marker deleted.", Toast.LENGTH_SHORT).show()
-                                            finish()
-                                        }?.addOnFailureListener {
-                                            Toast.makeText(this@CustomMapMarkerAddActivity, "Error deleting marker. Please try again.", Toast.LENGTH_SHORT).show()
-                                            Firebase.crashlytics.recordException(it)
-                                        }
+                                        CustomMarkers.delete(customMarker.id!!)
+                                        Toast.makeText(this@CustomMapMarkerAddActivity, "Marker deleted.", Toast.LENGTH_SHORT).show()
+                                        finish()
                                     }) {
                                         Icon(painter = painterResource(id = R.drawable.ic_baseline_delete_24), contentDescription = null, tint = White)
                                     }
@@ -119,22 +107,10 @@ class CustomMapMarkerAddActivity : AppCompatActivity() {
                             }
 
                             //Add marker if all fields are filled.
-                            if (customMarker.id.isNullOrEmpty()) {
-                                //New marker, not editing.
-                                userFirestore()?.collection("markers")?.add(customMarker)?.addOnSuccessListener {
-                                    Toast.makeText(this, "Marker added!", Toast.LENGTH_SHORT).show()
-                                    finish()
-                                }?.addOnFailureListener {
-                                    Toast.makeText(this, "Error occurred, please try again later.", Toast.LENGTH_SHORT).show()
-                                }
-                            } else {
-                                userFirestore()?.collection("markers")?.document(customMarker.id!!)?.set(customMarker, SetOptions.merge())?.addOnSuccessListener {
-                                    Toast.makeText(this, "Marker updated!", Toast.LENGTH_SHORT).show()
-                                    finish()
-                                }?.addOnFailureListener {
-                                    Toast.makeText(this, "Error occurred, please try again later.", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            val isNew = customMarker.id.isNullOrEmpty()
+                            CustomMarkers.save(customMarker)
+                            Toast.makeText(this, if (isNew) "Marker added!" else "Marker updated!", Toast.LENGTH_SHORT).show()
+                            finish()
                         }) {
                             Icon(painterResource(id = R.drawable.ic_baseline_save_24), contentDescription = null, tint = Color.Black)
                         }

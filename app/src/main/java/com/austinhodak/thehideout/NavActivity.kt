@@ -35,12 +35,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
-import com.afollestad.materialdialogs.MaterialDialog
 import com.austinhodak.tarkovapi.repository.TarkovRepo
 import com.austinhodak.tarkovapi.room.enums.ItemTypes
 import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.thehideout.features.ammunition.AmmunitionListScreen
-import com.austinhodak.thehideout.features.bitcoin.BitcoinPriceScreen
 import com.austinhodak.thehideout.features.bosses.BossesListScreen
 import com.austinhodak.thehideout.features.calculator.CalculatorMainActivity
 import com.austinhodak.thehideout.features.currency.CurrenyConverterScreen
@@ -61,8 +59,6 @@ import com.austinhodak.thehideout.features.provisions.ProvisionListScreen
 import com.austinhodak.thehideout.features.quests.QuestMainScreen
 import com.austinhodak.thehideout.features.quests.viewmodels.QuestMainViewModel
 import com.austinhodak.thehideout.features.skills.CharacterSkillsScreen
-import com.austinhodak.thehideout.features.team.TeamManagementActivity
-import com.austinhodak.thehideout.features.tools.PriceAlertsScreen
 import com.austinhodak.thehideout.features.tools.SensitivityCalculatorScreen
 import com.austinhodak.thehideout.features.tools.ServerPingScreen
 import com.austinhodak.thehideout.features.tools.viewmodels.SensitivityViewModel
@@ -77,12 +73,7 @@ import com.austinhodak.thehideout.ui.common.PERMANENT_DRAWER_MIN_WIDTH_DP
 import com.austinhodak.thehideout.ui.legacy.MainDrawer
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import com.firebase.ui.auth.AuthMethodPickerLayout
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.ErrorCodes
-import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.google.firebase.auth.FirebaseAuth
 import com.maxkeppeker.sheets.core.models.base.Header
 import com.maxkeppeker.sheets.core.models.base.SelectionButton
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
@@ -115,26 +106,6 @@ class NavActivity : GodActivity() {
 
     @Inject
     lateinit var tarkovRepo: TarkovRepo
-
-    private val signInLauncher = registerForActivityResult(
-        FirebaseAuthUIActivityResultContract()
-    ) {
-        val response = it.idpResponse
-
-        if (it.resultCode == RESULT_OK) {
-            //USER SIGNED IN
-            restartNavActivity()
-        } else {
-            if (response?.error?.errorCode == ErrorCodes.ANONYMOUS_UPGRADE_MERGE_CONFLICT) {
-                val nonAnonymousCredential = response.credentialForLinking
-                nonAnonymousCredential?.let {
-                    FirebaseAuth.getInstance().signInWithCredential(nonAnonymousCredential).addOnSuccessListener {
-                        restartNavActivity()
-                    }
-                }
-            }
-        }
-    }
 
     private val weaponDetailLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -222,8 +193,6 @@ class NavActivity : GodActivity() {
                 launchPremiumPusher()
             }
         }
-
-        setupInviteLinks()
 
         setContent {
             val scaffoldState = rememberScaffoldState()
@@ -383,9 +352,6 @@ class NavActivity : GodActivity() {
                                     tarkovRepo
                                 )
                             }
-                            composable("bitcoin") {
-                                BitcoinPriceScreen(navViewModel, tarkovRepo)
-                            }
                             composable("currency_converter") {
                                 CurrenyConverterScreen(navViewModel, tarkovRepo)
                             }
@@ -413,9 +379,6 @@ class NavActivity : GodActivity() {
                                     navViewModel,
                                     apolloClient
                                 )
-                            }
-                            composable("price_alerts") {
-                                PriceAlertsScreen(navViewModel, tarkovRepo)
                             }
                             composable("server_pings") {
                                 ServerPingScreen(navViewModel, tarkovRepo)
@@ -453,32 +416,6 @@ class NavActivity : GodActivity() {
                                     route.split(":")[1].openWithCustomTab(this@NavActivity)
                                 }
 
-                                identifier == 999 -> {
-                                    val customLayout = AuthMethodPickerLayout
-                                        .Builder(R.layout.login_picker)
-                                        .setEmailButtonId(R.id.login_email)
-                                        .setPhoneButtonId(R.id.login_phone)
-                                        .setGoogleButtonId(R.id.login_google)
-                                        .setGithubButtonId(R.id.login_github)
-                                        .build()
-
-                                    val providers = arrayListOf(
-                                        AuthUI.IdpConfig.EmailBuilder().build(),
-                                        AuthUI.IdpConfig.PhoneBuilder().build(),
-                                        AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        AuthUI.IdpConfig.GitHubBuilder().build()
-                                    )
-                                    val signInIntent = AuthUI.getInstance()
-                                        .createSignInIntentBuilder()
-                                        .setAvailableProviders(providers)
-                                        .enableAnonymousUsersAutoUpgrade()
-                                        .setAuthMethodPickerLayout(customLayout)
-                                        .setTheme(R.style.LoginTheme2)
-                                        .setLogo(R.drawable.hideout_shadow_1)
-                                        .build()
-                                    signInLauncher.launch(signInIntent)
-                                }
-
                                 else -> {
                                     navController.navigate(route) {
                                         restoreState = true
@@ -512,22 +449,6 @@ class NavActivity : GodActivity() {
                     }
                 }
             }
-        }
-    }
-
-    // Team invites are plain https://thehideout.io/invite/<teamId> links (Firebase Dynamic Links was shut down).
-    private fun setupInviteLinks() {
-        val deepLink = intent.data?.takeIf { it.host == "thehideout.io" && it.path?.startsWith("/invite/") == true } ?: return
-        MaterialDialog(this).show {
-            title(text = "Join Team?")
-            message(text = "You've clicked an invite link, do you want to join this team?")
-            positiveButton(text = "JOIN") {
-                deepLink.acceptTeamInvite {
-                    Toast.makeText(this@NavActivity, "Team joined successfully!", Toast.LENGTH_SHORT).show()
-                    openActivity(TeamManagementActivity::class.java)
-                }
-            }
-            negativeButton(text = "NEVERMIND")
         }
     }
 

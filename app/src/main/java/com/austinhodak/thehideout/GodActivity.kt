@@ -43,19 +43,9 @@ open class GodActivity : ComponentActivity() {
 
     private fun setupPlayerInfoSync() {
         fsUser.value?.let { user ->
-            val displayName = UserSettingsModel.playerIGN.value
-            if (user.displayName != displayName) {
-                userFirestore()?.update("displayName", displayName)
-            }
-
-            val discordUsername = UserSettingsModel.discordName.value
-            if (user.discordUsername != discordUsername) {
-                userFirestore()?.update("discordUsername", discordUsername)
-            }
-
             val playerLevel = UserSettingsModel.playerLevel.value
             if (user.playerLevel != playerLevel) {
-                userFirestore()?.update("playerLevel", playerLevel)
+                userFirestore().update("playerLevel", playerLevel)
             }
         }
     }

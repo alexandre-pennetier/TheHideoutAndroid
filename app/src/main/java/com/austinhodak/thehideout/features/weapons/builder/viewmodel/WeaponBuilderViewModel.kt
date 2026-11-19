@@ -12,10 +12,6 @@ import com.austinhodak.tarkovapi.room.models.Mod
 import com.austinhodak.tarkovapi.room.models.Weapon
 import com.austinhodak.thehideout.features.weapons.builder.WeaponBuild
 import com.austinhodak.thehideout.firebase.WeaponBuildFirestore
-import com.austinhodak.thehideout.utils.uid
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -31,16 +27,11 @@ class WeaponBuilderViewModel @Inject constructor(
     private val _userLoadouts = MutableLiveData<List<WeaponBuildFirestore>?>(null)
     val userLoadouts = _userLoadouts
 
-    init {
-        Firebase.firestore.collection("loadouts").whereEqualTo("uid", uid()).addSnapshotListener { value, error ->
-            val loadouts = ArrayList<WeaponBuildFirestore>()
-            for (doc in value!!) {
-                val loadout = doc.toObject<WeaponBuildFirestore>()
-                doc.id.also { loadout.id = it }
-                loadouts.add(loadout)
-            }
-            _userLoadouts.value = loadouts
-        }
+    private val loadoutsListener = WeaponBuildFirestore.listen { _userLoadouts.value = it }
+
+    override fun onCleared() {
+        loadoutsListener.close()
+        super.onCleared()
     }
 
     var buildState by mutableStateOf<WeaponBuild?>(WeaponBuild())
@@ -219,22 +210,9 @@ class WeaponBuilderViewModel @Inject constructor(
     }
 
     fun saveBuild(done: (Boolean) -> Unit) {
-        if (savedBuild == null) {
-            buildState?.toFirestore()?.let {
-                Firebase.firestore.collection("loadouts").add(it).addOnSuccessListener {
-                    done(true)
-                }
-            }
-        } else if (savedBuild != null) {
-            buildState?.toFirestore()?.let {
-                savedBuild!!.id?.let { id ->
-                    buildState?.toFirestore()?.let { save ->
-                        Firebase.firestore.collection("loadouts").document(id).set(save).addOnSuccessListener {
-                            done(true)
-                        }
-                    }
-                }
-            }
-        }
+        val build = buildState?.toFirestore() ?: return
+        val id = savedBuild?.id
+        if (id == null) WeaponBuildFirestore.add(build) else WeaponBuildFirestore.replace(id, build)
+        done(true)
     }
 }

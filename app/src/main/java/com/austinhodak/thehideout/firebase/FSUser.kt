@@ -1,13 +1,10 @@
 package com.austinhodak.thehideout.firebase
 
 import com.austinhodak.tarkovapi.room.models.Item
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.IgnoreExtraProperties
 import timber.log.Timber
 import java.io.Serializable
 
-@IgnoreExtraProperties
-data class FSUser (
+data class FSUser(
     val discordUsername: String? = null,
     val displayName: String? = null,
     val playerLevel: Int? = null,
@@ -25,8 +22,7 @@ data class FSUser (
     fun getUsername() = if (!displayName.isNullOrEmpty()) displayName else if (!discordUsername.isNullOrEmpty()) discordUsername else "Teammate"
     fun hasKey(item: Item) = keys?.containsKey(item.id) == true
 
-    @IgnoreExtraProperties
-    data class Progress (
+    data class Progress(
         val quests: HashMap<String, Quest>? = null,
         val questObjectives: HashMap<String, QuestObjective>? = null,
         val hideoutModules: HashMap<String, Hideout>? = null,
@@ -55,30 +51,26 @@ data class FSUser (
             Timber.d(getCompletedHideoutIDs().toString())
         }
 
-        @IgnoreExtraProperties
-        data class Quest (
+        data class Quest(
             val completed: Boolean? = null,
-            val timestamp: Timestamp? = null
+            val timestamp: Long? = null,
         )
 
-        @IgnoreExtraProperties
-        data class QuestObjective (
+        data class QuestObjective(
             val completed: Boolean? = null,
-            val timestamp: Timestamp? = null,
-            val progress: Int? = null
+            val timestamp: Long? = null,
+            val progress: Int? = null,
         )
 
-        @IgnoreExtraProperties
-        data class Hideout (
+        data class Hideout(
             val completed: Boolean? = null,
-            val timestamp: Timestamp? = null
+            val timestamp: Long? = null,
         )
 
-        @IgnoreExtraProperties
-        data class HideoutObjective (
+        data class HideoutObjective(
             val completed: Boolean? = null,
-            val timestamp: Timestamp? = null,
-            val progress: Int? = null
+            val timestamp: Long? = null,
+            val progress: Int? = null,
         )
     }
 }

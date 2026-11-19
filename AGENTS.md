@@ -8,7 +8,7 @@ Guidance for humans and AI coding agents working on **The Hideout: Tarkov Sideki
 
 | Module | Purpose |
 |---|---|
-| `:app` | The application: Compose + legacy View UI, Hilt DI, Realm cache, Firebase, sync workers. Product flavors `beta` and `full`. |
+| `:app` | The application: Compose + legacy View UI, Hilt DI, Realm cache, local user store, sync workers. Product flavors `beta` and `full`. |
 | `:tarkovapi` | Library: legacy data layer (Room DB with bundled `hideout_database_*.db` assets), Apollo GraphQL for older screens, models, API helpers. |
 
 Both modules have their own Apollo service and their own `schema.graphqls` + `.graphql` files:
@@ -28,8 +28,8 @@ Both modules have their own Apollo service and their own `schema.graphqls` + `.g
 | DI | Hilt / Dagger 2.60.1 (via **KSP**), androidx.hilt 1.4.0 | |
 | Networking | Apollo Kotlin 5.2.0 (GraphQL), Retrofit 3.0.0 + OkHttp 5.5.1 + Gson | |
 | Local storage | krdb 3.3.7 (community fork of Realm Kotlin, package `io.github.xilinjia.krdb`, local only) in `:app`; Room 2.8.5 (KSP) in `:tarkovapi`; Apollo SQL normalized cache (currently disabled in `ApolloModule`) | |
-| Backend services | Firebase (BoM 35.2.0, main artifacts, no `-ktx`: Auth, Firestore, Messaging, Crashlytics, Perf, AppCheck, Functions; FirebaseUI Auth 9.1.1), Sentry 8.64.0, Qonversion 9.8.0 (premium), Google Maps (maps-compose 9.0.1), ML Kit text recognition (item scanner), CameraX | |
-| Images/other | Coil 2.7.0, Glide 4.16.0 (FirebaseUI Storage and legacy views), Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
+| Backend services | Firebase (BoM 35.2.0, main artifacts, no `-ktx`: Analytics, Messaging, Crashlytics, Perf, Remote Config; no Auth/Firestore/Realtime Database any more), Sentry 8.64.0, Qonversion 9.8.0 (premium), Google Maps (maps-compose 9.0.1), ML Kit text recognition (item scanner), CameraX | |
+| Images/other | Coil 2.7.0, Glide 4.16.0 (legacy views), Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
 | Quality | ktlint Gradle plugin 14.2.0 with per-module baselines in `config/ktlint/` (existing violations are baselined; new code must pass), Maestro UI flows in `.maestro/` | |
 | CI/CD | GitHub Actions in `.github/workflows/` (package, beta, release, secrets decode, emulator + Maestro), Fastlane in `fastlane/` | |
 
@@ -37,7 +37,7 @@ Version catalogs: `gradle/libs.versions.toml` (`libs.*`) and `gradle/androidx.ve
 
 ## Architecture in one paragraph
 
-On launch, `Application.kt` initialises Firebase App Check, Mavericks, Qonversion, notification channels and the legacy static helpers (maps, traders, rigs, skills). `data/sync/` (WorkManager `SyncWorker`, `Sync`, `SyncStatusMonitor`) pulls data from the tarkov.dev GraphQL API through `apollo/TarkovApiRepository` and writes it into Realm via `realm/RealmRepository` and the converters in `realm/converters/`. Screens under `features/<name>/` (Compose screens and Activities, each with `viewmodels/`) read from Realm/Room and the API. Per-user state (quest/hideout progress, favorites, price alerts, teams, weapon builds) lives in Firebase (`firebase/`). DI modules are in `di/`.
+On launch, `Application.kt` initialises the local store, Mavericks, Qonversion, notification channels and the legacy static helpers (maps, traders, rigs, skills). `data/sync/` (WorkManager `SyncWorker`, `Sync`, `SyncStatusMonitor`) pulls data from the tarkov.dev GraphQL API through `apollo/TarkovApiRepository` and writes it into Realm via `realm/RealmRepository` and the converters in `realm/converters/`. Screens under `features/<name>/` (Compose screens and Activities, each with `viewmodels/`) read from Realm/Room and the API. Per-user state lives on the device only (no account, no login): quest/hideout progress and keys, needed items and cart, weapon builds and custom map markers are in `local/LocalStore` (one JSON tree in `filesDir/local_store.json`: `user`, `tracker`, `loadouts`, `markers`), favorites and settings stay in DataStore. Settings > Export/Import progress writes and restores that JSON tree (favorites and settings are not part of it). The `firebase/` package only holds the data classes (`FSUser`, `User`, `WeaponBuildFirestore`) that Gson maps the tree onto; keep their field names stable (R8 keeps them). DI modules are in `di/`.
 
 ## tarkov.dev API
 
@@ -45,14 +45,14 @@ On launch, `Application.kt` initialises Firebase App Check, Mavericks, Qonversio
 - Queries run against the **live** API at runtime; the checked-in `schema.graphqls` is only used by Apollo codegen. A stale schema therefore hides breakage until the app runs.
 - Upstream schema source (useful for review and diffs): https://github.com/the-hideout/tarkov-api (`schema-static.mjs`).
 - Refresh the local schemas: both modules have an Apollo `introspection {}` block, so run `gradlew.bat downloadServiceApolloSchemaFromIntrospection` (writes `schema.graphqls` in each module), then rebuild. If the endpoint is unreachable, print the SDL from upstream `schema-static.mjs` with graphql-js `printSchema` instead (that is how the current files were made).
-- Game profiles (Settings > Display > Game profile, `UserSettingsModel.gameProfile`, enum `GameProfile`): PvP zone (default), PvE zone and PvP season. `GameModeInterceptor` (`di/`) adds `gameMode: "pve"` to every operation that declares `$gameMode` when the PvE zone is active, so new root queries that accept `gameMode` should declare `$gameMode: GameMode` and pass it. tarkov.dev only knows regular and PvE, so PvP season uses regular data. Progress is stored per profile in the Firestore user doc (`progress`/`keys` for PvP zone, `progressPve`/`keysPve`, `progressSeason`/`keysSeason`): write with `progressField` / `keysField` and read `FSUser` through `forActiveMode()` (all in `utils/GameMode.kt`). Switching between regular and PvE API data empties the Room price, quest, barter and craft tables and refreshes them (`applyGameModeToCache`). The Realm cache and `data/sync` path is not wired into the running app and was not changed. The legacy Realtime Database paths (`items`, `cart`) are write-only and are shared across profiles.
+- Game profiles (Settings > Display > Game profile, `UserSettingsModel.gameProfile`, enum `GameProfile`): PvP zone (default), PvE zone and PvP season. `GameModeInterceptor` (`di/`) adds `gameMode: "pve"` to every operation that declares `$gameMode` when the PvE zone is active, so new root queries that accept `gameMode` should declare `$gameMode: GameMode` and pass it. tarkov.dev only knows regular and PvE, so PvP season uses regular data. Progress is stored per profile in the `user` node of the local store (`progress`/`keys` for PvP zone, `progressPve`/`keysPve`, `progressSeason`/`keysSeason`): write with `progressField` / `keysField` and read `FSUser` through `forActiveMode()` (all in `utils/GameMode.kt`). Switching between regular and PvE API data empties the Room price, quest, barter and craft tables and refreshes them (`applyGameModeToCache`). The Realm cache and `data/sync` path is not wired into the running app and was not changed. The `tracker` node (needed items, `cart`) is shared across profiles. `local/Compat.kt` keeps the old call shapes (`FieldValue.delete()`, `ServerValue.increment()`, `userRefTracker(...)`, `userFirestore()`) so call sites did not change.
 - Newer API features not used yet: new root queries (`achievements`, `skills`, `mastering`, `prestige`, `goonReports`, `lootContainers`, `stationaryWeapons`).
 
 ### Deprecated API usage
 
 None: Apollo codegen reports zero deprecated-field warnings in either module (check with `gradlew.bat generateApolloSources --rerun-tasks` and look for "Use of deprecated field"). Keep it that way. How the legacy `:tarkovapi` data was moved off the deprecated API:
 
-- `Quests.graphql` aliases `quests: tasks` and `RoomExtensions.toQuest()` maps each Task onto the legacy Room `Quest` (id = `tarkovDataId`, which matches the ids stored in users' Firebase progress; objective types are translated to the old names such as `find`, `collect`, `kill` or `place`).
+- `Quests.graphql` aliases `quests: tasks` and `RoomExtensions.toQuest()` maps each Task onto the legacy Room `Quest` (id = `tarkovDataId`, which matches the ids stored in the local progress; objective types are translated to the old names such as `find`, `collect`, `kill` or `place`).
 - `ItemPrice.vendor` is turned back into the old `source` + `requirements` (`loyaltyLevel`, `questCompleted`, `playerLevel`) in `toBuySell()`. `ItemSourceName` and `RequirementType` are kept through `alwaysGenerateTypesMatching` in `tarkovapi/build.gradle`.
 - `Barter.source` / `Craft.source` strings are rebuilt as "<Trader> LL<n>" / "<Station> level <n>". Trader restock timers alias `traders { normalizedName resetTime }`. Boss and escort names come from `boss.name` via the extension properties in `tarkovapi/models/MapsQueryExtensions.kt`.
 - In `:app`, task keys come from `requiredKeys` on the objectives, trader levels from `traderRequirements` (`requirementType == "level"`, `value`), item objectives from `items`, shoot targets from `targetNames`, and armour zones from `zones`.
@@ -70,7 +70,7 @@ None: Apollo codegen reports zero deprecated-field warnings in either module (ch
 ## Secrets and external accounts
 
 - `app/google-services.json` and the Sentry DSN, Google Maps API key (`AndroidManifest.xml`) and Qonversion project key (`Application.kt`) are committed and belong to the original author's accounts. Do not add new secrets to the repo; do not copy these values into docs or logs.
-- Firebase-backed features (login, sync of progress, price alerts, teams, shared builds) depend on that Firebase project and App Check; a fork with a different signing key may not be authorised. API-driven screens (items, flea prices, tasks, traders, maps data) only need network access to tarkov.dev.
+- Removed in the local-storage change: login, cloud sync of progress, teams and invite links, price alerts, the price-history charts and the Bitcoin screen (they needed the original author's Firebase project and Cloud Functions). Still pointing at the original author's services, to remove next: `app/google-services.json` (Analytics, Crashlytics, Perf, Messaging topics, Remote Config), Qonversion (premium), Sentry DSN and the Maps key. API-driven screens (items, flea prices, tasks, traders, maps data) only need network access to tarkov.dev.
 - MongoDB Realm is end-of-life; the app uses the krdb fork for its local cache only (no sync). The Realm cache is deleted on schema mismatch (`deleteRealmIfMigrationNeeded`) and re-synced.
 
 ## Conventions
@@ -82,7 +82,7 @@ None: Apollo codegen reports zero deprecated-field warnings in either module (ch
 
 ## Known upgrade debt (tablet / current-Android readiness)
 
-- Toolchain and libraries are done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP, Compose BOM 2026.09, Firebase BoM 35, Qonversion 9). FirebaseUI Auth stays on 9.1.1 because 10.x changed its API. Team invites are plain `https://thehideout.io/invite/<teamId>` links handled in `NavActivity` (Firebase Dynamic Links was shut down); App Links verification for that host needs an `assetlinks.json` on thehideout.io.
+- Toolchain and libraries are done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP, Compose BOM 2026.09, Firebase BoM 35, Qonversion 9).
 - targetSdk 36 is done. Edge-to-edge is on for every activity (`EdgeToEdgeCallbacks` in `Application.kt`), and `HideoutTheme` / `HideoutTheme3` wrap content in `ui/common/SystemBarsBox`, which pads `WindowInsets.safeDrawing` and paints the bar areas. Screens that want to draw behind the bars must opt out of that box deliberately; nested inset modifiers add nothing because the box consumes the insets. Do not use `window.statusBarColor` or `setDecorFitsSystemWindows`.
 - Back handling: `onBackPressed()` overrides are not called at targetSdk 36 (predictive back). Use `onBackPressedDispatcher.addCallback` or Compose `BackHandler`; in `NavActivity` the `BackHandler` sits after `NavHost` so it runs first.
 - Native libraries are 16 KB page aligned (checked on the APK's arm64/x86_64 `.so` files).

@@ -1,20 +1,16 @@
 package com.austinhodak.thehideout
 
-import android.Manifest
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.Configuration
@@ -39,6 +35,7 @@ import com.austinhodak.tarkovapi.utils.Traders
 import com.austinhodak.tarkovapi.utils.WeaponPresets
 import com.austinhodak.thehideout.features.premium.viewmodels.checkEntitlement
 import com.austinhodak.thehideout.firebase.FSUser
+import com.austinhodak.thehideout.local.LocalStore
 import com.austinhodak.thehideout.utils.*
 import com.austinhodak.thehideout.utils.applyGameModeToCache
 import com.austinhodak.thehideout.utils.forActiveMode
@@ -46,17 +43,6 @@ import com.austinhodak.thehideout.workmanager.PriceUpdateFactory
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.analytics
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
-import com.google.firebase.auth.auth
-import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.database.database
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.firestoreSettings
-import com.google.firebase.firestore.toObject
 import com.google.firebase.messaging.messaging
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
@@ -73,7 +59,6 @@ import timber.log.Timber
 import timber.log.Timber.DebugTree
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.coroutines.suspendCoroutine
 
 internal const val SyncWorkName = "SyncWorkName"
 
@@ -139,7 +124,10 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
         }
     }
 
-    lateinit var listenerRegistration: ListenerRegistration
+    /** Publishes the stored progress of the active game profile to [fsUser]. */
+    private fun publishUser(stored: Any?) {
+        fsUser.postValue(LocalStore.convert(stored, FSUser::class.java)?.forActiveMode() ?: FSUser())
+    }
 
     private fun setupQonversion() {
         Qonversion.initialize(
@@ -191,16 +179,7 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
         super.onCreate()
         // Edge-to-edge is enforced from targetSdk 35; theme roots keep content clear of the bars (SystemBarsBox).
         registerActivityLifecycleCallbacks(EdgeToEdgeCallbacks)
-        val firebaseAppCheck = FirebaseAppCheck.getInstance()
-        firebaseAppCheck.installAppCheckProviderFactory(
-            if (isDebug()) {
-                DebugAppCheckProviderFactory.getInstance()
-            } else {
-                PlayIntegrityAppCheckProviderFactory.getInstance()
-            }
-
-        )
-
+        LocalStore.init(this)
 
         Mavericks.initialize(this)
 
@@ -232,65 +211,14 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
         if (BuildConfig.DEBUG) {
             Timber.plant(DebugTree())
-            Timber.d("Firebase UID: %s", uid())
         }
 
-        Firebase.database.setPersistenceEnabled(true)
-
-        setupFirebaseAuth()
-
-        if (Firebase.auth.currentUser == null) {
-            Firebase.auth.signInAnonymously().addOnSuccessListener {
-                Timber.d("Result ${uid()}")
-                it.user?.uid?.let {
-                    listenerRegistration = Firebase.firestore.collection("users").document(it)
-                        .addSnapshotListener { value, error ->
-                            val user = value?.toObject<FSUser>()?.forActiveMode()
-                            if (value?.exists() == false) {
-                                Firebase.firestore.collection("users").document(it).set(
-                                    hashMapOf(
-                                        "playerLevel" to UserSettingsModel.playerLevel.value
-                                    ), SetOptions.merge()
-                                )
-                            }
-                            Timber.d("User $user")
-                            user?.let {
-                                fsUser.postValue(it)
-                            }
-                        }
-                }
-            }
-        } else {
-            Timber.d("${uid()}")
-            uid()?.let {
-                listenerRegistration = Firebase.firestore.collection("users").document(it)
-                    .addSnapshotListener { value, error ->
-                        val user = value?.toObject<FSUser>()?.forActiveMode()
-                        if (value?.exists() == false) {
-                            Firebase.firestore.collection("users").document(it).set(
-                                hashMapOf(
-                                    "playerLevel" to UserSettingsModel.playerLevel.value
-                                ), SetOptions.merge()
-                            )
-                        }
-                        Timber.d("$user")
-                        user?.let {
-                            fsUser.postValue(it)
-                        }
-                    }
-
-            }
+        if (LocalStore.get("user/playerLevel") == null) {
+            LocalStore.set("user/playerLevel", UserSettingsModel.playerLevel.value)
         }
+        LocalStore.listen("user") { publishUser(it) }
 
         Only.init(applicationContext)
-
-        try {
-            Firebase.firestore.firestoreSettings = firestoreSettings {
-                isPersistenceEnabled = true
-            }
-        } catch (e: Exception) {
-            Firebase.crashlytics.recordException(e)
-        }
 
         Firebase.messaging.token.addOnSuccessListener {
             Timber.d("Firebase Messaging Token: %s", it)
@@ -348,35 +276,11 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
             MainScope().launch(Dispatchers.IO) {
                 applyGameModeToCache(tarkovRepo)
                 // Re-read progress so screens switch to the other mode's data immediately.
-                uid()?.let { uid ->
-                    Firebase.firestore.collection("users").document(uid).get().addOnSuccessListener { doc ->
-                        doc.toObject<FSUser>()?.forActiveMode()?.let { user -> fsUser.postValue(user) }
-                    }
-                }
+                publishUser(LocalStore.get("user"))
             }
         }
     }
 
-
-    private fun setupFirebaseAuth() {
-        Firebase.auth.addAuthStateListener { auth ->
-            auth.currentUser?.let { currentUser ->
-                Qonversion.shared.identify(currentUser.uid)
-                Qonversion.shared.setUserProperty(QUserPropertyKey.CustomUserId, currentUser.uid)
-
-                currentUser.email?.let { email ->
-                    Qonversion.shared.setUserProperty(QUserPropertyKey.Email, email)
-                }
-
-                currentUser.displayName?.let { name ->
-                    Qonversion.shared.setUserProperty(QUserPropertyKey.Name, name)
-                }
-            } ?: run {
-                //Current user is null
-                Qonversion.shared.logout()
-            }
-        }
-    }
 
     /*
      * Sets up the Firebase remote config.

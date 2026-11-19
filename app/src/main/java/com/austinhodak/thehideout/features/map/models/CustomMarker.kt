@@ -2,14 +2,12 @@ package com.austinhodak.thehideout.features.map.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.google.firebase.encoders.annotations.Encodable
-import com.google.firebase.firestore.DocumentId
-import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.IgnoreExtraProperties
+import com.austinhodak.thehideout.local.GeoPoint
+import com.austinhodak.thehideout.local.LocalStore
+import java.io.Closeable
+import java.util.UUID
 
-@IgnoreExtraProperties
 data class CustomMarker(
-    @DocumentId
     val id: String? = null,
     var title: String? = null,
     var description: String? = null,
@@ -57,4 +55,26 @@ data class CustomMarker(
         }
     }
 
+}
+
+/** Markers the user placed on the maps, stored under `markers/<id>` in [LocalStore]. */
+object CustomMarkers {
+    /** Calls [onChange] with the markers of [map] (lowercase map name), now and after each change. */
+    fun listen(
+        map: String?,
+        onChange: (List<CustomMarker>) -> Unit,
+    ): Closeable =
+        LocalStore.listen("markers") { node ->
+            onChange(
+                (node as? Map<*, *>)
+                    ?.mapNotNull { (id, value) ->
+                        LocalStore.convert(value, CustomMarker::class.java)?.copy(id = id.toString())
+                    }?.filter { it.map == map }
+                    .orEmpty(),
+            )
+        }
+
+    fun save(marker: CustomMarker) = LocalStore.set("markers/${marker.id ?: UUID.randomUUID()}", marker)
+
+    fun delete(id: String) = LocalStore.remove("markers/$id")
 }

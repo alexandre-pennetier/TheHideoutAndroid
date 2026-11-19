@@ -10,13 +10,7 @@ import com.austinhodak.tarkovapi.room.enums.Traders
 import com.austinhodak.tarkovapi.room.models.Pricing
 import com.austinhodak.tarkovapi.room.models.Quest
 import com.austinhodak.tarkovapi.utils.QuestExtraHelper
-import com.austinhodak.thehideout.firebase.Team
-import com.austinhodak.thehideout.fsUser
 import com.austinhodak.thehideout.mapsList
-import com.austinhodak.thehideout.utils.questsFirebase
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.collect
@@ -33,39 +27,7 @@ class QuestDetailViewModel @Inject constructor(
     private val _questsExtras = MutableLiveData<List<QuestExtra.QuestExtraItem>>()
     val questsExtra = _questsExtras
 
-    private val _teamsData = MutableLiveData<List<Team>>(null)
-    val teamsData = _teamsData
-
     init {
-        fsUser.value?.let { user ->
-            user.teams?.forEach {
-                val teamID = it.key
-                val teams: MutableList<Team> = mutableListOf()
-                questsFirebase.child("teams/$teamID")
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (!snapshot.exists()) {
-                                _teamsData.value = emptyList()
-                                return
-                            }
-                            val team = snapshot.getValue(Team::class.java)
-                            team?.let { team ->
-                                teams.add(team)
-                                _teamsData.value = teams.toList()
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-
-                        }
-                    })
-            }
-
-            if (user.teams == null) {
-                _teamsData.value = emptyList()
-            }
-        }
-
         _questsExtras.value = QuestExtraHelper.getQuests(context = context)
     }
 

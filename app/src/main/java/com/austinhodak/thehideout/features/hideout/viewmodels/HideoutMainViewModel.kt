@@ -6,13 +6,12 @@ import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.tarkovapi.models.Hideout
 import com.austinhodak.thehideout.SearchViewModel
 import com.austinhodak.thehideout.features.hideout.HideoutFilter
+import com.austinhodak.thehideout.local.FieldValue
+import com.austinhodak.thehideout.local.SetOptions
 import com.austinhodak.thehideout.utils.addQuotes
 import com.austinhodak.thehideout.utils.progressField
 import com.austinhodak.thehideout.utils.userFirestore
 import com.austinhodak.thehideout.utils.userRefTracker
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,7 +45,7 @@ class HideoutMainViewModel @Inject constructor() : SearchViewModel() {
         val objectiveMap = module.require?.associateBy({it?.id?.toString()}, {
             mapOf(
                 "completed" to true,
-                "timestamp" to Timestamp.now(),
+                "timestamp" to System.currentTimeMillis(),
                 "progress" to it?.quantity
             )
         })
@@ -57,7 +56,7 @@ class HideoutMainViewModel @Inject constructor() : SearchViewModel() {
                     "hideoutModules" to hashMapOf(
                         module.id?.toString() to hashMapOf(
                             "completed" to true,
-                            "timestamp" to Timestamp.now()
+                            "timestamp" to System.currentTimeMillis()
                         )
                     ),
                     "hideoutObjectives" to objectiveMap

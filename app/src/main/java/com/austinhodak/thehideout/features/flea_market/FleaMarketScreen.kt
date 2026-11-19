@@ -19,8 +19,8 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,12 +58,12 @@ import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
 import com.austinhodak.thehideout.features.flea_market.viewmodels.FleaViewModel
 import com.austinhodak.thehideout.features.profile.UserProfileActivity
 import com.austinhodak.thehideout.firebase.User
+import com.austinhodak.thehideout.local.ServerValue
 import com.austinhodak.thehideout.ui.common.EmptyText
 import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.ui.theme3.HideoutTheme3
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.userRefTracker
-import com.google.firebase.database.ServerValue
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
 import com.maxkeppeler.sheets.list.ListDialog
 import com.maxkeppeler.sheets.list.models.ListOption

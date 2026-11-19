@@ -39,7 +39,6 @@ import com.austinhodak.thehideout.compose.components.SearchToolbar
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.features.gear.ItemCard
 import com.austinhodak.thehideout.features.pickers.viewmodels.PickerViewModel
-import com.austinhodak.thehideout.utils.addPriceAlertDialog
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.features.weapons.WeaponCard
 import com.austinhodak.thehideout.features.weapons.builder.WeaponBuilderActivity
@@ -263,12 +262,6 @@ class WidgetPickerActivity : GodActivity() {
         val intent = intent
         val extras = intent.extras
         if (extras != null) {
-            if (extras.containsKey("priceAlert")) {
-                (item as Item).pricing?.addPriceAlertDialog(this) {
-                    finish()
-                }
-                return
-            }
             appWidgetId = extras.getInt(
                 AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID
             )
