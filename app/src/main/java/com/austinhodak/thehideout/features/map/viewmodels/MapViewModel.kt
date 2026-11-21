@@ -1,7 +1,6 @@
 package com.austinhodak.thehideout.features.map.viewmodels
 
 import android.content.Context
-import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.austinhodak.tarkovapi.models.MapInteractive
@@ -9,14 +8,12 @@ import com.austinhodak.tarkovapi.models.QuestExtra
 import com.austinhodak.tarkovapi.utils.QuestExtraHelper
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.features.map.models.CustomMarker
-import com.austinhodak.thehideout.utils.userFirestore
-
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.toObject
+import com.austinhodak.thehideout.features.map.models.CustomMarkers
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
+import java.io.Closeable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +21,7 @@ class MapViewModel @Inject constructor(
     @ApplicationContext context: Context
 ) : ViewModel() {
 
-    var markerListener: ListenerRegistration? = null
+    var markerListener: Closeable? = null
 
     private val _customMarkers = MutableLiveData<List<CustomMarker>>(null)
     val customMarkers = _customMarkers
@@ -77,26 +74,15 @@ class MapViewModel @Inject constructor(
                 }
             }
         }
-        markerListener?.remove()
-        markerListener = userFirestore()?.collection("markers")?.whereEqualTo("map", _map.value?.lowercase()?.replace("lighthouse-dark", "lighthouse"))?.addSnapshotListener { value, error ->
-            if (error != null || value?.isEmpty == true) {
-                _customMarkers.postValue(emptyList())
-                return@addSnapshotListener
-            }
-
-            val markers = ArrayList<CustomMarker>()
-            for (doc in value!!) {
-                markers.add(doc.toObject())
-            }
-            _customMarkers.value = markers
+        markerListener?.close()
+        markerListener = CustomMarkers.listen(_map.value?.lowercase()?.replace("lighthouse-dark", "lighthouse")) {
+            _customMarkers.value = it
         }
     }
 
-
-
     override fun onCleared() {
         super.onCleared()
-        markerListener?.remove()
+        markerListener?.close()
     }
 
     private fun getMapRaw(map: String? = _map.value): Int {

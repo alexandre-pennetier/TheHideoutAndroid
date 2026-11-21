@@ -38,8 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import coil.annotation.ExperimentalCoilApi
@@ -49,7 +47,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.checkbox.checkBoxPrompt
 import com.afollestad.materialdialogs.input.getInputField
 import com.afollestad.materialdialogs.input.input
-import com.afollestad.materialdialogs.list.listItems
 import com.austinhodak.tarkovapi.IconSelection
 import com.austinhodak.tarkovapi.UserSettingsModel
 import com.austinhodak.tarkovapi.repository.TarkovRepo
@@ -70,34 +67,17 @@ import com.austinhodak.thehideout.features.flea_market.viewmodels.FleaViewModel
 import com.austinhodak.thehideout.features.gear.GearDetailActivity
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity
 import com.austinhodak.thehideout.firebase.FSUser
-import com.austinhodak.thehideout.firebase.PriceAlert
 import com.austinhodak.thehideout.firebase.User
-import com.austinhodak.thehideout.ui.legacy.PriceChartMarkerView
+import com.austinhodak.thehideout.local.ServerValue
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import com.bumptech.glide.Glide
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.ValueFormatter
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ServerValue
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import com.stfalcon.imageviewer.StfalconImageViewer
 import dagger.hilt.android.AndroidEntryPoint
 import io.sentry.Sentry
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 @ExperimentalCoilApi
@@ -164,8 +144,6 @@ class FleaItemDetail : GodActivity() {
                 val userData by viewModel.userData.observeAsState()
                 val userDataFS by fsUser.observeAsState()
 
-                var priceAlerts by remember { mutableStateOf<List<PriceAlert>?>(null) }
-
                 val items = listOf(
                     NavItem("Item", R.drawable.ic_baseline_storefront_24),
                     NavItem("Barters", R.drawable.ic_baseline_compare_arrows_24, bartersFiltered.isNotEmpty()),
@@ -183,24 +161,6 @@ class FleaItemDetail : GodActivity() {
 
                 if (isDebug()) {
                     Timber.d(itemID)
-                }
-
-                LaunchedEffect(key1 = "") {
-                    questsFirebase.child("priceAlerts").orderByChild("uid").equalTo(uid()).addValueEventListener(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            priceAlerts = snapshot.children.map {
-                                val alert = it.getValue<PriceAlert>()!!
-                                alert.reference = it.ref
-                                alert
-                            }.filter {
-                                it.itemID == itemID
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-
-                        }
-                    })
                 }
 
                 Scaffold(
@@ -240,9 +200,6 @@ class FleaItemDetail : GodActivity() {
                                     item?.pricing?.wikiLink?.let { WikiItem(url = it) }
                                     OverflowMenuItem(text = "Add to Needed Items") {
                                         item?.pricing?.addToNeededItemsDialog(this@FleaItemDetail)
-                                    }
-                                    OverflowMenuItem(text = "Add Price Alert") {
-                                        item?.pricing?.addPriceAlertDialog(this@FleaItemDetail)
                                     }
                                 }
                             }
@@ -344,22 +301,6 @@ class FleaItemDetail : GodActivity() {
 
                                                 NeededCard(title = "NEEDED", item = item, needed, tarkovRepo)
                                             }
-                                            if (UserSettingsModel.showPriceGraph.value) {
-                                                Card(
-                                                    modifier = Modifier
-                                                        .padding(
-                                                            horizontal = 8.dp,
-                                                            vertical = 4.dp
-                                                        )
-                                                        .fillMaxWidth(),
-                                                    backgroundColor = Color(0xFE1F1F1F)
-                                                ) {
-                                                    Chart()
-                                                }
-                                            }
-                                            if (!priceAlerts.isNullOrEmpty()) {
-                                                PriceAlertCard(priceAlerts = priceAlerts!!, item)
-                                            }
                                         }
                                         item {
                                             CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
@@ -380,111 +321,6 @@ class FleaItemDetail : GodActivity() {
                                     CraftsPage(item = item, craftsFiltered, userDataFS)
                                 }
                                 3 -> QuestsPage(item = item, quests, tarkovRepo, userData)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    @Composable
-    fun PriceAlertCard(priceAlerts: List<PriceAlert>, item: Item?) {
-        Card(
-            backgroundColor = if (isSystemInDarkTheme()) Color(
-                0xFE1F1F1F
-            ) else MaterialTheme.colors.primary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 8.dp)
-        ) {
-            Column {
-                Row(
-                    modifier = Modifier.padding(bottom = 8.dp, top = 16.dp, start = 16.dp, end = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        Text(
-                            text = "PRICE ALERTS",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Light,
-                            fontFamily = Bender,
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                    IconButton(onClick = {
-                        item?.pricing?.addPriceAlertDialog(this@FleaItemDetail)
-                    }, modifier = Modifier.size(20.dp)) {
-                        Icon(painter = painterResource(id = R.drawable.ic_baseline_notification_add_24), contentDescription = "ADD")
-                    }
-                }
-
-                Column(
-                    modifier = Modifier.padding(
-                        start = 0.dp,
-                        end = 0.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-                ) {
-                    priceAlerts.forEachIndexed { i, alert ->
-                        if (i != 0) {
-                            Divider(color = DividerDarkLighter)
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .combinedClickable(
-                                    onClick = {
-                                        if (alert.persistent == true) {
-                                            alert.reference
-                                                ?.child("enabled")
-                                                ?.setValue(alert.enabled != true)
-                                        }
-                                    },
-                                    onLongClick = {
-                                        MaterialDialog(this@FleaItemDetail).show {
-                                            listItems(items = listOf("Delete")) { dialog, index, text ->
-                                                when (text) {
-                                                    "Delete" -> {
-                                                        alert.reference?.removeValue()
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                )
-                                .padding(
-                                    start = 16.dp,
-                                    end = 16.dp,
-                                    top = 0.dp,
-                                    bottom = 0.dp
-                                )
-                                .defaultMinSize(minHeight = 28.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = alert.getConditionIcon()),
-                                contentDescription = "",
-                                modifier = Modifier.size(20.dp),
-                                tint = White
-                            )
-                            /*Text(
-                                text = alert.getConditionString() ?: "",
-                                style = MaterialTheme.typography.subtitle2,
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(start = 0.dp)
-                            )*/
-                            Text(
-                                text = alert.price?.toInt()?.asCurrency() ?: "",
-                                style = MaterialTheme.typography.subtitle2,
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            if (alert.persistent == true) {
-                                Switch(checked = alert.enabled ?: false, onCheckedChange = {
-                                    alert.reference?.child("enabled")?.setValue(it)
-                                })
                             }
                         }
                     }
@@ -721,188 +557,6 @@ class FleaItemDetail : GodActivity() {
                 fontWeight = FontWeight.Medium,
                 fontSize = 9.sp
             )
-        }
-    }
-
-    @Composable
-    private fun Chart() {
-        val benderFont = ResourcesCompat.getFont(this, R.font.bender)
-        val ms7D = (604800000).toLong()
-        val ms1M = 2629800000
-        val ms3M = 7889400000
-        val ms6M = 15778800000
-        val ms1Y = 31557600000
-
-        var selectedRange by remember {
-            mutableStateOf((604800000).toLong())
-        }
-
-        Column {
-            Row(
-                Modifier.padding(
-                    bottom = 0.dp,
-                    top = 8.dp,
-                    start = 16.dp,
-                    end = 4.dp
-                )
-            ) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                    Text(
-                        text = "PRICE HISTORY",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light,
-                        fontFamily = Bender,
-                        modifier = Modifier.padding(
-                            bottom = 0.dp,
-                            top = 8.dp,
-                            start = 0.dp,
-                            end = 16.dp
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                Chip(
-                    text = "1Y",
-                    selected = selectedRange == ms1Y
-                ) {
-                    isPremium {
-                        if (it) {
-                            selectedRange = ms1Y
-                        } else {
-                            launchPremiumPusher()
-                        }
-                    }
-                }
-                Chip(
-                    text = "6M",
-                    selected = selectedRange == ms6M
-                ) {
-                    isPremium {
-                        if (it) {
-                            selectedRange = ms6M
-                        } else {
-                            launchPremiumPusher()
-                        }
-                    }
-                }
-                Chip(
-                    text = "3M",
-                    selected = selectedRange == ms3M
-                ) {
-                    isPremium {
-                        if (it) {
-                            selectedRange = ms3M
-                        } else {
-                            launchPremiumPusher()
-                        }
-                    }
-                }
-                Chip(
-                    text = "1M",
-                    selected = selectedRange == ms1M
-                ) {
-                    isPremium {
-                        if (it) {
-                            selectedRange = ms1M
-                        } else {
-                            launchPremiumPusher()
-                        }
-                    }
-                }
-                Chip(
-                    text = "7D",
-                    selected = selectedRange == ms7D
-                ) {
-                    selectedRange = ms7D
-                }
-            }
-
-            AndroidView(
-                factory = {
-                    val chart = LineChart(it)
-
-                    val formatter: ValueFormatter = object : ValueFormatter() {
-                        override fun getAxisLabel(value: Float, axis: AxisBase): String {
-                            val simpleDateFormat = SimpleDateFormat("MM/dd")
-                            return simpleDateFormat.format(value)
-                        }
-                    }
-
-                    chart.xAxis.valueFormatter = formatter
-                    chart.xAxis.textColor = resources.getColor(R.color.white)
-                    chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-                    chart.axisLeft.textColor = resources.getColor(R.color.white)
-                    chart.axisRight.isEnabled = false
-
-                    chart.setDrawGridBackground(false)
-                    //chart.xAxis.setDrawGridLines(false)
-                    chart.xAxis.setCenterAxisLabels(true)
-                    //chart.axisLeft.setDrawGridLines(false)
-                    //chart.setTouchEnabled(false)
-                    chart.isScaleYEnabled = false
-                    chart.description.isEnabled = false
-                    chart.legend.textColor = resources.getColor(R.color.white)
-
-                    chart.setNoDataText("No price history found.")
-                    chart.legend.isEnabled = false
-
-                    //chart.xAxis.setDrawAxisLine(false)
-
-                    //Set fonts
-                    chart.legend.typeface = benderFont
-                    chart.xAxis.typeface = benderFont
-                    chart.axisLeft.typeface = benderFont
-                    chart.setNoDataTextTypeface(benderFont)
-
-                    chart.axisLeft.valueFormatter = object : ValueFormatter() {
-                        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-                            val format = DecimalFormat("###,##0")
-                            return "${format.format(value)}₽"
-                        }
-                    }
-
-                    val mv = PriceChartMarkerView(this@FleaItemDetail, R.layout.price_chart_marker_view)
-                    chart.marker = mv
-
-                    chart
-                }, modifier = Modifier
-                    .padding(start = 8.dp, end = 0.dp, bottom = 16.dp)
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) { chart ->
-                //if (chart.data != null) return@AndroidView
-                fleaFirebase.child("priceHistory/${itemID}").orderByKey().startAt("\"${(System.currentTimeMillis() - selectedRange)}\"").endAt(System.currentTimeMillis().addQuotes())
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (!snapshot.exists()) return
-                            val data = snapshot.children.map {
-                                val entry = Entry(it.key?.removeSurrounding("\"")?.toFloat() ?: 0f, (it.value as Long).toFloat())
-                                entry.data = it
-                                entry
-                            }
-
-                            val dataSet = LineDataSet(data, "Prices")
-                            dataSet.fillColor = resources.getColor(R.color.md_red_400)
-                            dataSet.setDrawFilled(true)
-                            dataSet.color = resources.getColor(R.color.md_red_400)
-                            dataSet.setCircleColor(resources.getColor(R.color.md_red_500))
-                            dataSet.valueTypeface = benderFont
-                            dataSet.setDrawValues(false)
-                            dataSet.setDrawCircles(false)
-                            dataSet.mode = LineDataSet.Mode.CUBIC_BEZIER
-
-                            val lineData = LineData(dataSet)
-                            lineData.setValueTextColor(resources.getColor(R.color.white))
-
-                            chart.data = lineData
-                            chart.animateY(250, Easing.EaseOutQuad)
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-
-                        }
-                    })
-            }
         }
     }
 

@@ -183,7 +183,7 @@ private fun replaceQuoteSpans(spannable: Spannable, context: Context): Spannable
         spannable.removeSpan(quoteSpan)
         spannable.setSpan(
             CustomQuoteSpan(
-                context.getColor(R.color.fui_transparent),
+                context.getColor(android.R.color.transparent),
                 context.getColor(R.color.md_grey_500),
                 10f,
                 60f

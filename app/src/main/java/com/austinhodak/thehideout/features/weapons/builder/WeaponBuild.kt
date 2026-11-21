@@ -3,8 +3,6 @@ package com.austinhodak.thehideout.features.weapons.builder
 import com.austinhodak.tarkovapi.room.models.Ammo
 import com.austinhodak.tarkovapi.room.models.Mod
 import com.austinhodak.tarkovapi.room.models.Weapon
-import com.austinhodak.thehideout.utils.uid
-import com.google.firebase.Timestamp
 import kotlin.math.roundToInt
 
 data class WeaponBuild (
@@ -31,7 +29,6 @@ data class WeaponBuild (
                 "name" to parentWeapon?.Name,
                 "shortName" to parentWeapon?.ShortName
             ),
-            "uid" to uid(),
             "name" to "${parentWeapon?.ShortName} Build",
             "id" to id,
             "mods" to mods?.mapValues { it.value.mod?.id },
@@ -43,7 +40,7 @@ data class WeaponBuild (
                 "weight" to totalWeight(),
                 "costRoubles" to totalCostFleaMarket()
             ),
-            "timestamp" to Timestamp.now()
+            "timestamp" to System.currentTimeMillis()
         )
     }
 

@@ -42,9 +42,9 @@
 -keep class com.austinhodak.thehideout.features.crafts.CraftDetailActivity$ItemSubtitle { *; }
 -keep class com.austinhodak.thehideout.features.barters.BarterDetailActivity$ItemSubtitle { *; }
 
--keepclassmembers class com.google.firebase.database.GenericTypeIndicator {
-  *;
-}
+# Gson maps the local store onto these classes by field name.
+-keep class com.austinhodak.thehideout.features.map.models.** { *; }
+-keep class com.austinhodak.thehideout.local.** { *; }
 
 -keep class com.austinhodak.thehideout.features.premium.** { *; }
 

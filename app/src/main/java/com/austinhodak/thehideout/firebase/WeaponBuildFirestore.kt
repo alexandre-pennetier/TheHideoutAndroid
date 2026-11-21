@@ -1,8 +1,9 @@
 package com.austinhodak.thehideout.firebase
 
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.austinhodak.thehideout.local.LocalStore
+import java.io.Closeable
 import java.io.Serializable
+import java.util.UUID
 
 data class WeaponBuildFirestore(
     val ammo: String? = null,
@@ -29,18 +30,30 @@ data class WeaponBuildFirestore(
     ) : Serializable
 
     fun delete() {
-        id?.let {
-            Firebase.firestore.collection("loadouts").document(it).delete()
-        }
+        id?.let { LocalStore.remove("loadouts/$it") }
     }
 
     fun updateName(name: String) {
-        id?.let {
-            Firebase.firestore.collection("loadouts").document(it).update(
-                mapOf(
-                    "name" to name
+        id?.let { LocalStore.set("loadouts/$it/name", name) }
+    }
+
+    companion object {
+        /** Calls [onChange] with every saved build, now and after each change. */
+        fun listen(onChange: (List<WeaponBuildFirestore>) -> Unit): Closeable =
+            LocalStore.listen("loadouts") { node ->
+                onChange(
+                    (node as? Map<*, *>)
+                        ?.mapNotNull { (id, value) ->
+                            LocalStore.convert(value, WeaponBuildFirestore::class.java)?.also { it.id = id.toString() }
+                        }.orEmpty(),
                 )
-            )
-        }
+            }
+
+        fun add(build: Map<String, Any?>) = LocalStore.set("loadouts/${UUID.randomUUID()}", build)
+
+        fun replace(
+            id: String,
+            build: Map<String, Any?>,
+        ) = LocalStore.set("loadouts/$id", build)
     }
 }

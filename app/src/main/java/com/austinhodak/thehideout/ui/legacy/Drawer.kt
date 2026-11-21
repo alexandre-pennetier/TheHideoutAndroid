@@ -36,20 +36,18 @@ import com.austinhodak.tarkovapi.models.ServerStatus
 import com.austinhodak.tarkovapi.models.toObj
 import com.austinhodak.thehideout.NavViewModel
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.features.premium.PremiumPusherActivity
-import com.austinhodak.thehideout.features.calculator.CalculatorMainActivity
 import com.austinhodak.thehideout.compose.theme.*
-import com.austinhodak.thehideout.features.map.MapsActivity
 import com.austinhodak.thehideout.extras
+import com.austinhodak.thehideout.features.calculator.CalculatorMainActivity
+import com.austinhodak.thehideout.features.map.MapsActivity
 import com.austinhodak.thehideout.features.map.StaticMapsActivity
 import com.austinhodak.thehideout.features.ocr.ItemScannerActivity
-import com.austinhodak.thehideout.settings.SettingsActivity
+import com.austinhodak.thehideout.features.premium.PremiumPusherActivity
 import com.austinhodak.thehideout.features.status.ServerStatusActivity
+import com.austinhodak.thehideout.settings.SettingsActivity
 import com.austinhodak.thehideout.utils.launchPremiumPusher
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.openWithCustomTab
-import com.google.firebase.auth.auth
-import com.google.firebase.Firebase
 import com.mikepenz.materialdrawer.holder.BadgeStyle
 import com.mikepenz.materialdrawer.holder.ColorHolder
 import com.mikepenz.materialdrawer.holder.DimenHolder
@@ -256,12 +254,6 @@ class Drawer(context: Context, lifecycleOwner: LifecycleOwner) :
         true; typeface = benderFont; isEnabled = true
     }
 
-    private val drawerBitcoin = SecondaryDrawerItem().apply {
-        tag = "bitcoin"; level = 2; identifier = 401; nameText = context.getString(R.string.bitcoin_price); iconRes =
-        R.drawable.icons8_bitcoin_96; isIconTinted =
-        true; typeface = benderFont; isEnabled = true
-    }
-
     private val drawerSensitivity = SecondaryDrawerItem().apply {
         tag = "sensitivity"; level = 2; identifier = 403; nameText =
         context.getString(R.string.sens_calculator); iconRes = R.drawable.ic_baseline_calculate_24; isIconTinted =
@@ -271,12 +263,6 @@ class Drawer(context: Context, lifecycleOwner: LifecycleOwner) :
     private val drawerRestockTimers = SecondaryDrawerItem().apply {
         tag = "restock"; level = 2; identifier = 404; nameText =
         context.getString(R.string.trader_restock_timers); iconRes = R.drawable.ic_baseline_timer_24; isIconTinted =
-        true; typeface = benderFont; isEnabled = true
-    }
-
-    private val drawerPriceAlerts = SecondaryDrawerItem().apply {
-        tag = "price_alerts"; level = 2; identifier = 405; nameText =
-        context.getString(R.string.price_alerts); iconRes = R.drawable.ic_baseline_notifications_active_24; isIconTinted =
         true; typeface = benderFont; isEnabled = true
     }
 
@@ -308,10 +294,8 @@ class Drawer(context: Context, lifecycleOwner: LifecycleOwner) :
         typeface = benderFont
         isSelectable = false
         subItems = mutableListOf(
-            drawerBitcoin,
             drawerCurrencyConverter,
             drawerItemScanner,
-            drawerPriceAlerts,
             drawerSensitivity,
             drawerServerPings,
             drawerRestockTimers
@@ -532,16 +516,6 @@ fun MainDrawer(
         playerLevel = it
     }
 
-    val drawerLogin = SecondaryDrawerItem().apply {
-        tag = "login"
-        nameText = stringResource(R.string.sign_in_up)
-        iconRes = R.drawable.icons8_lock_96_color
-        isIconTinted = false
-        isSelectable = false
-        identifier = 999
-        typeface = benderFont
-    }
-
     var status: ServerStatus? by remember { mutableStateOf(null) }
     val isPremium = UserSettingsModel.isPremiumUser.value
     var hideBanner: Boolean by remember { mutableStateOf(UserSettingsModel.hidePremiumBanner.value) }
@@ -698,25 +672,6 @@ fun MainDrawer(
                             drawer.setSelectionAtPosition(-1, false)
                             drawer.setSelection(it.first, false)
                             navViewModel.selectedDrawerItemIdentifier.value = null
-                        }
-                    }
-
-                    Firebase.auth.addAuthStateListener {
-                        val isLoggedIn =
-                            it.currentUser != null && it.currentUser?.isAnonymous == false
-                        if (!isLoggedIn) {
-                            try {
-                                drawer.removeStickyFooterItemAtPosition(1)
-                            } catch (e: Exception) {
-
-                            }
-                            drawer.addStickyFooterItemAtPosition(drawerLogin, 1)
-                        } else {
-                            try {
-                                drawer.removeStickyFooterItemAtPosition(1)
-                            } catch (e: Exception) {
-
-                            }
                         }
                     }
                 }

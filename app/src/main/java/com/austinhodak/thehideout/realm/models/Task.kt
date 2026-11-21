@@ -9,9 +9,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.austinhodak.thehideout.TasksQuery
-import com.austinhodak.thehideout.base.Result
-import com.austinhodak.thehideout.firebase.models.TaskStatus
-import com.austinhodak.thehideout.firebase.models.UserData
 import com.austinhodak.thehideout.fragment.TaskFragment
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveBasic
 import com.austinhodak.thehideout.fragment.TaskFragment.Objective.Companion.asTaskObjectiveBuildItem
@@ -34,8 +31,6 @@ import io.github.xilinjia.krdb.types.EmbeddedRealmObject
 import io.github.xilinjia.krdb.types.RealmList
 import io.github.xilinjia.krdb.types.RealmObject
 import io.github.xilinjia.krdb.types.annotations.PrimaryKey
-import kotlinx.coroutines.flow.callbackFlow
-import com.google.android.gms.tasks.Task as FSTask
 
 class Task : RealmObject {
     @PrimaryKey
@@ -94,32 +89,6 @@ class Task : RealmObject {
             style = style
         )
     }
-
-    fun mark(userData: UserData, status: TaskStatus) = callbackFlow {
-        try {
-            if (status == TaskStatus.COMPLETED) {
-                markAllObjectives(userData, status)
-            }
-
-            userData.ref.update("taskProgress.${this@Task.id}.status", status.name).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    trySend(Result.Success(Unit))
-                } else {
-                    trySend(Result.Error(it.exception!!))
-                }
-            }
-        } catch (e: Exception) {
-            close(e)
-        }
-    }
-
-    fun markAllObjectives(userData: UserData, status: TaskStatus): FSTask<Void> {
-        return userData.ref.update(
-            this.objectives.associate { objective ->
-                "objectiveProgress.${objective.id}.status" to status.name
-            }
-        )
-    }
 }
 
 class TaskStatusRequirement : EmbeddedRealmObject {
@@ -145,10 +114,6 @@ class TaskObjective : EmbeddedRealmObject {
     var taskObjectiveSkill: TaskObjectiveSkill? = null
     var taskObjectiveTaskStatus: TaskObjectiveTaskStatus? = null
     var taskObjectiveTraderLevel: TaskObjectiveTraderLevel? = null
-
-    fun mark(userData: UserData, status: TaskStatus): FSTask<Void> {
-        return userData.ref.update("objectiveProgress.${this.id}.status", status.name)
-    }
 
     class TaskObjectiveBuildItem : EmbeddedRealmObject {
         var item: Item? = null

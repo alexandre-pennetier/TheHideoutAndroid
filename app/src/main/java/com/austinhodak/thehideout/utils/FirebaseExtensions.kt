@@ -1,13 +1,10 @@
 package com.austinhodak.thehideout.utils
 
+import com.austinhodak.thehideout.local.LocalRef
 import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.google.firebase.analytics.logEvent
-import com.google.firebase.auth.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.database
-import timber.log.Timber
 
 fun log(event: String, itemID: String, itemName: String, contentType: String) {
     Firebase.analytics.logEvent(event) {
@@ -31,20 +28,4 @@ fun logScreen(name: String) {
     }
 }
 
-val questsFirebase = Firebase.database("https://hideout-tracker.firebaseio.com").reference
-val fleaFirebase = Firebase.database("https://hideout-flea-market.firebaseio.com").reference
-fun userRefTracker(ref: String? = null): DatabaseReference {
-    return questsFirebase.child("users/${Firebase.auth.uid}/$ref/")
-}
-
-fun uid(): String? {
-    val uid = Firebase.auth.currentUser?.uid
-    Timber.d("1 - $uid")
-    return uid
-}
-
-fun pushToken(token: String) {
-    if (Firebase.auth.currentUser != null) {
-        userRefTracker("token").setValue(token)
-    }
-}
+fun userRefTracker(ref: String? = null) = LocalRef(ref.orEmpty().trim('/'))

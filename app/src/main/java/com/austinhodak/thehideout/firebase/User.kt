@@ -1,12 +1,5 @@
 package com.austinhodak.thehideout.firebase
 
-import com.austinhodak.tarkovapi.models.Hideout
-import com.austinhodak.tarkovapi.room.models.Item
-import com.austinhodak.tarkovapi.room.models.Quest
-import com.austinhodak.thehideout.utils.userRefTracker
-import com.google.firebase.database.IgnoreExtraProperties
-
-@IgnoreExtraProperties
 data class User(
     var questObjectives: Map<String, UQuestObjective?>? = null,
     var quests: Map<String, UQuest?>? = null,

@@ -251,9 +251,6 @@ class ItemScannerActivity : AppCompatActivity() {
                             Pair("Add to Needed Items") {
                                 item.pricing?.addToNeededItemsDialog(context)
                             },
-                            Pair("Add Price Alert") {
-                                item.pricing?.addPriceAlertDialog(context)
-                            },
                             Pair("Add to Cart") {
                                 item.pricing?.addToCartDialog(context)
                             },

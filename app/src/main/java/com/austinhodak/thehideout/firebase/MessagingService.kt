@@ -20,10 +20,6 @@ import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
 import com.austinhodak.thehideout.features.status.ServerStatusActivity
 import com.austinhodak.thehideout.utils.logNotification
-import com.austinhodak.thehideout.utils.pushToken
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.json.JSONObject
@@ -234,10 +230,6 @@ class MessagingService : FirebaseMessagingService() {
         }
 
         notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())
-    }
-
-    override fun onNewToken(token: String) {
-        pushToken(token)
     }
 
     fun isAppInforegrounded() : Boolean {

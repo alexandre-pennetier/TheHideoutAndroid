@@ -57,13 +57,12 @@ import com.austinhodak.thehideout.features.map.viewmodels.MapViewModel
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity
 import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.fsUser
+import com.austinhodak.thehideout.local.GeoPoint
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
-import com.google.firebase.firestore.GeoPoint
 import com.google.maps.android.ktx.awaitMap
 import com.stfalcon.imageviewer.StfalconImageViewer
 import dagger.hilt.android.AndroidEntryPoint

@@ -61,6 +61,11 @@ android {
         }
     }
 
+    testOptions {
+        // LocalStore touches Handler/Looper; unit tests only exercise its data operations.
+        unitTests.isReturnDefaultValues = true
+    }
+
     buildTypes {
         named("debug").configure {
             // applicationIdSuffix = ".debug"
@@ -103,8 +108,6 @@ dependencies {
     implementation(project(":tarkovapi"))
     implementation(platform(androidx.compose.bom))
     implementation(platform(libs.kotlin.bom))
-
-    implementation("com.google.firebase:firebase-appcheck-debug")
 
     api(libs.kotlinx.datetime)
 
@@ -167,7 +170,6 @@ dependencies {
     api(libs.bundles.firebase)
     implementation(libs.mlkit.text)
 
-    implementation(libs.firebase.auth.ui)
     // Drawer
 
     implementation(libs.drawer)

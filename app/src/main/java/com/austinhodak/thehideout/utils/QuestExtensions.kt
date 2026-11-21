@@ -5,9 +5,8 @@ import com.austinhodak.tarkovapi.room.enums.Traders
 import com.austinhodak.tarkovapi.room.models.Quest
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.firebase.FSUser
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
+import com.austinhodak.thehideout.local.FieldValue
+import com.austinhodak.thehideout.local.SetOptions
 import timber.log.Timber
 
 @DrawableRes
@@ -95,7 +94,7 @@ fun Quest.completed(success: ((Boolean) -> Unit)? = null) {
     val objectiveMap = quest.objective!!.associateBy({it.id}, {
         mapOf(
             "completed" to true,
-            "timestamp" to Timestamp.now()
+            "timestamp" to System.currentTimeMillis()
         )
     })
 
@@ -105,19 +104,15 @@ fun Quest.completed(success: ((Boolean) -> Unit)? = null) {
                 "quests" to hashMapOf(
                     quest.id to hashMapOf(
                         "completed" to true,
-                        "timestamp" to Timestamp.now()
+                        "timestamp" to System.currentTimeMillis()
                     )
                 ),
                 "questObjectives" to objectiveMap
             )
         ),
         SetOptions.merge()
-    )?.addOnCompleteListener {
-        success?.invoke(it.isSuccessful)
-    }?.addOnCompleteListener {
-        if (!it.isSuccessful)
-            Timber.e(it.exception)
-    }
+    )
+    success?.invoke(true)
 }
 
 fun Quest.QuestObjective.completed(success: ((Boolean) -> Unit)? = null) {
@@ -130,7 +125,7 @@ fun Quest.QuestObjective.completed(success: ((Boolean) -> Unit)? = null) {
                 "questObjectives" to hashMapOf(
                     objective.id to hashMapOf(
                         "completed" to true,
-                        "timestamp" to Timestamp.now(),
+                        "timestamp" to System.currentTimeMillis(),
                         "progress" to this.number
                     )
                 )

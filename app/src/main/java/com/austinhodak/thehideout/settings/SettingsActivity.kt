@@ -1,6 +1,7 @@
 package com.austinhodak.thehideout.settings
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
@@ -8,6 +9,7 @@ import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -56,7 +58,8 @@ import com.austinhodak.thehideout.BuildConfig
 import com.austinhodak.thehideout.R
 import com.austinhodak.thehideout.extras
 import com.austinhodak.thehideout.features.profile.UserProfileActivity
-import com.austinhodak.thehideout.features.team.TeamManagementActivity
+import com.austinhodak.thehideout.local.FieldValue
+import com.austinhodak.thehideout.local.LocalStore
 import com.austinhodak.thehideout.ui.theme3.HideoutTheme3
 import com.austinhodak.thehideout.utils.isDebug
 import com.austinhodak.thehideout.utils.isPremium
@@ -66,17 +69,13 @@ import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.openNotificationSettings
 import com.austinhodak.thehideout.utils.openWithCustomTab
 import com.austinhodak.thehideout.utils.progressField
-import com.austinhodak.thehideout.utils.restartNavActivity
 import com.austinhodak.thehideout.utils.userFirestore
 import com.austinhodak.thehideout.utils.userRefTracker
 import com.austinhodak.thehideout.workmanager.PriceUpdateFactory
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.crashlytics.crashlytics
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.get
 import com.michaelflisar.materialpreferences.preferencescreen.PreferenceScreen
@@ -116,6 +115,45 @@ class SettingsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var myWorkerFactory: PriceUpdateFactory
+
+    private fun writeBackup(uri: Uri): Boolean {
+        try {
+            contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { it.write(LocalStore.exportJson()) }
+        } catch (e: Exception) {
+            return false
+        }
+        return true
+    }
+
+    private fun readBackup(uri: Uri): Boolean {
+        try {
+            LocalStore.importJson(contentResolver.openInputStream(uri)!!.bufferedReader().use { it.readText() })
+        } catch (e: Exception) {
+            return false
+        }
+        return true
+    }
+
+    private val exportLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+            if (uri == null) return@registerForActivityResult
+            val message = if (writeBackup(uri)) "Backup saved." else "Could not save the backup."
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
+
+    private val importLauncher =
+        registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri == null) return@registerForActivityResult
+            MaterialDialog(this).show {
+                title(text = "Import progress?")
+                message(text = "This replaces all current progress, needed items, cart, builds and markers.")
+                positiveButton(text = "IMPORT") {
+                    val message = if (readBackup(uri)) "Backup restored." else "Not a valid backup file."
+                    Toast.makeText(this@SettingsActivity, message, Toast.LENGTH_SHORT).show()
+                }
+                negativeButton(text = "NEVERMIND")
+            }
+        }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,16 +214,6 @@ class SettingsActivity : AppCompatActivity() {
                 dynamicColor = false
             ) {
                 var toolbarTitle by remember { mutableStateOf("Settings") }
-
-                var isSignedIn by remember {
-                    mutableStateOf(false)
-                }
-
-                FirebaseAuth.AuthStateListener {
-                    isSignedIn = it.currentUser != null && it.currentUser?.isAnonymous == false
-                }
-
-                isSignedIn = FirebaseAuth.getInstance().currentUser != null && FirebaseAuth.getInstance().currentUser?.isAnonymous == false
 
                 val gameInfo = try {
                     JSONObject(FirebaseRemoteConfig.getInstance()["game_info"].asString())
@@ -343,21 +371,16 @@ class SettingsActivity : AppCompatActivity() {
                                         title = getString(R.string.other).asText()
                                     }
                                     button {
-                                        title = getString(R.string.log_out).asText()
-                                        icon = R.drawable.ic_baseline_logout_24.asIcon()
-                                        enabled = isSignedIn
-                                        onClick = {
-                                            MaterialDialog(this@SettingsActivity).show {
-                                                title(text = "Log Out?")
-                                                message(text = "Are you sure? Progress will be saved.")
-                                                positiveButton(text = "LOGOUT") {
-                                                    Firebase.auth.signOut()
-                                                    Toast.makeText(this@SettingsActivity, "Logged out!", Toast.LENGTH_SHORT).show()
-                                                    restartNavActivity()
-                                                }
-                                                negativeButton(text = "NEVERMIND")
-                                            }
-                                        }
+                                        title = "Export progress".asText()
+                                        summary = "Save progress, needed items, cart, builds and markers to a file.".asText()
+                                        icon = R.drawable.ic_baseline_settings_backup_restore_24.asIcon()
+                                        onClick = { exportLauncher.launch("hideout-backup.json") }
+                                    }
+                                    button {
+                                        title = "Import progress".asText()
+                                        summary = "Replace everything with the content of a backup file.".asText()
+                                        icon = R.drawable.ic_baseline_settings_backup_restore_24.asIcon()
+                                        onClick = { importLauncher.launch(arrayOf("application/json", "text/plain")) }
                                     }
                                     subScreen {
                                         title = getString(R.string.reset).asText()
@@ -399,7 +422,7 @@ class SettingsActivity : AppCompatActivity() {
                                             onClick = {
                                                 MaterialDialog(this@SettingsActivity).show {
                                                     title(text = "Reset All Progress?")
-                                                    message(text = "This is typically used after a wipe or reset.\n\nTeam settings will not be affected.")
+                                                    message(text = "This is typically used after a wipe or reset.")
                                                     positiveButton(text = "RESET") {
                                                         userFirestore()?.update("$progressField.quests", FieldValue.delete())
                                                         userFirestore()?.update("$progressField.questObjectives", FieldValue.delete())
@@ -418,14 +441,6 @@ class SettingsActivity : AppCompatActivity() {
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                                button {
-                                    title = getString(R.string.team_management).asText()
-                                    //summary = "Join, leave, and manage your teams.".asText()
-                                    icon = R.drawable.ic_baseline_group_24.asIcon()
-                                    onClick = {
-                                        openActivity(TeamManagementActivity::class.java)
                                     }
                                 }
                                 category {
@@ -567,10 +582,6 @@ class SettingsActivity : AppCompatActivity() {
                                     }
                                     category {
                                         title = "Details Screen".asText()
-                                    }
-                                    switch(UserSettingsModel.showPriceGraph) {
-                                        title = "Show Price Graph".asText()
-                                        icon = R.drawable.ic_baseline_show_chart_24.asIcon()
                                     }
                                     switch(UserSettingsModel.showAddToCardButton) {
                                         title = "Show Add to Cart Button".asText()

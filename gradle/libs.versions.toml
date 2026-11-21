@@ -79,7 +79,6 @@ firebase-crashlytics-gradle = "3.0.8"
 firebase-perf-gradle = "2.0.2"
 firebase-messaging = "23.1.1"
 gms-googleServices = "4.6.0"
-firebase-auth-ui = "9.1.1"
 
 # Gradle plugins
 gradle-android-cacheFix = "2.6.2"
@@ -320,18 +319,11 @@ ksp-gradlePlugin = { module = "com.google.devtools.ksp:symbol-processing-gradle-
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
-firebase-auth = { module = "com.google.firebase:firebase-auth" }
-firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
-firebase-functions = { module = "com.google.firebase:firebase-functions" }
 firebase-config = { module = "com.google.firebase:firebase-config" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
-firebase-storage = { module = "com.google.firebase:firebase-storage" }
 firebase-perf = { module = "com.google.firebase:firebase-perf" }
-firebase-database = { module = "com.google.firebase:firebase-database" }
 firebase-inappmessaging = { module = "com.google.firebase:firebase-inappmessaging-display" }
-firebase-app-check = { module = "com.google.firebase:firebase-appcheck-playintegrity" }
-firebase-auth-ui = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebase-auth-ui" }
 
 firebase-crashlytics-gradle = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "firebase-crashlytics-gradle" }
 gms-googleServices = { module = "com.google.gms:google-services", version.ref = "gms-googleServices" }
@@ -389,7 +381,7 @@ realm = { id = "io.github.xilinjia.krdb", version.ref = "realm" }
 [bundles]
 compose-dialogs = ["dialogs-core", "dialogs-info", "dialogs-color", "dialogs-calendar", "dialogs-clock", "dialogs-duration", "dialogs-date-time", "dialogs-emoji", "dialogs-input", "dialogs-list", "dialogs-state"]
 preferences-screen = ["preferences-screen", "preferences-bool", "preferences-choice", "preferences-color", "preferences-image", "preferences-input", "preferences-slider"]
-firebase = ["firebase-analytics", "firebase-auth", "firebase-crashlytics", "firebase-database", "firebase-inappmessaging", "firebase-perf", "firebase-app-check", "firebase-config", "firebase-firestore", "firebase-functions", "firebase-messaging", "firebase-storage"]
+firebase = ["firebase-analytics", "firebase-crashlytics", "firebase-inappmessaging", "firebase-perf", "firebase-config", "firebase-messaging"]
 coil = ["coil-compose", "coil-core"]
 afollestad-dialogs = ["afollestad-dialogs", "afollestad-dialogs-input", "afollestad-dialogs-color"]
 google-play = ["play-review", "play-review-ktx"]

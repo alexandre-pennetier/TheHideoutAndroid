@@ -105,17 +105,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="thehideout.io"
-                    android:pathPrefix="/invite/"
-                    android:scheme="https" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".features.ammunition.AmmoDetailActivity"
@@ -140,10 +129,6 @@
         <activity
             android:name=".features.weapons.mods.ModPickerActivity"
             android:theme="@style/Theme.TheHideout.Launcher.NoActionBar" />
-        <activity
-            android:name=".features.login.LoginActivity"
-            android:exported="true"
-            android:theme="@style/Theme.TheHideout.Launcher.NoActionBar" />
 
         <meta-data
             android:name="preloaded_fonts"
@@ -167,9 +152,6 @@
             android:name=".features.quests.inraid.QuestInRaidActivity"
             android:exported="true"
             android:theme="@style/Theme.TheHideout.Launcher.NoActionBar" />
-        <activity
-            android:name=".features.team.TeamManagementActivity"
-            android:exported="true" />
         <activity
             android:name=".features.skills.SkillDetailActivity"
             android:exported="true" />

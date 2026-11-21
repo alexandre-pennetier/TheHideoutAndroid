@@ -3,7 +3,6 @@ package com.austinhodak.thehideout.features.flea_market.viewmodels
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -12,23 +11,13 @@ import com.austinhodak.tarkovapi.repository.TarkovRepo
 import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.thehideout.SearchViewModel
 import com.austinhodak.thehideout.firebase.User
-import com.austinhodak.thehideout.utils.questsFirebase
-import com.austinhodak.thehideout.utils.uid
-import com.austinhodak.thehideout.utils.userRefTracker
+import com.austinhodak.thehideout.local.LocalStore
 import com.austinhodak.thehideout.workmanager.PriceUpdateWorker
-import com.google.common.util.concurrent.MoreExecutors
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ServerValue
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -61,20 +50,12 @@ class FleaViewModel @Inject constructor(
     private val _userData = MutableLiveData<User?>(null)
     val userData = _userData
 
-    init {
-        if (uid() != null) {
-            questsFirebase.child("users/${uid()}").addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    _userData.value = snapshot.getValue<User>()
-                }
+    private val trackerListener = LocalStore.listenAs<User>("tracker") { _userData.value = it }
 
-                override fun onCancelled(error: DatabaseError) {
-
-                }
-            })
-        }
+    override fun onCleared() {
+        trackerListener.close()
+        super.onCleared()
     }
-
 
     fun refreshList() {
         viewModelScope.launch {

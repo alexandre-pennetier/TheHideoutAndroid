@@ -7,6 +7,8 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
@@ -49,24 +51,16 @@ import com.austinhodak.tarkovapi.room.models.Quest
 import com.austinhodak.tarkovapi.utils.asCurrency
 import com.austinhodak.thehideout.GodActivity
 import com.austinhodak.thehideout.R
-import com.austinhodak.thehideout.ui.common.EmptyText
-import com.austinhodak.thehideout.ui.common.LoadingItem
 import com.austinhodak.thehideout.compose.components.OverflowMenu
 import com.austinhodak.thehideout.compose.components.WikiItem
 import com.austinhodak.thehideout.compose.theme.*
-import com.austinhodak.thehideout.firebase.FSUser
-import com.austinhodak.thehideout.firebase.Team
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
-import com.austinhodak.thehideout.fsUser
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity.Types.*
 import com.austinhodak.thehideout.features.quests.viewmodels.QuestDetailViewModel
+import com.austinhodak.thehideout.firebase.FSUser
+import com.austinhodak.thehideout.fsUser
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.statusBarsPadding
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
-import com.google.firebase.Firebase
 import com.stfalcon.imageviewer.StfalconImageViewer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -110,9 +104,6 @@ class QuestDetailActivity : GodActivity() {
                 val objectiveTypes = quest?.objective?.groupBy { it.type }
 
                 val userData by fsUser.observeAsState()
-                val teamData by questViewModel.teamsData.observeAsState()
-
-                Timber.d(teamData.toString())
 
                 val navController = rememberNavController()
 
@@ -334,122 +325,9 @@ class QuestDetailActivity : GodActivity() {
                                 }
                             }
                         }
-                        composable("Team") { _ ->
-                            if (teamData == null) {
-                                LoadingItem()
-                            } else if (teamData?.isEmpty() == true) {
-                                EmptyText(text = "No teams.")
-                            } else {
-                                LazyColumn(
-                                    contentPadding = PaddingValues(
-                                        top = 4.dp,
-                                        bottom = it.calculateBottomPadding() + 64.dp
-                                    )
-                                ) {
-                                    teamData?.forEach {
-                                        Timber.d(it.toString())
-                                        item {
-                                            TeamCard(it)
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    @Composable
-    private fun TeamCard(team: Team) {
-        team.let {
-            Card(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
-                    .fillMaxWidth(),
-                backgroundColor = DarkGrey
-            ) {
-                Column(
-                    Modifier.padding(top = 16.dp, start = 0.dp, end = 0.dp, bottom = 0.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    ) {
-                        Text(text = it.name ?: "", style = MaterialTheme.typography.h6)
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-
-                    Divider(color = DividerDark)
-
-                    it.members?.forEach {
-                        TeamMemberItem(id = it.key, it.value)
-                    }
-                }
-            }
-        }
-    }
-
-    @SuppressLint("CheckResult")
-    @OptIn(ExperimentalFoundationApi::class)
-    @Composable
-    private fun TeamMemberItem(id: String, value: Team.MemberSettings) {
-        var teamMember by remember { mutableStateOf<FSUser?>(null) }
-        Firebase.firestore.collection("users").document(id).get().addOnSuccessListener {
-            teamMember = it.toObject<FSUser>()?.forActiveMode()
-        }
-
-        teamMember?.let {
-            Row(
-                Modifier
-                    .height(48.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Rectangle(color = value.getColorM(), modifier = Modifier.fillMaxHeight())
-                Row(
-                    Modifier
-                        .padding(start = 16.dp, end = 16.dp)
-                        .fillMaxHeight(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "${it.getUsername()}${
-                            if (id == uid()) {
-                                " (You)"
-                            } else ""
-                        }", fontWeight = if (id == uid()) FontWeight.Bold else FontWeight.Normal
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    quest?.let {
-                        if (teamMember?.progress?.isQuestCompleted(quest!!) == true) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_check_circle_outline_24),
-                                contentDescription = "",
-                                Modifier.size(16.dp),
-                                tint = Green400
-                            )
-                        }
-                        if (quest?.isLocked(teamMember) == true) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_lock_24),
-                                contentDescription = "",
-                                Modifier.size(16.dp),
-                                tint = Red400
-                            )
-                        } else if (quest?.isAvailable(teamMember) == true) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_baseline_lock_open_24),
-                                contentDescription = "",
-                                Modifier.size(16.dp),
-                                tint = Amber500
-                            )
-                        }
-                    }
-                }
-            }
-
         }
     }
 
@@ -992,8 +870,6 @@ class QuestDetailActivity : GodActivity() {
         @DrawableRes val iconDrawable: Int? = null
     ) {
         object You : BottomNavigationScreens("You", "You", null, R.drawable.ic_baseline_person_24)
-
-        object Team : BottomNavigationScreens("Team", "Team", null, R.drawable.ic_groups_white_24dp)
     }
 
     @Composable
@@ -1001,8 +877,7 @@ class QuestDetailActivity : GodActivity() {
         navController: NavController
     ) {
         val items = listOf(
-            BottomNavigationScreens.You,
-            BottomNavigationScreens.Team
+            BottomNavigationScreens.You
         )
 
         BottomNavigation(
