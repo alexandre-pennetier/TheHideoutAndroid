@@ -47,10 +47,9 @@ class Updaters (
             val response = apolloClient.query(ItemsByTypeQuery(ItemType.any))
                 .fetchPolicy(FetchPolicy.NetworkOnly)
                 .execute()
-            val items = response.data?.items?.map { fragments ->
-                Log.d("Item", "${fragments?.itemFragment?.iconLink}")
-                fragments?.toPricing()
-            } ?: emptyList()
+            val items = response.data?.items?.map { it?.toPricing() } ?: emptyList()
+            // An empty answer is a failed fetch: keep the stored prices and let WorkManager retry.
+            if (items.isEmpty()) return ListenableWorker.Result.retry()
 
             val ms = measureTimeMillis {
                 priceDao.insertAll(items.mapNotNull {
@@ -69,7 +68,7 @@ class Updaters (
         } catch (e: Exception) {
             e.printStackTrace()
 
-            ListenableWorker.Result.failure()
+            ListenableWorker.Result.retry()
         }
     }
 
@@ -81,6 +80,7 @@ class Updaters (
                 quest?.toQuest()
             } ?: emptyList()
 
+            if (quests.isEmpty()) return ListenableWorker.Result.retry()
             val ms = measureTimeMillis {
                 questDao.insertAll(quests.filterNotNull())
             }
@@ -91,7 +91,7 @@ class Updaters (
         } catch (e: Exception) {
             e.printStackTrace()
 
-            ListenableWorker.Result.failure()
+            ListenableWorker.Result.retry()
         }
     }
 
@@ -111,11 +111,11 @@ class Updaters (
                 //Timber.d("Inserted ${crafts.count()} crafts in $ms ms")
 
                 ListenableWorker.Result.success()
-            } else ListenableWorker.Result.failure()
+            } else ListenableWorker.Result.retry()
         }  catch (e: Exception) {
             e.printStackTrace()
 
-            ListenableWorker.Result.failure()
+            ListenableWorker.Result.retry()
         }
     }
 
@@ -138,11 +138,11 @@ class Updaters (
                 //Timber.d("Inserted ${barters.count()} barters in $ms ms")
 
                 ListenableWorker.Result.success()
-            } else ListenableWorker.Result.failure()
+            } else ListenableWorker.Result.retry()
         }  catch (e: Exception) {
             e.printStackTrace()
 
-            ListenableWorker.Result.failure()
+            ListenableWorker.Result.retry()
         }
     }
 }

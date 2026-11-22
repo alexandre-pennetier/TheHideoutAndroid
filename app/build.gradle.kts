@@ -1,6 +1,3 @@
-import io.sentry.android.gradle.extensions.InstrumentationFeature
-import java.util.EnumSet
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -10,7 +7,6 @@ plugins {
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.realm)
     alias(libs.plugins.apollo)
-    alias(libs.plugins.firebase.perf)
     alias(libs.plugins.sentry)
 }
 
@@ -73,6 +69,8 @@ android {
         named("release").configure {
             isDebuggable = false
             isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
         }
     }
@@ -92,9 +90,9 @@ android {
 sentry {
     // Mapping upload needs the CI secrets; skip it for local release builds.
     autoUploadProguardMapping.set(System.getenv("SENTRY_AUTH_TOKEN") != null)
+    // Bytecode tracing instrumentation costs time on every file, network and Compose call.
     tracingInstrumentation {
-        enabled.set(true)
-        features.set(EnumSet.allOf(InstrumentationFeature::class.java) - InstrumentationFeature.DATABASE)
+        enabled.set(false)
     }
 }
 
@@ -134,7 +132,6 @@ dependencies {
     implementation(androidx.compose.ui.tooling.preview)
 
     implementation(libs.gson)
-    implementation(libs.glide)
 
     // Tests
     testImplementation(libs.junit4)

@@ -280,7 +280,7 @@ fun FleaMarketNeededScreen(
     }
 
     LazyVerticalGrid(columns = GridCells.Adaptive(52.dp)) {
-        items(items = neededItems) {
+        items(items = neededItems, key = { it.id }) {
             val needed = userData?.items?.get(it.id)
             val color = if (needed?.has == needed?.getTotalNeeded()) {
                 Green500

@@ -48,7 +48,6 @@ import com.austinhodak.thehideout.rigsList
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
 import com.austinhodak.thehideout.utils.*
-import com.bumptech.glide.Glide
 import com.google.firebase.crashlytics.crashlytics
 import com.google.firebase.Firebase
 import com.stfalcon.imageviewer.StfalconImageViewer

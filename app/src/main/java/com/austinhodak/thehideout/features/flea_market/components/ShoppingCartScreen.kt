@@ -102,7 +102,7 @@ fun ShoppingCartScreen(
             EmptyText(text = "Nothing in cart.")
         } else {
             LazyColumn(contentPadding = PaddingValues(top = 4.dp, bottom = 4.dp)) {
-                items(items = items) { item ->
+                items(items = items, key = { it.id }) { item ->
                     val quantity = userData?.cart?.get(item.id) ?: 1
                     ShoppingFleaItem(item = item, quantity, onClick = {
                         context.openFleaDetail(it)

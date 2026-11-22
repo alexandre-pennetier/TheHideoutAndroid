@@ -3,7 +3,7 @@ package com.austinhodak.thehideout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.asLiveData
 import com.austinhodak.tarkovapi.repository.TarkovRepo
 import com.austinhodak.tarkovapi.room.models.Item
 import com.austinhodak.thehideout.utils.Time
@@ -11,12 +11,10 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class NavViewModel @Inject constructor(
@@ -51,40 +49,20 @@ class NavViewModel @Inject constructor(
         _selectedDrawerItemIdentifier.value = identifier
     }
 
-    private val _timeLeft = MutableLiveData("00:00:00")
-    val timeLeft: LiveData<String> = _timeLeft
-
-    private val _timeRight = MutableLiveData("00:00:00")
-    val timeRight: LiveData<String> = _timeRight
-
-    private suspend fun startGameTimers() {
-        withContext(Dispatchers.Main) {
-            while (true) {
-                _timeLeft.value = Time.realTimeToTarkovTime(true)
-                _timeRight.value = Time.realTimeToTarkovTime(false)
-                delay(1000.div(7).toLong())
-            }
+    // The loop only runs while a clock is on screen (plus a short grace period), not for the whole process.
+    private fun clock(left: Boolean) = flow {
+        while (true) {
+            emit(Time.realTimeToTarkovTime(left))
+            delay(1000.div(7).toLong())
         }
-    }
+    }.distinctUntilChanged().asLiveData()
 
-    private val _allItems = MutableLiveData<List<Item>>(emptyList())
-    val allItems = _allItems
+    val timeLeft: LiveData<String> = clock(true)
+    val timeRight: LiveData<String> = clock(false)
 
-    init {
-        viewModelScope.launch {
-            startGameTimers()
-        }
+    // Starts on the first observer, not at launch; identical re-emissions (e.g. a price refresh that changed
+    // nothing) are dropped so screens do not re-sort and re-filter for no reason.
+    val allItems: LiveData<List<Item>> = tarkovRepo.getAllItems().distinctUntilChanged().flowOn(Dispatchers.Default).asLiveData()
 
-        getAllItems()
-    }
-
-    private fun getAllItems() {
-        viewModelScope.launch {
-            tarkovRepo.getAllItems().collect {
-                Timber.d("Got ${it.size} items")
-                _allItems.value = it
-            }
-        }
-    }
 }
 

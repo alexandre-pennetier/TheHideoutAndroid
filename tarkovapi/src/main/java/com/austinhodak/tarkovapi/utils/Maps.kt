@@ -20,14 +20,9 @@ class Maps(context: Context) {
         if (maps.isNullOrEmpty()) {
             val string = context.resources.openRawResource(R.raw.maps).bufferedReader().use { it.readText() }
             val json = JSONObject(string)
-            maps.add(Gson().fromJson(json.getJSONObject("factory").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("customs").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("woods").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("shoreline").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("interchange").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("lab").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("reserve").toString(), Map::class.java))
-            maps.add(Gson().fromJson(json.getJSONObject("lighthouse").toString(), Map::class.java))
+            val gson = Gson()
+            val order = listOf("factory", "customs", "woods", "shoreline", "interchange", "lab", "reserve", "lighthouse")
+            order.mapTo(maps) { gson.fromJson(json.getJSONObject(it).toString(), Map::class.java) }
         }
     }
 
