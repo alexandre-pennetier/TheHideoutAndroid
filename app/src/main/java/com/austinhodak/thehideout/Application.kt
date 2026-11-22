@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
@@ -52,8 +53,6 @@ import timber.log.Timber
 import timber.log.Timber.DebugTree
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
-internal const val SyncWorkName = "SyncWorkName"
 
 @HiltAndroidApp
 class Application : android.app.Application(), Configuration.Provider, ImageLoaderFactory {
@@ -191,8 +190,10 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
             MainScope().launch(Dispatchers.IO) {
                 if (tarkovRepo.isPriceDaoEmpty()) {
-                    workManager.enqueue(
-                        OneTimeWorkRequest.Builder(PriceUpdateWorker::class.java).build()
+                    workManager.enqueueUniqueWork(
+                        "price_update_first_run",
+                        ExistingWorkPolicy.KEEP,
+                        OneTimeWorkRequest.Builder(PriceUpdateWorker::class.java).build(),
                     )
                 }
             }

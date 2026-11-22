@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonParseException
 import com.google.gson.ToNumberPolicy
 import com.google.gson.reflect.TypeToken
 import timber.log.Timber
@@ -134,10 +135,22 @@ object LocalStore {
         crossinline onChange: (T?) -> Unit,
     ): Closeable = listen(path) { onChange(convert(it, T::class.java)) }
 
+    // Locked because [value] is a live node that writers on other threads mutate; a node of the wrong shape reads as empty.
+    @Synchronized
     fun <T> convert(
         value: Any?,
         type: Class<T>,
-    ): T? = if (value == null) null else gson.fromJson(gson.toJsonTree(value), type)
+    ): T? =
+        if (value == null) {
+            null
+        } else {
+            try {
+                gson.fromJson(gson.toJsonTree(value), type)
+            } catch (e: JsonParseException) {
+                Timber.e(e, "Ignoring malformed %s data", type.simpleName)
+                null
+            }
+        }
 
     @Synchronized
     fun exportJson(): String = gson.toJson(root)

@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
@@ -68,9 +70,9 @@ jobs:
       - name: Build Release
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
-          KEYSTORE_PASSWORD: ${{ env.KEYSTORE_PASSWORD }}
-          KEYSTORE_ALIAS: ${{ env.KEY_ALIAS }}
-          KEYSTORE_ALIAS_PASSWORD: ${{ env.KEY_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           VERSION: ${{ env.VERSION_NAME }}
           VERSION_CODE: ${{ env.VERSION_CODE }}
         run: ./gradlew assembleFullRelease
@@ -92,6 +94,8 @@ jobs:
     needs: app_build
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
@@ -149,9 +153,9 @@ jobs:
       - name: Build Release
         env:
           KEYSTORE_PATH: ${{ steps.android_keystore.outputs.filePath }}
-          KEYSTORE_PASSWORD: ${{ env.KEYSTORE_PASSWORD }}
-          KEYSTORE_ALIAS: ${{ env.KEY_ALIAS }}
-          KEYSTORE_ALIAS_PASSWORD: ${{ env.KEY_PASSWORD }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           VERSION: ${{ env.VERSION_NAME }}
           VERSION_CODE: ${{ env.VERSION_CODE }}
         run: ./gradlew bundleFullRelease

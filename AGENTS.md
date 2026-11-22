@@ -8,7 +8,7 @@ Guidance for humans and AI coding agents working on **The Hideout: Tarkov Sideki
 
 | Module | Purpose |
 |---|---|
-| `:app` | The application: Compose + legacy View UI, Hilt DI, Realm cache, local user store, sync workers. Product flavors `beta` and `full`. |
+| `:app` | The application: Compose + legacy View UI, Hilt DI, Realm cache, local user store. Product flavors `beta` and `full`. |
 | `:tarkovapi` | Library: legacy data layer (Room DB with bundled `hideout_database_*.db` assets), Apollo GraphQL for older screens, models, API helpers. |
 
 Both modules have their own Apollo service and their own `schema.graphqls` + `.graphql` files:
@@ -37,7 +37,7 @@ Version catalogs: `gradle/libs.versions.toml` (`libs.*`) and `gradle/androidx.ve
 
 ## Architecture in one paragraph
 
-On launch, `Application.kt` initialises the local store, Mavericks, notification channels and the legacy static helpers (maps, traders, rigs, skills). `data/sync/` (WorkManager `SyncWorker`, `Sync`, `SyncStatusMonitor`) pulls data from the tarkov.dev GraphQL API through `apollo/TarkovApiRepository` and writes it into Realm via `realm/RealmRepository` and the converters in `realm/converters/`. Screens under `features/<name>/` (Compose screens and Activities, each with `viewmodels/`) read from Realm/Room and the API. Per-user state lives on the device only (no account, no login): quest/hideout progress and keys, needed items and cart, weapon builds and custom map markers are in `local/LocalStore` (one JSON tree in `filesDir/local_store.json`: `user`, `tracker`, `loadouts`, `markers`), favorites and settings stay in DataStore. Settings > Export/Import progress writes and restores that JSON tree (favorites and settings are not part of it). The `firebase/` package only holds the data classes (`FSUser`, `User`, `WeaponBuildFirestore`) that Gson maps the tree onto; keep their field names stable (R8 keeps them). DI modules are in `di/`.
+On launch, `Application.kt` initialises the local store, Mavericks, notification channels and the legacy static helpers (maps, traders, rigs, skills). The `PriceUpdateWorker` pulls data from the tarkov.dev GraphQL API into Room. The Realm models and converters in `realm/` are no longer fed by any sync job. Screens under `features/<name>/` (Compose screens and Activities, each with `viewmodels/`) read from Realm/Room and the API. Per-user state lives on the device only (no account, no login): quest/hideout progress and keys, needed items and cart, weapon builds and custom map markers are in `local/LocalStore` (one JSON tree in `filesDir/local_store.json`: `user`, `tracker`, `loadouts`, `markers`), favorites and settings stay in DataStore. Settings > Export/Import progress writes and restores that JSON tree (favorites and settings are not part of it). The `firebase/` package only holds the data classes (`FSUser`, `User`, `WeaponBuildFirestore`) that Gson maps the tree onto; keep their field names stable (R8 keeps them). DI modules are in `di/`.
 
 ## tarkov.dev API
 

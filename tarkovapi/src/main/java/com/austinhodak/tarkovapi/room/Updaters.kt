@@ -128,11 +128,8 @@ class Updaters (
             } ?: emptyList()
 
             return if (barters.isNotEmpty()) {
-                //Timber.d("NUKING BARTER TABLE")
-                barterDao.nukeTable()
-
                 val ms = measureTimeMillis {
-                    barterDao.insertAll(barters.filterNotNull())
+                    barterDao.replaceAll(barters.filterNotNull())
                 }
 
                 //Timber.d("Inserted ${barters.count()} barters in $ms ms")

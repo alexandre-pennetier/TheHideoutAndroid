@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.austinhodak.tarkovapi.room.models.Barter
 import kotlinx.coroutines.flow.Flow
 
@@ -27,4 +28,10 @@ interface BarterDao {
 
     @Query("DELETE FROM barters")
     fun nukeTable()
+
+    @Transaction
+    suspend fun replaceAll(barters: List<Barter>) {
+        nukeTable()
+        insertAll(barters)
+    }
 }

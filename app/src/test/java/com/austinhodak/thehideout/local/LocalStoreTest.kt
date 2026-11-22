@@ -43,6 +43,13 @@ class LocalStoreTest {
     }
 
     @Test
+    fun malformedNodeReadsAsEmptyInsteadOfThrowing() {
+        LocalStore.importJson("""{"user":"abc"}""")
+
+        assertNull(LocalStore.convert(LocalStore.get("user"), FSUser::class.java))
+    }
+
+    @Test
     fun exportThenImportRestoresEverythingAndBadJsonKeepsData() {
         LocalStore.set("tracker/cart/x", 4)
         val backup = LocalStore.exportJson()
