@@ -45,7 +45,6 @@ import com.austinhodak.thehideout.utils.*
 import com.austinhodak.thehideout.features.weapons.detail.WeaponDetailActivity
 import com.austinhodak.thehideout.ui.theme.Bender
 import com.austinhodak.thehideout.ui.theme.HideoutTheme
-import com.bumptech.glide.Glide
 import com.stfalcon.imageviewer.StfalconImageViewer
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.ExperimentalCoroutinesApi

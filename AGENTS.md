@@ -29,7 +29,7 @@ Both modules have their own Apollo service and their own `schema.graphqls` + `.g
 | Networking | Apollo Kotlin 5.2.0 (GraphQL), Retrofit 3.0.0 + OkHttp 5.5.1 + Gson | |
 | Local storage | krdb 3.3.7 (community fork of Realm Kotlin, package `io.github.xilinjia.krdb`, local only) in `:app`; Room 2.8.5 (KSP) in `:tarkovapi`; Apollo SQL normalized cache (currently disabled in `ApolloModule`) | |
 | Backend services | Firebase (BoM 35.2.0, main artifacts, no `-ktx`: Analytics, Messaging, Crashlytics, Perf, Remote Config; no Auth/Firestore/Realtime Database any more), Sentry 8.64.0, Qonversion 9.8.0 (premium), Google Maps (maps-compose 9.0.1), ML Kit text recognition (item scanner), CameraX | |
-| Images/other | Coil 2.7.0, Glide 4.16.0 (legacy views), Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
+| Images/other | Coil 2.7.0, Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
 | Quality | ktlint Gradle plugin 14.2.0 with per-module baselines in `config/ktlint/` (existing violations are baselined; new code must pass), Maestro UI flows in `.maestro/` | |
 | CI/CD | GitHub Actions in `.github/workflows/` (package, beta, release, secrets decode, emulator + Maestro), Fastlane in `fastlane/` | |
 

@@ -81,15 +81,6 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
     companion object {
         var fsUser: MutableLiveData<FSUser?> = MutableLiveData()
-        var extras: Extras? = null
-        var maps: Maps? = null
-        var traders: Traders? = null
-        var rigs: Rigs? = null
-        var skills: Skills? = null
-        var presets: WeaponPresets? = null
-        var hideout: Hideout? = null
-        var ballistics: AmmoBallistics? = null
-        var stims: Stims? = null
         lateinit var instance: Application
             private set
     }
@@ -189,18 +180,7 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
         AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
 
-        setupQonversion()
-
         instance = this
-        extras = Extras(applicationContext)
-        maps = Maps(applicationContext)
-        traders = Traders(applicationContext)
-        rigs = Rigs(applicationContext)
-        skills = Skills(applicationContext)
-        presets = WeaponPresets(applicationContext)
-        hideout = Hideout(applicationContext)
-        ballistics = AmmoBallistics(applicationContext)
-        stims = Stims(applicationContext)
 
 
 
@@ -224,7 +204,11 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
             Timber.d("Firebase Messaging Token: %s", it)
         }
 
-        setupRemoteConfig()
+        // Runs after onCreate returns: SDK setup is not needed to draw the first screen.
+        mainScope.launch {
+            setupQonversion()
+            setupRemoteConfig()
+        }
 
         UserSettingsModel.dataSyncFrequency.observe(MainScope()) {
             val workManager = WorkManager.getInstance(this)
@@ -313,29 +297,26 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
 }
 
-val extras: Extras by lazy {
-    Application.extras!!
-}
+// Loaded on first use, not in Application.onCreate, so startup does not parse these JSON files.
+val extras: Extras by lazy { Extras(Application.instance) }
 
 val fsUser: LiveData<FSUser?> = Application.fsUser
 
-val mapsList: Maps = Application.maps!!
+val mapsList: Maps by lazy { Maps(Application.instance) }
 
-val tradersList: Traders = Application.traders!!
+val tradersList: Traders by lazy { Traders(Application.instance) }
 
-val rigsList: Rigs = Application.rigs!!
+val rigsList: Rigs by lazy { Rigs(Application.instance) }
 
-val skillsList: Skills = Application.skills!!
+val skillsList: Skills by lazy { Skills(Application.instance) }
 
-val presetList: WeaponPresets = Application.presets!!
+val presetList: WeaponPresets by lazy { WeaponPresets(Application.instance) }
 
-val ballistics: AmmoBallistics = Application.ballistics!!
+val ballistics: AmmoBallistics by lazy { AmmoBallistics(Application.instance) }
 
-val stims: Stims = Application.stims!!
+val stims: Stims by lazy { Stims(Application.instance) }
 
-val hideoutList: Hideout by lazy {
-    Application.hideout!!
-}
+val hideoutList: Hideout by lazy { Hideout(Application.instance) }
 
 private object EdgeToEdgeCallbacks : android.app.Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(

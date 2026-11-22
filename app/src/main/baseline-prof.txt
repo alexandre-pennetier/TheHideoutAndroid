@@ -1,0 +1,14 @@
+# Hand-written baseline profile for the start path (launch, drawer, flea market). Wildcards are expanded by AGP at build time.
+# shortcut: not generated from a real run. Replace with a Macrobenchmark-generated profile when a benchmark module exists.
+HSPLcom/austinhodak/thehideout/Application**->**(**)**
+HSPLcom/austinhodak/thehideout/NavActivity**->**(**)**
+HSPLcom/austinhodak/thehideout/NavViewModel**->**(**)**
+HSPLcom/austinhodak/thehideout/local/**->**(**)**
+HSPLcom/austinhodak/thehideout/di/**->**(**)**
+HSPLcom/austinhodak/thehideout/compose/**->**(**)**
+HSPLcom/austinhodak/thehideout/ui/**->**(**)**
+HSPLcom/austinhodak/thehideout/features/flea_market/**->**(**)**
+HSPLcom/austinhodak/tarkovapi/room/**->**(**)**
+HSPLcom/austinhodak/tarkovapi/repository/**->**(**)**
+Lcom/austinhodak/thehideout/**;
+Lcom/austinhodak/tarkovapi/room/**;

@@ -72,19 +72,22 @@ object LocalStore {
 
     inline fun <reified T> getAs(path: String): T? = convert(get(path), T::class.java)
 
-    @Synchronized
     fun set(
         path: String,
         value: Any?,
     ) {
         val keys = segments(path)
         if (keys.isEmpty()) return
-        when {
-            value === Delete || value == null -> remove(keys)
-            value is Increment -> write(keys, ((read(keys) as? Number)?.toLong() ?: 0L) + value.by)
-            else -> write(keys, normalize(value))
+        // The JSON round trip runs before the lock so a big value does not block readers on the main thread.
+        val plain = if (value === Delete || value == null || value is Increment) value else normalize(value)
+        synchronized(this) {
+            when {
+                plain === Delete || plain == null -> remove(keys)
+                plain is Increment -> write(keys, ((read(keys) as? Number)?.toLong() ?: 0L) + plain.by)
+                else -> write(keys, plain)
+            }
+            changed(path)
         }
-        changed(path)
     }
 
     /** Deep-merges [values] into the node at [path]; [Delete] and [Increment] values apply to their key. */

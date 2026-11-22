@@ -184,7 +184,7 @@ class ModPickerActivity : GodActivity() {
                             else -> data.sortedBy { it.ShortName }
                         }
 
-                        items(items = data) { item ->
+                        items(items = data, key = { it.id }) { item ->
                             ModsBasicCard(item = item, conflicts = conflictingItems) {
                                 setResult(RESULT_OK, Intent().apply {
                                     putExtra("id", id)

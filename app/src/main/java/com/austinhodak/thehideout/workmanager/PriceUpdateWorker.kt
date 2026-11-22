@@ -30,7 +30,9 @@ class PriceUpdateWorker @AssistedInject constructor(
 
         val updateAll = Updaters(tarkovRepo, apolloClient).updateAll()
 
-        preferences.edit().putLong("lastPriceUpdate", System.currentTimeMillis()).apply()
+        if (updateAll.all { it == Result.success() }) {
+            preferences.edit().putLong("lastPriceUpdate", System.currentTimeMillis()).apply()
+        }
 
         val widgetIntent = Intent(appContext, SinglePriceWidget::class.java)
         widgetIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
@@ -40,11 +42,8 @@ class PriceUpdateWorker @AssistedInject constructor(
 
         appContext.sendBroadcast(widgetIntent)
 
-        return if (updateAll.all { it == Result.success() }) {
-            Result.success()
-        } else {
-            Result.failure()
-        }
+        // Back off and try again instead of waiting a full period after a failed fetch.
+        return if (updateAll.all { it == Result.success() }) Result.success() else Result.retry()
     }
 
     @AssistedFactory

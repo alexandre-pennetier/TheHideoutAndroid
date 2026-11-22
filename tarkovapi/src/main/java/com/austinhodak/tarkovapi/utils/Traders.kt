@@ -18,14 +18,9 @@ class Traders(context: Context) {
         if (traders.isNullOrEmpty()) {
             val string = context.resources.openRawResource(R.raw.traders).bufferedReader().use { it.readText() }
             val json = JSONObject(string)
-            traders.add(Gson().fromJson(json.getJSONObject("prapor").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("therapist").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("fence").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("skier").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("peacekeeper").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("mechanic").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("ragman").toString(), TraderInfo::class.java))
-            traders.add(Gson().fromJson(json.getJSONObject("jaeger").toString(), TraderInfo::class.java))
+            val gson = Gson()
+            val order = listOf("prapor", "therapist", "fence", "skier", "peacekeeper", "mechanic", "ragman", "jaeger")
+            order.mapTo(traders) { gson.fromJson(json.getJSONObject(it).toString(), TraderInfo::class.java) }
         }
     }
 
