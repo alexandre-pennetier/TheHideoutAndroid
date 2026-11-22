@@ -12,13 +12,14 @@ import java.io.Closeable
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * The app's only user-data store: one JSON tree in `filesDir/local_store.json`, no account and no network.
  *
  * Top-level nodes: `user` (progress, keys, player level), `tracker` (needed items, cart), `loadouts/<id>`
  * and `markers/<id>`. Paths use `/` (see [dotted] for Firestore-style `a.b.c`). Listeners always run on the
- * main thread. shortcut: the whole file is rewritten on every change and listeners are not diffed, which is
+ * main thread. shortcut: the whole file is rewritten (once per burst of writes) and listeners are not diffed, which is
  * fine for a few hundred small entries; move to Room if the tree grows large.
  */
 object LocalStore {
@@ -40,6 +41,10 @@ object LocalStore {
     private val main = Handler(Looper.getMainLooper())
     private val writer = Executors.newSingleThreadExecutor()
     private val listeners = CopyOnWriteArrayList<Listener>()
+    private val savePending = AtomicBoolean(false)
+
+    // Paths written since listeners last ran; guarded by this.
+    private val dirtyPaths = HashSet<String>()
     private var root = LinkedHashMap<String, Any?>()
     private lateinit var file: File
 
@@ -79,7 +84,7 @@ object LocalStore {
             value is Increment -> write(keys, ((read(keys) as? Number)?.toLong() ?: 0L) + value.by)
             else -> write(keys, normalize(value))
         }
-        changed()
+        changed(path)
     }
 
     /** Deep-merges [values] into the node at [path]; [Delete] and [Increment] values apply to their key. */
@@ -89,7 +94,7 @@ object LocalStore {
         values: Map<String, Any?>,
     ) {
         mergeInto(segments(path), values)
-        changed()
+        changed(path)
     }
 
     private fun mergeInto(
@@ -139,7 +144,7 @@ object LocalStore {
     fun importJson(json: String) {
         val parsed: LinkedHashMap<String, Any?> = gson.fromJson(json, mapType) ?: throw IllegalArgumentException("empty")
         root = parsed
-        changed()
+        changed("")
     }
 
     /** Firestore-style `a.b.c` field path to a store path. */
@@ -187,17 +192,39 @@ object LocalStore {
     // Round-trips through JSON so stored values are plain maps, lists, strings, numbers and booleans.
     private fun normalize(value: Any?): Any? = gson.fromJson(gson.toJson(value), Any::class.java)
 
-    private fun changed() {
-        val json = gson.toJson(root)
-        writer.execute {
-            try {
-                val tmp = File(file.parentFile, "local_store.json.tmp")
-                tmp.writeText(json)
-                tmp.renameTo(file)
-            } catch (e: Exception) {
-                Timber.e(e, "Could not save local_store.json")
-            }
+    /** Saves once and wakes only the listeners near [path], however many writes land in a burst. Call while holding the lock. */
+    private fun changed(path: String) {
+        if (savePending.compareAndSet(false, true)) writer.execute { save() }
+        val first = dirtyPaths.isEmpty()
+        dirtyPaths.add(segments(path).joinToString("/"))
+        if (first) main.post { notifyListeners() }
+    }
+
+    private fun save() {
+        savePending.set(false)
+        val json = synchronized(this) { gson.toJson(root) }
+        try {
+            val tmp = File(file.parentFile, "local_store.json.tmp")
+            tmp.writeText(json)
+            tmp.renameTo(file)
+        } catch (e: Exception) {
+            Timber.e(e, "Could not save local_store.json")
         }
-        main.post { listeners.forEach { it.onChange(get(it.path)) } }
+    }
+
+    private fun notifyListeners() {
+        val paths = synchronized(this) { dirtyPaths.toList().also { dirtyPaths.clear() } }
+        for (listener in listeners) {
+            if (paths.any { overlaps(it, listener.path) }) listener.onChange(get(listener.path))
+        }
+    }
+
+    // A write at "user/a" changes a listener on "user" and one on "user/a/b", not one on "tracker".
+    private fun overlaps(
+        changed: String,
+        listening: String,
+    ): Boolean {
+        val l = segments(listening).joinToString("/")
+        return changed.isEmpty() || l.isEmpty() || changed == l || changed.startsWith("$l/") || l.startsWith("$changed/")
     }
 }

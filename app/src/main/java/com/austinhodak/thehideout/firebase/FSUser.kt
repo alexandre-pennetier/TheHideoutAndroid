@@ -1,7 +1,6 @@
 package com.austinhodak.thehideout.firebase
 
 import com.austinhodak.tarkovapi.room.models.Item
-import timber.log.Timber
 import java.io.Serializable
 
 data class FSUser(
@@ -46,10 +45,6 @@ data class FSUser(
         fun getCompletedQuestObjectiveIDs() = questObjectives?.filter { it.value.completed == true }?.map { it.key }
         fun getCompletedHideoutIDs() = hideoutModules?.filter { it.value.completed == true }?.map { it.key }
         fun getCompletedHideoutObjectiveIDs() = hideoutObjectives?.filter { it.value.completed == true }?.map { it.key }
-
-        init {
-            Timber.d(getCompletedHideoutIDs().toString())
-        }
 
         data class Quest(
             val completed: Boolean? = null,

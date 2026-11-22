@@ -376,7 +376,14 @@ fun FleaMarketFavoritesList(
     val favoriteIds = Favorites.items.value
     val sortValue = sortBy.value
     val list = remember(items, favoriteIds, sortValue, searchKey, priceDisplay) {
-        val data = items?.filter { it.id in favoriteIds } ?: emptyList()
+        // Filter before sorting: the sort then only handles what is shown.
+        val data = items?.filter {
+            it.id in favoriteIds && (
+                it.ShortName?.contains(searchKey, ignoreCase = true) == true
+                    || it.Name?.contains(searchKey, ignoreCase = true) == true
+                    || it.itemType?.name?.contains(searchKey, ignoreCase = true) == true
+                )
+        } ?: emptyList()
         when (sortValue) {
             0 -> data.sortedBy { it.Name }
             1 -> data.sortedBy {
@@ -415,10 +422,6 @@ fun FleaMarketFavoritesList(
             6 -> data.sortedBy { it.pricing?.getInstaProfit() }
             7 -> data.sortedByDescending { it.pricing?.getInstaProfit() }
             else -> data.sortedBy { it.getPrice() }
-        }.filter {
-            it.ShortName?.contains(searchKey, ignoreCase = true) == true
-                    || it.Name?.contains(searchKey, ignoreCase = true) == true
-                    || it.itemType?.name?.contains(searchKey, ignoreCase = true) == true
         }
     }
 
@@ -486,9 +489,28 @@ fun FleaMarketListScreen(
     val sortValue = sortBy.value
     // Sorting and filtering thousands of items is too heavy to redo on every recomposition.
     val list = remember(data, sortValue, searchKey, priceDisplay, fleaHideTime, fleaHideNonFlea) {
+        val cutoff = when (fleaHideTime) {
+            FleaHideTime.HOUR24 -> 86400000L
+            FleaHideTime.DAY7 -> 604800000L
+            FleaHideTime.DAY14 -> 1209600000L
+            FleaHideTime.DAY30 -> 2592000000L
+            else -> null
+        }?.let { System.currentTimeMillis() - it }
+        // Filter before sorting: the sort then only handles what is shown.
+        val visible = data?.filter {
+            (
+                it.ShortName?.contains(searchKey, ignoreCase = true) == true
+                    || it.Name?.contains(searchKey, ignoreCase = true) == true
+                    || it.itemType?.name?.contains(searchKey, ignoreCase = true) == true
+                    || it.pricing?.types?.map { it?.rawValue }?.joinToString(" ")
+                        ?.contains(searchKey, ignoreCase = true) == true
+                ) &&
+                (cutoff == null || (it.pricing?.getTime() ?: Long.MAX_VALUE) > cutoff) &&
+                (!fleaHideNonFlea || it.pricing?.noFlea == false)
+        }
         when (sortValue) {
-            0 -> data?.sortedBy { it.Name }
-            1 -> data?.sortedBy {
+            0 -> visible?.sortedBy { it.Name }
+            1 -> visible?.sortedBy {
                 when (priceDisplay) {
                     FleaVisiblePrice.DEFAULT -> it.getPrice()
                     FleaVisiblePrice.AVG -> it.pricing?.avg24hPrice
@@ -498,7 +520,7 @@ fun FleaMarketListScreen(
                 }
             }
 
-            2 -> data?.sortedByDescending {
+            2 -> visible?.sortedByDescending {
                 when (priceDisplay) {
                     FleaVisiblePrice.DEFAULT -> it.getPrice()
                     FleaVisiblePrice.AVG -> it.pricing?.avg24hPrice
@@ -508,7 +530,7 @@ fun FleaMarketListScreen(
                 }
             }
 
-            3 -> data?.sortedByDescending {
+            3 -> visible?.sortedByDescending {
                 val price = when (priceDisplay) {
                     FleaVisiblePrice.DEFAULT -> it.getPrice()
                     FleaVisiblePrice.AVG -> it.pricing?.avg24hPrice
@@ -519,34 +541,16 @@ fun FleaMarketListScreen(
                 it.getPricePerSlot(price ?: 0)
             }
 
-            4 -> data?.sortedBy { it.pricing?.changeLast48h }
-            5 -> data?.sortedByDescending { it.pricing?.changeLast48h }
-            6 -> data?.sortedBy { it.pricing?.getInstaProfit() }
-            7 -> data?.sortedByDescending { it.pricing?.getInstaProfit() }
-            8 -> data?.sortedByDescending {
+            4 -> visible?.sortedBy { it.pricing?.changeLast48h }
+            5 -> visible?.sortedByDescending { it.pricing?.changeLast48h }
+            6 -> visible?.sortedBy { it.pricing?.getInstaProfit() }
+            7 -> visible?.sortedByDescending { it.pricing?.getInstaProfit() }
+            8 -> visible?.sortedByDescending {
                 if (it.pricing?.noFlea == true) return@sortedByDescending "";
                 return@sortedByDescending it.pricing?.updated
             }
 
-            else -> data?.sortedBy { it.getPrice() }
-        }?.filter {
-            it.ShortName?.contains(searchKey, ignoreCase = true) == true
-                    || it.Name?.contains(searchKey, ignoreCase = true) == true
-                    || it.itemType?.name?.contains(searchKey, ignoreCase = true) == true
-                    || it.pricing?.types?.map { it?.rawValue }?.joinToString(" ")
-                ?.contains(searchKey, ignoreCase = true) == true
-        }?.filter {
-            when (fleaHideTime) {
-                FleaHideTime.HOUR24 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (1000 * 60 * 60 * 24))
-                FleaHideTime.DAY7 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (604800000))
-                FleaHideTime.DAY14 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (1209600000))
-                FleaHideTime.DAY30 -> it.pricing?.getTime() ?: System.currentTimeMillis() > (System.currentTimeMillis() - (2592000000))
-                else -> true
-            }
-        }?.filter {
-            if (fleaHideNonFlea) {
-                it.pricing?.noFlea == false
-            } else true
+            else -> visible?.sortedBy { it.getPrice() }
         }
     }
 

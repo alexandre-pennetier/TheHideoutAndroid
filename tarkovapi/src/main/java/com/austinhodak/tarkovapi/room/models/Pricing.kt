@@ -37,6 +37,13 @@ data class Pricing(
     val containsItem: List<Contains>?
 ) : Serializable {
 
+    private companion object {
+        // SimpleDateFormat is not thread safe and costly to build; one per thread.
+        val timeFormat: ThreadLocal<SimpleDateFormat> = ThreadLocal.withInitial {
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US).apply { timeZone = TimeZone.getTimeZone("GMT") }
+        }
+    }
+
     fun isDisabled(): Boolean = false
     fun hasChild(): Boolean = containsItem?.isNotEmpty() == true
 
@@ -45,10 +52,8 @@ data class Pricing(
     fun getTransparentIcon(): String = "https://assets.tarkov.dev/$id-base-image.png"
 
     fun getTime(): Long? {
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-        sdf.timeZone = TimeZone.getTimeZone("GMT")
         updated?.let {
-            return sdf.parse(it)?.time
+            return timeFormat.get()!!.parse(it)?.time
         }
         return System.currentTimeMillis()
     }
