@@ -195,7 +195,6 @@ dependencies {
 
     implementation(androidx.compose.material.icons.extended)
 
-    implementation(libs.qonversion)
     implementation(libs.bundles.mavericks)
     implementation(androidx.core.splashscreen)
     implementation(androidx.compose.ui.text.googleFonts)

@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,10 +40,8 @@ import com.austinhodak.thehideout.features.calculator.CalculatorMainActivity
 import com.austinhodak.thehideout.features.map.MapsActivity
 import com.austinhodak.thehideout.features.map.StaticMapsActivity
 import com.austinhodak.thehideout.features.ocr.ItemScannerActivity
-import com.austinhodak.thehideout.features.premium.PremiumPusherActivity
 import com.austinhodak.thehideout.features.status.ServerStatusActivity
 import com.austinhodak.thehideout.settings.SettingsActivity
-import com.austinhodak.thehideout.utils.launchPremiumPusher
 import com.austinhodak.thehideout.utils.openActivity
 import com.austinhodak.thehideout.utils.openWithCustomTab
 import com.mikepenz.materialdrawer.holder.BadgeStyle
@@ -517,13 +513,6 @@ fun MainDrawer(
     }
 
     var status: ServerStatus? by remember { mutableStateOf(null) }
-    val isPremium = UserSettingsModel.isPremiumUser.value
-    var hideBanner: Boolean by remember { mutableStateOf(UserSettingsModel.hidePremiumBanner.value) }
-
-    UserSettingsModel.hidePremiumBanner.observe(scope) {
-        hideBanner = it
-    }
-
     var isTimersRunning = false
 
     LaunchedEffect("drawer") {
@@ -580,25 +569,6 @@ fun MainDrawer(
 
                 GameClockText(Modifier.weight(1f), false, navViewModel)
             }
-            if (!isPremium && !hideBanner) {
-                Surface(
-                    color = Red400,
-                    modifier = Modifier,
-                ) {
-                    Row(
-                        Modifier
-                            .clickable {
-                                context.launchPremiumPusher()
-                            }
-                            .padding(horizontal = 14.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = stringResource(R.string.go_premium), color = Black, style = MaterialTheme.typography.button, modifier = Modifier.padding(start = 2.dp))
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(painter = painterResource(id = R.drawable.ic_baseline_arrow_forward_24), contentDescription = "", tint = Black)
-                    }
-                }
-            }
             Divider(
                 modifier = Modifier.background(MaterialTheme.colors.surface),
                 color = DividerDark
@@ -621,7 +591,6 @@ fun MainDrawer(
                                     route == "map_interactive" -> context.openActivity(MapsActivity::class.java)
                                     route == "map_static" -> context.openActivity(StaticMapsActivity::class.java)
                                     route == "settings" -> context.openActivity(SettingsActivity::class.java)
-                                    route == "upgrade" -> context.openActivity(PremiumPusherActivity::class.java)
                                     route == "server_status" -> context.openActivity(
                                         ServerStatusActivity::class.java)
                                     route == "item_scanner" -> context.openActivity(

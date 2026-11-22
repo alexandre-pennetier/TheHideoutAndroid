@@ -33,7 +33,6 @@ import com.austinhodak.tarkovapi.utils.Skills
 import com.austinhodak.tarkovapi.utils.Stims
 import com.austinhodak.tarkovapi.utils.Traders
 import com.austinhodak.tarkovapi.utils.WeaponPresets
-import com.austinhodak.thehideout.features.premium.viewmodels.checkEntitlement
 import com.austinhodak.thehideout.firebase.FSUser
 import com.austinhodak.thehideout.local.LocalStore
 import com.austinhodak.thehideout.utils.*
@@ -46,12 +45,6 @@ import com.google.firebase.analytics.analytics
 import com.google.firebase.messaging.messaging
 import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
-import com.qonversion.android.sdk.Qonversion
-import com.qonversion.android.sdk.QonversionConfig
-import com.qonversion.android.sdk.dto.QEnvironment
-import com.qonversion.android.sdk.dto.QLaunchMode
-import com.qonversion.android.sdk.dto.entitlements.QEntitlementRenewState
-import com.qonversion.android.sdk.dto.properties.QUserPropertyKey
 import com.skydoves.only.Only
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
@@ -120,52 +113,6 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
         fsUser.postValue(LocalStore.convert(stored, FSUser::class.java)?.forActiveMode() ?: FSUser())
     }
 
-    private fun setupQonversion() {
-        Qonversion.initialize(
-            QonversionConfig.Builder(
-                this@Application,
-                "QGPONvV6rgfVxSM74fv5aID13TuunIu3",
-                QLaunchMode.SubscriptionManagement
-            ).apply {
-                if (BuildConfig.DEBUG) {
-                    setEnvironment(QEnvironment.Sandbox)
-                }
-            }.build()
-        )
-
-        Firebase.analytics.appInstanceId.addOnSuccessListener { instanceId ->
-            Qonversion.shared.setUserProperty(QUserPropertyKey.FirebaseAppInstanceId, instanceId)
-        }
-
-        Qonversion.shared.checkEntitlement { map, qonversionError ->
-            Timber.d("Qonversion: $map")
-            map?.get("Premium")?.let { entitlement ->
-                if (entitlement.isActive) {
-                    Timber.d("User is premium")
-
-                    mainScope.launch {
-                        UserSettingsModel.isPremiumUser.update(true)
-                        Timber.d(UserSettingsModel.isPremiumUser.value.toString())
-                    }
-
-                    when (entitlement.renewState) {
-                        QEntitlementRenewState.NonRenewable -> {}
-                        QEntitlementRenewState.Unknown -> {}
-                        QEntitlementRenewState.WillRenew -> {}
-                        QEntitlementRenewState.Canceled -> {}
-                        QEntitlementRenewState.BillingIssue -> {}
-                    }
-                } else {
-                    Timber.d("User is not premium")
-                    mainScope.launch {
-                        UserSettingsModel.isPremiumUser.update(false)
-                        Timber.d(UserSettingsModel.isPremiumUser.value.toString())
-                    }
-                }
-            }
-        }
-    }
-
     override fun onCreate() {
         super.onCreate()
         // Edge-to-edge is enforced from targetSdk 35; theme roots keep content clear of the bars (SystemBarsBox).
@@ -206,7 +153,6 @@ class Application : android.app.Application(), Configuration.Provider, ImageLoad
 
         // Runs after onCreate returns: SDK setup is not needed to draw the first screen.
         mainScope.launch {
-            setupQonversion()
             setupRemoteConfig()
         }
 

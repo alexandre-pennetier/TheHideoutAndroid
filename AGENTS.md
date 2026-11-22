@@ -28,7 +28,7 @@ Both modules have their own Apollo service and their own `schema.graphqls` + `.g
 | DI | Hilt / Dagger 2.60.1 (via **KSP**), androidx.hilt 1.4.0 | |
 | Networking | Apollo Kotlin 5.2.0 (GraphQL), Retrofit 3.0.0 + OkHttp 5.5.1 + Gson | |
 | Local storage | krdb 3.3.7 (community fork of Realm Kotlin, package `io.github.xilinjia.krdb`, local only) in `:app`; Room 2.8.5 (KSP) in `:tarkovapi`; Apollo SQL normalized cache (currently disabled in `ApolloModule`) | |
-| Backend services | Firebase (BoM 35.2.0, main artifacts, no `-ktx`: Analytics, Messaging, Crashlytics, Perf, Remote Config; no Auth/Firestore/Realtime Database any more), Sentry 8.64.0, Qonversion 9.8.0 (premium), Google Maps (maps-compose 9.0.1), ML Kit text recognition (item scanner), CameraX | |
+| Backend services | Firebase (BoM 35.2.0, main artifacts, no `-ktx`: Analytics, Messaging, Crashlytics, Perf, Remote Config; no Auth/Firestore/Realtime Database any more), Sentry 8.64.0, Google Maps (maps-compose 9.0.1), ML Kit text recognition (item scanner), CameraX | |
 | Images/other | Coil 2.7.0, Lottie, MPAndroidChart, kotlinx-datetime, Timber | |
 | Quality | ktlint Gradle plugin 14.2.0 with per-module baselines in `config/ktlint/` (existing violations are baselined; new code must pass), Maestro UI flows in `.maestro/` | |
 | CI/CD | GitHub Actions in `.github/workflows/` (package, beta, release, secrets decode, emulator + Maestro), Fastlane in `fastlane/` | |
@@ -37,7 +37,7 @@ Version catalogs: `gradle/libs.versions.toml` (`libs.*`) and `gradle/androidx.ve
 
 ## Architecture in one paragraph
 
-On launch, `Application.kt` initialises the local store, Mavericks, Qonversion, notification channels and the legacy static helpers (maps, traders, rigs, skills). `data/sync/` (WorkManager `SyncWorker`, `Sync`, `SyncStatusMonitor`) pulls data from the tarkov.dev GraphQL API through `apollo/TarkovApiRepository` and writes it into Realm via `realm/RealmRepository` and the converters in `realm/converters/`. Screens under `features/<name>/` (Compose screens and Activities, each with `viewmodels/`) read from Realm/Room and the API. Per-user state lives on the device only (no account, no login): quest/hideout progress and keys, needed items and cart, weapon builds and custom map markers are in `local/LocalStore` (one JSON tree in `filesDir/local_store.json`: `user`, `tracker`, `loadouts`, `markers`), favorites and settings stay in DataStore. Settings > Export/Import progress writes and restores that JSON tree (favorites and settings are not part of it). The `firebase/` package only holds the data classes (`FSUser`, `User`, `WeaponBuildFirestore`) that Gson maps the tree onto; keep their field names stable (R8 keeps them). DI modules are in `di/`.
+On launch, `Application.kt` initialises the local store, Mavericks, notification channels and the legacy static helpers (maps, traders, rigs, skills). `data/sync/` (WorkManager `SyncWorker`, `Sync`, `SyncStatusMonitor`) pulls data from the tarkov.dev GraphQL API through `apollo/TarkovApiRepository` and writes it into Realm via `realm/RealmRepository` and the converters in `realm/converters/`. Screens under `features/<name>/` (Compose screens and Activities, each with `viewmodels/`) read from Realm/Room and the API. Per-user state lives on the device only (no account, no login): quest/hideout progress and keys, needed items and cart, weapon builds and custom map markers are in `local/LocalStore` (one JSON tree in `filesDir/local_store.json`: `user`, `tracker`, `loadouts`, `markers`), favorites and settings stay in DataStore. Settings > Export/Import progress writes and restores that JSON tree (favorites and settings are not part of it). The `firebase/` package only holds the data classes (`FSUser`, `User`, `WeaponBuildFirestore`) that Gson maps the tree onto; keep their field names stable (R8 keeps them). DI modules are in `di/`.
 
 ## tarkov.dev API
 
@@ -69,7 +69,7 @@ None: Apollo codegen reports zero deprecated-field warnings in either module (ch
 
 ## Secrets and external accounts
 
-- `app/google-services.json` and the Sentry DSN, Google Maps API key (`AndroidManifest.xml`) and Qonversion project key (`Application.kt`) are committed and belong to the original author's accounts. Do not add new secrets to the repo; do not copy these values into docs or logs.
+- `app/google-services.json` and the Sentry DSN, Google Maps API key (`AndroidManifest.xml`) are committed and belong to the original author's accounts. Do not add new secrets to the repo; do not copy these values into docs or logs.
 - Removed in the local-storage change: login, cloud sync of progress, teams and invite links, price alerts, the price-history charts and the Bitcoin screen (they needed the original author's Firebase project and Cloud Functions). Still pointing at the original author's services, to remove next: `app/google-services.json` (Analytics, Crashlytics, Perf, Messaging topics, Remote Config), Qonversion (premium), Sentry DSN and the Maps key. API-driven screens (items, flea prices, tasks, traders, maps data) only need network access to tarkov.dev.
 - MongoDB Realm is end-of-life; the app uses the krdb fork for its local cache only (no sync). The Realm cache is deleted on schema mismatch (`deleteRealmIfMigrationNeeded`) and re-synced.
 
@@ -82,7 +82,7 @@ None: Apollo codegen reports zero deprecated-field warnings in either module (ch
 
 ## Known upgrade debt (tablet / current-Android readiness)
 
-- Toolchain and libraries are done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP, Compose BOM 2026.09, Firebase BoM 35, Qonversion 9).
+- Toolchain and libraries are done (AGP 9.5, Gradle 9.9, Kotlin 2.4, KSP, Compose BOM 2026.09, Firebase BoM 35).
 - targetSdk 36 is done. Edge-to-edge is on for every activity (`EdgeToEdgeCallbacks` in `Application.kt`), and `HideoutTheme` / `HideoutTheme3` wrap content in `ui/common/SystemBarsBox`, which pads `WindowInsets.safeDrawing` and paints the bar areas. Screens that want to draw behind the bars must opt out of that box deliberately; nested inset modifiers add nothing because the box consumes the insets. Do not use `window.statusBarColor` or `setDecorFitsSystemWindows`.
 - Back handling: `onBackPressed()` overrides are not called at targetSdk 36 (predictive back). Use `onBackPressedDispatcher.addCallback` or Compose `BackHandler`; in `NavActivity` the `BackHandler` sits after `NavHost` so it runs first.
 - Native libraries are 16 KB page aligned (checked on the APK's arm64/x86_64 `.so` files).

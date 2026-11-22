@@ -62,7 +62,6 @@ import com.austinhodak.thehideout.local.FieldValue
 import com.austinhodak.thehideout.local.LocalStore
 import com.austinhodak.thehideout.ui.theme3.HideoutTheme3
 import com.austinhodak.thehideout.utils.isDebug
-import com.austinhodak.thehideout.utils.isPremium
 import com.austinhodak.thehideout.utils.isWorkRunning
 import com.austinhodak.thehideout.utils.keysField
 import com.austinhodak.thehideout.utils.openActivity
@@ -492,11 +491,6 @@ class SettingsActivity : AppCompatActivity() {
                                     category {
                                         title = getString(R.string.other).asText()
                                     }
-                                    if (!isPremium() || isDebug())
-                                        switch(UserSettingsModel.hidePremiumBanner) {
-                                            title = getString(R.string.hide_premium_banner).asText()
-                                            icon = R.drawable.ic_baseline_visibility_off_24.asIcon()
-                                        }
                                     singleChoice(UserSettingsModel.languageSetting, LanguageSetting.values(), {
                                         when (it) {
                                             LanguageSetting.ENGLISH -> "English"

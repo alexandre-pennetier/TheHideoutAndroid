@@ -426,37 +426,8 @@ class WeaponBuilderActivity : AppCompatActivity() {
                                 }
                                 OutlinedButton(
                                     onClick = {
-                                        if (userLoadouts?.size ?: 0 >= 5 && intent.getSerializableExtra("build") == null) {
-                                            isPremium {
-                                                if (it) {
-                                                    viewModel.saveBuild {
-                                                        Toast.makeText(this@WeaponBuilderActivity, "Saved!", Toast.LENGTH_SHORT).show()
-                                                    }
-                                                } else {
-                                                    /*Adapty.getPaywalls { paywalls, products, error ->
-                                                        val premium = products?.find { it.skuDetails?.sku == "premium_1" }?.let {
-                                                            it.purchase(this@WeaponBuilderActivity) { purchaserInfo, purchaseToken, googleValidationResult, product, error ->
-                                                                if (error != null) {
-                                                                    Toast.makeText(this@WeaponBuilderActivity, "Error upgrading.", Toast.LENGTH_SHORT).show()
-                                                                }
-                                                                isPremium {
-                                                                    if (it) {
-                                                                        viewModel.saveBuild {
-                                                                            Toast.makeText(this@WeaponBuilderActivity, "Saved!", Toast.LENGTH_SHORT).show()
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }*/
-                                                    launchPremiumPusherResult()
-                                                }
-                                            }
-                                            //Toast.makeText(this@WeaponBuilderActivity, "Limited to 5 loadouts during beta.", Toast.LENGTH_SHORT).show()
-                                        } else {
-                                            viewModel.saveBuild {
-                                                Toast.makeText(this@WeaponBuilderActivity, "Saved!", Toast.LENGTH_SHORT).show()
-                                            }
+                                        viewModel.saveBuild {
+                                            Toast.makeText(this@WeaponBuilderActivity, "Saved!", Toast.LENGTH_SHORT).show()
                                         }
                                     },
                                     modifier = Modifier

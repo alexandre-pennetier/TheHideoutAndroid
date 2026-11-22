@@ -428,29 +428,17 @@ class MapsActivity : GodActivity() {
                                                             string = category,
                                                             selected = selectedUserQuests.contains(category)
                                                         ) {
-                                                            isPremium { premium ->
-                                                                val it = premium
-                                                                if (it) {
-                                                                    val list = selectedUserQuests.toMutableList()
-                                                                    if (selectedUserQuests.contains(category)) {
-                                                                        category.let {
-                                                                            list.remove(it)
-                                                                        }
-                                                                    } else {
-                                                                        category.let {
-                                                                            list.add(it)
-                                                                        }
-                                                                    }
-
-                                                                    scope.launch {
-                                                                        selectedUserQuests = list.toSet()
-                                                                        //UserSettingsModel.mapQuestSelection.update(list.toSet())
-                                                                    }
-                                                                    updateQuestMarkers(list, userData, quests)
-                                                                } else {
-                                                                    launchPremiumPusherResult()
-                                                                }
+                                                            val list = selectedUserQuests.toMutableList()
+                                                            if (selectedUserQuests.contains(category)) {
+                                                                list.remove(category)
+                                                            } else {
+                                                                list.add(category)
                                                             }
+
+                                                            scope.launch {
+                                                                selectedUserQuests = list.toSet()
+                                                            }
+                                                            updateQuestMarkers(list, userData, quests)
                                                         }
                                                     }
                                                 }
@@ -747,21 +735,16 @@ class MapsActivity : GodActivity() {
                                                 }
 
                                                 map.setOnMapLongClickListener {
-                                                    val markerCount = customMarkers?.size ?: 0
-                                                    if (markerCount < 5 || isPremium()) {
-                                                        val customMarker = CustomMarker(
-                                                            coordinates = GeoPoint(
-                                                                it.latitude,
-                                                                it.longitude
-                                                            ),
-                                                            map = selectedMapText?.lowercase()
-                                                        )
-                                                        openActivity(CustomMapMarkerAddActivity::class.java) {
-                                                            putParcelable("marker", customMarker)
-                                                            putString("map", selectedMapText?.lowercase())
-                                                        }
-                                                    } else {
-                                                        launchPremiumPusher()
+                                                    val customMarker = CustomMarker(
+                                                        coordinates = GeoPoint(
+                                                            it.latitude,
+                                                            it.longitude
+                                                        ),
+                                                        map = selectedMapText?.lowercase()
+                                                    )
+                                                    openActivity(CustomMapMarkerAddActivity::class.java) {
+                                                        putParcelable("marker", customMarker)
+                                                        putString("map", selectedMapText?.lowercase())
                                                     }
                                                 }
 

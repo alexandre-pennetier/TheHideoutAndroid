@@ -46,7 +46,6 @@
 -keep class com.austinhodak.thehideout.features.map.models.** { *; }
 -keep class com.austinhodak.thehideout.local.** { *; }
 
--keep class com.austinhodak.thehideout.features.premium.** { *; }
 
 
 

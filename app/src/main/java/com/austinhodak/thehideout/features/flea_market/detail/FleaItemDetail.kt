@@ -560,10 +560,6 @@ class FleaItemDetail : GodActivity() {
         }
     }
 
-    private fun launchPremiumPusher() {
-        launchPremiumPusherResult()
-    }
-
     @Composable
     private fun NeededCard(
         title: String,

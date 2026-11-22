@@ -31,7 +31,6 @@ object UserSettingsModel : SettingsModel(DataStoreStorage(name = "user")) {
     val test by boolPref(true, "test")
 
     val keepScreenOn by boolPref(false, "keepScreenOn")
-    val hidePremiumBanner by boolPref(false, "hidePremiumBanner")
 
     // Which game profile is active: picks the API game mode and where progress is stored (see GameProfile).
     val gameProfile by enumPref(GameProfile.PVP_ZONE, "gameProfile")
@@ -100,7 +99,6 @@ object UserSettingsModel : SettingsModel(DataStoreStorage(name = "user")) {
 
     val priceAlertsGlobalNotifications by boolPref(true, "priceAlertsGlobalNotifications")
 
-    val isPremiumUser by boolPref(false, "isPremiumUser")
 
     val userGameEdition by enumPref(GameEdition.STANDARD, "userGameEdition")
     val faction by enumPref(Faction.USEC, "faction")

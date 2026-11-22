@@ -47,7 +47,6 @@ import com.austinhodak.thehideout.features.ammunition.AmmoDetailActivity
 import com.austinhodak.thehideout.features.calculator.models.CAmmo
 import com.austinhodak.thehideout.features.calculator.models.CArmor
 import com.austinhodak.thehideout.features.flea_market.detail.FleaItemDetail
-import com.austinhodak.thehideout.features.premium.PremiumPusherActivity
 import com.austinhodak.thehideout.features.quests.QuestDetailActivity
 import com.austinhodak.thehideout.features.weapons.detail.WeaponDetailActivity
 import com.austinhodak.thehideout.features.weapons.mods.ModDetailActivity
@@ -297,35 +296,6 @@ fun Context.openModDetail(id: String) {
     }
 }
 
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalCoilApi
-@ExperimentalFoundationApi
-@ExperimentalMaterialApi
-fun Context.launchPremiumPusher() {
-    this.openActivity(PremiumPusherActivity::class.java)
-}
-
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalCoilApi
-@ExperimentalFoundationApi
-@ExperimentalMaterialApi
-fun Context.launchPremiumPusherResult() {
-    this.openActivity(PremiumPusherActivity::class.java) {
-        putString("setResult", "true")
-    }
-}
-
-@ExperimentalAnimationApi
-@ExperimentalCoroutinesApi
-@ExperimentalCoilApi
-@ExperimentalFoundationApi
-@ExperimentalMaterialApi
-fun Context.launchPremium() {
-    this.openActivity(PremiumPusherActivity::class.java)
-}
-
 fun AmmoCalibers(): List<String> = arrayListOf(
     "Caliber762x35",
     "Caliber86x70",
@@ -541,14 +511,6 @@ fun Pricing.addToNeededItems(quantity: Long? = 1) {
     userRefTracker("items/${this.id}/user/${UUID.randomUUID()}/quantity").setValue(quantity)
 }
 
-fun isPremium(isPremium: (Boolean) -> Unit) {
-    isPremium.invoke(UserSettingsModel.isPremiumUser.value)
-}
-
-fun isPremium(): Boolean {
-    return UserSettingsModel.isPremiumUser.value
-}
-
 fun isWorkScheduled(context: Context, tag: String): Boolean {
     val instance = WorkManager.getInstance(context)
     val statuses: ListenableFuture<List<WorkInfo>> = instance.getWorkInfosForUniqueWork(tag)
@@ -594,19 +556,11 @@ fun openStatusSite(context: Context) {
 }
 
 fun ttSyncEnabledPremium(isEnabled: (Boolean) -> Unit) {
-    if (isPremium() || isDebug()) {
-        isEnabled(UserSettingsModel.ttAPIKey.value.isNotEmpty() && UserSettingsModel.ttSync.value)
-    } else {
-        isEnabled(false)
-    }
+    isEnabled(ttSyncEnabledPremium())
 }
 
 fun ttSyncEnabledPremium(): Boolean {
-    return if (isPremium() || isDebug()) {
-        UserSettingsModel.ttAPIKey.value.isNotEmpty() && UserSettingsModel.ttSync.value
-    } else {
-        false
-    }
+    return UserSettingsModel.ttAPIKey.value.isNotEmpty() && UserSettingsModel.ttSync.value
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

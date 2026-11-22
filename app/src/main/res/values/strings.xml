@@ -109,7 +109,6 @@
     <string name="sign_in_up">Sign In/Sign Up</string>
     <string name="set_level">Set Level</string>
     <string name="level">Level</string>
-    <string name="go_premium">GO PREMIUM</string>
     <string name="unarmored">UNARMORED</string>
     <string name="armored">ARMORED</string>
     <string name="vanity">VANITY</string>
@@ -174,7 +173,6 @@
     <string name="display">Display</string>
     <string name="keep_screen_on">Keep Screen On</string>
     <string name="opening_screen">Opening Screen</string>
-    <string name="hide_premium_banner">Hide Premium Banner</string>
     <string name="language">Language</string>
     <string name="list_price">Item Display Price</string>
     <string name="icon_display">Icon Display</string>

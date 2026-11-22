@@ -189,9 +189,6 @@ class NavActivity : GodActivity() {
         val data = intent.extras
         data?.let {
             it.getString("url")?.openWithCustomTab(this)
-            if (it.containsKey("premium")) {
-                launchPremiumPusher()
-            }
         }
 
         setContent {
